@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-openai
+pytesseract
+Pillow
+scikit-learn
+python-dotenv
