@@ -1,34 +1,34 @@
 # User Stories & Acceptance Criteria
 
-## Epic 1: Quản lý Giao dịch Thông minh (Smart Transaction Management)
+## Epic 1: Smart Transaction Management
 
-### User Story 1.1: Nhập liệu bằng văn bản tự nhiên (NLP)
-**As a** người dùng bận rộn,
-**I want** to nhập một câu mô tả chi tiêu (ví dụ: "đổ xăng 50k"),
-**So that** hệ thống tự động lưu giao dịch 50,000 VND vào danh mục "Đi lại" mà tôi không cần bấm chọn nhiều bước.
-
-**Acceptance Criteria (Tiêu chí chấp nhận):**
-1. Giao diện có một thanh input cho phép nhập text tự do.
-2. Khi submit, AI service phải trả về được `amount` (50000) và `category` ("Đi lại").
-3. Nếu AI không tự tin (<70%), hiển thị popup yêu cầu người dùng xác nhận lại trước khi lưu.
-
-### User Story 1.2: Quét hóa đơn bằng hình ảnh (OCR)
-**As a** người dùng thích giữ hóa đơn,
-**I want** to chụp ảnh tờ hóa đơn siêu thị,
-**So that** ứng dụng tự động điền số tiền tổng và ngày tháng vào form thêm giao dịch.
+### User Story 1.1: Natural Language Input (NLP)
+**As a** busy user,
+**I want** to input a natural language description of my expense (e.g., "spent 50k on gas"),
+**So that** the system automatically saves a 50,000 VND transaction under the "Transportation" category without requiring me to manually click through multiple steps.
 
 **Acceptance Criteria:**
-1. Có nút "Chụp/Tải hóa đơn".
-2. Hệ thống bóc tách được đúng "Tổng tiền" (Total) trên hóa đơn.
-3. Nếu ảnh mờ, hệ thống trả về thông báo lỗi yêu cầu chụp lại.
+1. The UI provides a free-text input field for transaction descriptions.
+2. Upon submission, the AI service must return the parsed `amount` (50000) and `category` ("Transportation").
+3. If the AI confidence score is low (<70%), display a confirmation popup asking the user to verify the parsed data before saving.
 
-## Epic 2: Kiểm soát Ngân sách (Budget Control)
-
-### User Story 2.1: Cảnh báo chi tiêu (AI Alert)
-**As a** người dùng muốn tiết kiệm,
-**I want** to nhận được cảnh báo nếu tốc độ tiêu tiền của tôi trong tuần đầu tiên quá cao,
-**So that** tôi có thể điều chỉnh lại hành vi mua sắm cho những tuần tiếp theo.
+### User Story 1.2: Receipt Scanning (OCR)
+**As a** user who keeps paper receipts,
+**I want** to take a picture of a grocery receipt,
+**So that** the application automatically extracts the total amount and date, and pre-fills the transaction form.
 
 **Acceptance Criteria:**
-1. AI model dựa vào dữ liệu chi tiêu 3 tháng gần nhất để dự báo tháng hiện tại.
-2. Nếu số tiền dự báo vượt quá 90% ngân sách đã đặt, hiển thị cảnh báo (UI Warning) trên Dashboard.
+1. A "Scan/Upload Receipt" button is available on the UI.
+2. The system successfully extracts the "Total Amount" and "Date" from the receipt image.
+3. If the image is too blurry, the system returns an error message prompting the user to retake the photo.
+
+## Epic 2: Budget Control
+
+### User Story 2.1: AI Spending Alerts
+**As a** user who wants to save money,
+**I want** to receive a warning if my spending rate in the first week is unusually high,
+**So that** I can adjust my shopping behavior for the rest of the month.
+
+**Acceptance Criteria:**
+1. The AI model uses the last 3 months of spending data to forecast the current month's total expense.
+2. If the forecasted amount exceeds 90% of the set budget, a warning notification (UI Warning) is displayed on the Dashboard.

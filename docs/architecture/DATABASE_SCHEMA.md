@@ -1,6 +1,6 @@
-# Database Schema (Sơ bộ)
+# Database Schema (Preliminary)
 
-Đây là bản thiết kế Cơ sở dữ liệu cốt lõi cho Budgetly.
+This is the core Database Schema design for Budgetly.
 
 ## 1. Table: Users
 - `id` (PK, UUID)
@@ -11,13 +11,13 @@
 ## 2. Table: Wallets
 - `id` (PK, UUID)
 - `user_id` (FK -> Users.id)
-- `name` (Varchar) - Ví dụ: Tiền mặt, Thẻ tín dụng
+- `name` (Varchar) - e.g., Cash, Credit Card
 - `balance` (Decimal)
 
 ## 3. Table: Categories
 - `id` (PK, UUID)
-- `user_id` (FK -> Users.id, Nullable) - Nếu null thì là category mặc định của hệ thống
-- `name` (Varchar) - Ví dụ: Ăn uống, Đi lại
+- `user_id` (FK -> Users.id, Nullable) - If null, it represents a global system default category
+- `name` (Varchar) - e.g., Dining, Transportation
 - `type` (Enum: INCOME, EXPENSE)
 
 ## 4. Table: Transactions
@@ -27,7 +27,7 @@
 - `amount` (Decimal)
 - `transaction_date` (Date)
 - `description` (Text)
-- `ai_confidence_score` (Float, Nullable) - Độ tự tin của AI khi tự động phân loại
+- `ai_confidence_score` (Float, Nullable) - The confidence level of the AI when automatically categorizing the transaction
 
 ## 5. Table: Budgets
 - `id` (PK, UUID)

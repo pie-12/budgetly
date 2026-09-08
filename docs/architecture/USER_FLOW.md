@@ -1,26 +1,26 @@
-# Luồng người dùng (User Flow)
+# User Flow
 
-Dưới đây là luồng người dùng cốt lõi tập trung vào tính năng AI nhập liệu tự động.
+Below is the core user flow focusing on the AI-powered automated data entry feature.
 
-## 1. Luồng nhập giao dịch bằng AI (NLP / OCR)
+## 1. AI Transaction Input Flow (NLP / OCR)
 
 ```mermaid
 graph TD
-    A[Trang chủ (Dashboard)] --> B{Chọn phương thức nhập liệu}
-    B -->|Nhập text tự nhiên| C[Gõ câu mô tả: VD "ăn trưa 50k"]
-    B -->|Chụp hóa đơn| D[Upload ảnh hóa đơn]
+    A[Dashboard] --> B{Choose Input Method}
+    B -->|Natural Text Input| C[Type description: e.g., "lunch 50k"]
+    B -->|Scan Receipt| D[Upload receipt image]
     
-    C --> E[AI NLP Service phân tích]
-    D --> F[AI OCR Service bóc tách text]
+    C --> E[AI NLP Service analyzes text]
+    D --> F[AI OCR Service extracts text]
     
-    E --> G{Độ tự tin > 80%?}
+    E --> G{Confidence > 80%?}
     F --> G
     
-    G -->|Yes| H[Tự động điền Form (Số tiền, Danh mục, Ngày)]
-    G -->|No / Ảnh mờ| I[Hiển thị cảnh báo & Yêu cầu nhập tay]
+    G -->|Yes| H[Auto-fill Form: Amount, Category, Date]
+    G -->|No / Blurry Image| I[Display Warning & Request Manual Input]
     
     I --> H
-    H --> J[Người dùng xác nhận lưu]
-    J --> K[Cập nhật Database]
+    H --> J[User confirms and saves]
+    J --> K[Update Database]
     K --> A
 ```
