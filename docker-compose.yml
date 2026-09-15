@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: budgetly_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-budgetly_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-budgetly_secure_password_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-budgetly_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-budgetly_user} -d ${POSTGRES_DB:-budgetly_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: budgetly_server
+    restart: always
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-budgetly_user}:${POSTGRES_PASSWORD:-budgetly_secure_password_2026}@postgres:5432/${POSTGRES_DB:-budgetly_db}
+      AI_ENGINE_URL: http://ai_engine:8001
+      SECRET_KEY: super_secret_jwt_key_budgetly_2026_change_in_prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ai_engine:
+    build:
+      context: ./ai_engine
+      dockerfile: Dockerfile
+    container_name: budgetly_ai_engine
+    restart: always
+    ports:
+      - "${AI_ENGINE_PORT:-8001}:8001"
+    environment:
+      CORE_SERVER_URL: http://server:8000
+      TESSERACT_CMD: /usr/bin/tesseract
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: budgetly_client
+    restart: always
+    ports:
+      - "${CLIENT_PORT:-3000}:3000"
+    environment:
+      CORE_SERVER_URL: http://server:8000
+    depends_on:
+      - server
+
+volumes:
+  postgres_data:
