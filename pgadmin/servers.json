@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Budgetly Postgres DB",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "budgetly_db",
+      "Username": "budgetly_user",
+      "SSLMode": "prefer"
+    }
+  }
+}
