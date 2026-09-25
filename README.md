@@ -1,104 +1,111 @@
 # Budgetly - Smart Personal Financial Management Platform
 
-> **Đồ án Môn học:** Phát triển Sản phẩm AI / Công nghệ Phần mềm  
-> **Tên dự án:** Budgetly - Nền tảng Quản lý Tài chính Cá nhân Thông minh  
-> **Thành viên thực hiện:**
-> - Nguyễn Tùng Lâm (MSSV: 23IT138)
-> - Lê Hữu Anh Tú (MSSV: 23IT294)
+> **Course Project:** AI Product Development: End to End  
+> **Project Name:** Budgetly - Smart Personal Financial Management Platform  
+> **Team Members:**
+> - Nguyen Tung Lam (Student ID: 23IT138)
+> - Le Huu Anh Tu (Student ID: 23IT294)
 
 ---
 
-## 🌟 1. Giới thiệu Tổng quan (Overview)
+## 🌟 1. Overview
 
-**Budgetly** là ứng dụng quản lý tài chính cá nhân thông minh giúp người dùng (đặc biệt là sinh viên và người đi làm trẻ) chủ động kiểm soát chi tiêu mà không gặp rào cản từ việc nhập liệu thủ công phức tạp.
+**Budgetly** is an AI-powered personal financial management web platform designed to help users (especially students and young professionals) proactively control their personal finances without the barrier of tedious manual data entry.
 
-Bằng việc tích hợp các công nghệ **Trí tuệ Nhân tạo (AI)** như **Nhận diện Giọng nói / Văn bản Tự nhiên (NLP)**, **Quét Hóa đơn Tự động (OCR)** và **Dự báo Chi tiêu (Predictive Analytics)**, Budgetly biến quy trình theo dõi tài chính trở nên nhanh chóng, chính xác và tự động.
-
----
-
-## 🚀 2. Tính năng Cốt lõi (Key Features)
-
-### 🔹 Tính năng Quản lý Tài chính (Non-AI)
-- **Quản lý Tài khoản & Ví:** Hỗ trợ nhiều loại ví (Tiền mặt, Tài khoản ngân hàng, Thẻ tín dụng).
-- **Quản lý Giao dịch:** Thêm, sửa, xóa, gắn nhãn danh mục thu/chi.
-- **Hạn mức Ngân sách:** Thiết lập hạn mức chi tiêu theo tháng cho từng danh mục.
-- **Báo cáo & Thống kê:** Biểu đồ trực quan hóa doanh thu, chi tiêu, xu hướng tài chính.
-
-### 🤖 Tính năng Trí tuệ Nhân tạo (AI Features - Core Highlight)
-1. **Smart Text Input (NLP):** Phân tích câu thoại/văn bản tự nhiên (ví dụ: *"Vừa trả 50k tiền ăn trưa"*) để tự động trích xuất số tiền, ngày giờ và tự động phân loại danh mục (*Ăn uống*).
-2. **Receipt Scanner (OCR):** Tải lên ảnh hóa đơn/biên lai, hệ thống tự động trích xuất Tên cửa hàng, Tổng tiền, Ngày giao dịch và điền biểu mẫu tự động.
-3. **AI Spending Forecast & Alerts:** Phân tích chuỗi thời gian chi tiêu quá khứ để dự báo tổng chi tiêu cuối tháng và đưa ra cảnh báo sớm trước khi người dùng bị quá hạn mức ngân sách.
+By leveraging **Generative AI** and machine learning capabilities such as **Natural Language Processing (NLP)**, **Automated Receipt Scanning (OCR)**, and **Predictive Spending Analytics**, Budgetly turns routine expense tracking into an automated, insightful, and frictionless experience.
 
 ---
 
-## 🛠️ 3. Kiến trúc & Công nghệ (Tech Stack)
+## 🚀 2. Key Features
 
-| Phân hệ | Công nghệ sử dụng | Vai trò |
+### 🔹 Core Financial Features (Non-AI)
+- **Account & Multi-Wallet Management:** Support for cash wallets, bank accounts, and e-wallets.
+- **Transaction Tracking:** Create, edit, filter, and tag income/expense records.
+- **Budgeting:** Set monthly budget thresholds per category with real-time progress indicators.
+- **Analytics & Visual Reports:** Interactive charts showing cash flow, spending breakdown, and financial health.
+
+### 🤖 AI-Powered Capabilities (Core Highlight)
+1. **Smart Text Input (NLP):** Type natural sentences (e.g., *"Bought lunch for $5.50"*) to automatically extract amount, date, and categorize into *"Food & Dining"*.
+2. **Receipt Scanner (OCR):** Upload invoice/receipt images to automatically extract merchant name, total price, and transaction date.
+3. **AI Spending Forecast & Anomaly Detection:** Time-series projection to forecast end-of-month expenditure and trigger early warnings before exceeding budget limits.
+
+---
+
+## 🛠️ 3. Tech Stack & Architecture
+
+| Layer | Technologies | Purpose |
 | :--- | :--- | :--- |
-| **Frontend** | Next.js 14, TypeScript, Tailwind CSS, React Query | Giao diện người dùng web tương tác cao, responsive |
-| **Core Backend** | Python, FastAPI, SQLAlchemy, Pydantic | Xử lý logic nghiệp vụ, quản lý dữ liệu CRUD, xác thực JWT |
-| **AI Engine** | FastAPI, LangChain, Tesseract OCR / Vision API, scikit-learn | Vi dịch vụ độc lập chuyên trách các tác vụ AI/ML |
-| **Database** | PostgreSQL, Alembic | Cơ sở dữ liệu quan hệ, quản lý migration schema |
-| **DevOps** | Docker, Docker Compose | Đóng gói container và điều phối hạ tầng |
+| **Frontend** | Next.js 14, TypeScript, Tailwind CSS, Lucide Icons | Responsive, high-performance web user interface |
+| **Core Backend** | Python, FastAPI, SQLAlchemy, Pydantic | RESTful API, business logic, transaction ledger, JWT authentication |
+| **AI Engine** | FastAPI, LangChain, Tesseract OCR / Cloud Vision, scikit-learn | Dedicated microservice handling NLP, OCR, and predictive models |
+| **Database** | PostgreSQL, Alembic | Relational database with automatic migration and ACID compliance |
+| **DevOps** | Docker, Docker Compose | Containerized microservices architecture |
 
 ---
 
-## 📁 4. Cấu trúc Tài liệu Dự án (Documentation Structure)
+## 📁 4. Project Documentation Structure
 
-Hệ thống tài liệu hoàn chỉnh của đồ án được tổ chức tại thư mục [`docs/`](./docs/):
+Comprehensive technical documentation is maintained under the [`docs/`](./docs/) directory:
 
 ```
 docs/
-├── requirements/                      # Yêu cầu Phần mềm
-│   ├── PRD.md                         # Tài liệu Đặc tả Yêu cầu Sản phẩm (PRD / SRS)
-│   └── USER_STORIES.md                # Danh sách User Stories & Acceptance Criteria (AC)
-├── architecture/                      # Thiết kế & Kiến trúc
-│   ├── SYSTEM_ARCHITECTURE.md         # Kiến trúc Hệ thống & Sơ đồ Tổng quan
-│   ├── DATABASE_SCHEMA.md             # Thiết kế Cơ sở Dữ liệu & ERD Diagram
-│   ├── USER_FLOW.md                   # Sơ đồ Luồng Người dùng (User Flow)
-│   ├── API_SPECIFICATION.md           # Đặc tả RESTful API Chi tiết
-│   └── SEQUENCE_DIAGRAMS.md           # Sơ đồ Tuần tự cho các Luồng Cốt lõi
-├── ai/                                # Tài liệu Thành phần AI
-│   └── AI_SPECIFICATIONS.md           # Mạch Xử lý NLP, OCR, Model Dự báo & Metrics
-├── testing/                           # Kế hoạch Kiểm thử
-│   └── TEST_PLAN.md                   # Unit Test, API Integration Test & UAT Test Cases
-├── deployment/                        # Triển khai & Cài đặt
-│   └── DEPLOYMENT_GUIDE.md            # Hướng dẫn Môi trường, Biến Môi trường & Docker
-└── user_guide/                        # Hướng dẫn Sử dụng
-    └── USER_GUIDE.md                  # Hướng dẫn Thao tác cho Người dùng & Đánh giá
+├── requirements/                      # Software Requirements
+│   ├── PRD.md                         # Product Requirements Document (PRD / SRS)
+│   └── USER_STORIES.md                # User Stories & Acceptance Criteria (AC)
+├── architecture/                      # Architecture & Design
+│   ├── SYSTEM_ARCHITECTURE.md         # System Architecture & Diagrams
+│   ├── DATABASE_SCHEMA.md             # Relational Database Schema & ERD
+│   ├── USER_FLOW.md                   # User Journey & Interaction Flow
+│   ├── API_SPECIFICATION.md           # RESTful API Specifications
+│   └── SEQUENCE_DIAGRAMS.md           # Sequence Diagrams for Core Workflows
+├── ai/                                # AI Specifications
+│   └── AI_SPECIFICATIONS.md           # NLP, OCR & Forecasting Pipeline Specs
+├── testing/                           # Quality Assurance
+│   └── TEST_PLAN.md                   # Unit, Integration & AI Verification Plan
+├── deployment/                        # Infrastructure
+│   └── DEPLOYMENT_GUIDE.md            # Docker & Cloud Deployment Instructions
+└── user_guide/                        # End-User Guides
+    └── USER_GUIDE.md                  # Comprehensive User Manual
 ```
 
 ---
 
-## ⚙️ 5. Hướng dẫn Khởi chạy Nhanh (Quick Start)
+## 🏁 5. Quick Start (Local Setup)
 
-### Cấu hình Yêu cầu
-- Node.js >= 18.x
-- Python >= 3.11
-- Docker & Docker Compose (Khuyên dùng)
-- PostgreSQL >= 15
-
-### Khởi chạy bằng Docker Compose (Cách nhanh nhất)
+### Option 1: Run with Docker Compose (Recommended)
 ```bash
-# 1. Clone repository
-git clone https://github.com/your-repo/budgetly.git
-cd budgetly
+docker compose up --build
+```
+- Frontend: `http://localhost:3000`
+- Core API Docs: `http://localhost:8000/docs`
+- AI Engine API Docs: `http://localhost:8001/docs`
 
-# 2. Tạo file cấu hình môi trường (.env)
-cp .env.example .env
+### Option 2: Run Locally
 
-# 3. Khởi chạy toàn bộ hệ thống (Database, Core Backend, AI Engine, Client)
-docker compose up --build -d
+#### 1. Backend Core
+```bash
+cd server
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
 
-# 4. Truy cập ứng dụng:
-# Frontend Web App: http://localhost:3000
-# Core Backend Swagger Docs: http://localhost:8000/docs
-# AI Engine Swagger Docs: http://localhost:8001/docs
+pip install -r requirements.txt
+uvicorn server.main:app --reload --port 8000
 ```
 
-Để xem chi tiết cài đặt thủ công (Local Development), vui lòng đọc bài [Hướng dẫn Triển khai](./docs/deployment/DEPLOYMENT_GUIDE.md).
+#### 2. Frontend
+```bash
+cd client
+npm install
+npm run dev
+```
+Access the client application at `http://localhost:3000`.
 
 ---
 
-## 📄 6. Giấy phép & Bản quyền (License)
-Dự án được phát triển phục vụ mục đích nghiên cứu và hoàn thành đồ án môn học.
+## 👥 6. Team Contributions
+
+- **Nguyen Tung Lam (`23IT138`):** Core Backend API (FastAPI), Database Architecture (PostgreSQL/SQLAlchemy), AI Microservice Engine, Client-Server API integration.
+- **Le Huu Anh Tu (`23IT294`):** UI/UX Frontend Design (Next.js/Tailwind), Component Engineering, System Documentation & ERD Diagrams.
