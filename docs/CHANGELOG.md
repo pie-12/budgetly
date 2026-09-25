@@ -6,3 +6,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - PostgreSQL database connection lifecycle and base session handlers.
 - Core database schema models for users, wallets, transactions, and categories.
+
+## [0.2.0] - 2026-09-25
+### Added
+- Architectural specifications and documentation alignment.
+- English localization for developer guides.
