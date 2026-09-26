@@ -12,20 +12,20 @@ import AddTransactionModal from "@/components/modals/AddTransactionModal";
 import OCRScanModal from "@/components/modals/OCRScanModal";
 
 const initialTransactions: Transaction[] = [
-  { id: 1, description: "Ăn phở trưa cùng đồng nghiệp", amount: 45000, type: "expense", category: "Ăn uống", wallet: "Ví tiền mặt", date: "2026-09-24" },
-  { id: 2, description: "Đổ xăng xe máy", amount: 50000, type: "expense", category: "Di chuyển", wallet: "ATM Vietcombank", date: "2026-09-24" },
-  { id: 3, description: "Nhận lương tháng 9/2026", amount: 15000000, type: "income", category: "Thu nhập / Lương", wallet: "ATM Vietcombank", date: "2026-09-01" },
-  { id: 4, description: "Mua sắm quần áo ở Shopee", amount: 350000, type: "expense", category: "Mua sắm", wallet: "ATM Vietcombank", date: "2026-09-23" },
-  { id: 5, description: "Uống cà phê họp nhóm", amount: 65000, type: "expense", category: "Ăn uống", wallet: "Ví MoMo", date: "2026-09-22" },
-  { id: 6, description: "Thanh toán tiền điện thoại", amount: 200000, type: "expense", category: "Tiện ích", wallet: "Ví MoMo", date: "2026-09-20" },
+  { id: 1, description: "Team lunch at downtown cafe", amount: 45000, type: "expense", category: "Food & Dining", wallet: "Cash Wallet", date: "2026-09-24" },
+  { id: 2, description: "Gas station refill", amount: 50000, type: "expense", category: "Transportation", wallet: "Bank Account", date: "2026-09-24" },
+  { id: 3, description: "Monthly salary deposit", amount: 15000000, type: "income", category: "Salary & Income", wallet: "Bank Account", date: "2026-09-01" },
+  { id: 4, description: "Online clothing order", amount: 350000, type: "expense", category: "Shopping", wallet: "Bank Account", date: "2026-09-23" },
+  { id: 5, description: "Coffee meeting with teammates", amount: 65000, type: "expense", category: "Food & Dining", wallet: "E-Wallet", date: "2026-09-22" },
+  { id: 6, description: "Mobile internet subscription", amount: 200000, type: "expense", category: "Utilities", wallet: "E-Wallet", date: "2026-09-20" },
 ];
 
 const mockCategoryBreakdown = [
-  { name: "Ăn uống", amount: 3450000, color: "bg-amber-500", icon: "🍲" },
-  { name: "Di chuyển", amount: 850000, color: "bg-blue-500", icon: "🚗" },
-  { name: "Mua sắm", amount: 2150000, color: "bg-purple-500", icon: "🛍️" },
-  { name: "Giải trí", amount: 1100000, color: "bg-rose-500", icon: "🎬" },
-  { name: "Tiện ích", amount: 700000, color: "bg-teal-500", icon: "⚡" },
+  { name: "Food & Dining", amount: 3450000, color: "bg-amber-500", icon: "🍲" },
+  { name: "Transportation", amount: 850000, color: "bg-blue-500", icon: "🚗" },
+  { name: "Shopping", amount: 2150000, color: "bg-purple-500", icon: "🛍️" },
+  { name: "Entertainment", amount: 1100000, color: "bg-rose-500", icon: "🎬" },
+  { name: "Utilities", amount: 700000, color: "bg-teal-500", icon: "⚡" },
 ];
 
 export default function Home() {
@@ -38,7 +38,7 @@ export default function Home() {
   const monthlyIncome = 15000000;
   const monthlyExpense = transactions
     .filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 8250000); // Baseline + new items
+    .reduce((sum, t) => sum + t.amount, 8250000);
   const monthlyBudget = 15000000;
   const remainingBudget = Math.max(monthlyBudget - monthlyExpense, 0);
 
@@ -62,8 +62,8 @@ export default function Home() {
           onOpenOCRModal={() => setIsOCRModalOpen(true)}
         />
 
-        <main className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full">
-          {/* Section 1: Summary Indicator Cards */}
+        <main className="p-8 space-y-8 flex-1 overflow-y-auto">
+          {/* Top Metric Cards */}
           <SummaryCards
             totalBalance={totalBalance}
             monthlyIncome={monthlyIncome}
@@ -71,27 +71,27 @@ export default function Home() {
             remainingBudget={remainingBudget}
           />
 
-          {/* Section 2: Core Feature - Smart AI Natural Text Input Bar (FR-08) */}
+          {/* AI Intelligent NLP Input Bar */}
           <SmartAIInput onAddTransaction={handleAddTransaction} />
 
-          {/* Section 3: Core Feature - AI Financial Forecast & Budget Warning (FR-10) */}
+          {/* AI Spending Projection & Alert */}
           <AIForecastAlert
             monthlyExpense={monthlyExpense}
             monthlyBudget={monthlyBudget}
           />
 
-          {/* Section 4: Analytics Chart & Recent Transactions Grid */}
+          {/* Dashboard Visuals Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1">
-              <ExpenseBreakdownChart
-                categories={mockCategoryBreakdown}
-                totalExpense={monthlyExpense}
-              />
-            </div>
             <div className="lg:col-span-2">
               <RecentTransactions
                 transactions={transactions}
                 onDeleteTransaction={handleDeleteTransaction}
+              />
+            </div>
+            <div>
+              <ExpenseBreakdownChart
+                categories={mockCategoryBreakdown}
+                totalExpense={monthlyExpense}
               />
             </div>
           </div>

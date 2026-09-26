@@ -16,8 +16,8 @@ export default function AddTransactionModal({
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<"expense" | "income">("expense");
-  const [category, setCategory] = useState("Ăn uống");
-  const [wallet, setWallet] = useState("Ví tiền mặt");
+  const [category, setCategory] = useState("Food & Dining");
+  const [wallet, setWallet] = useState("Cash Wallet");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
   if (!isOpen) return null;
@@ -36,7 +36,6 @@ export default function AddTransactionModal({
       date,
     });
 
-    // Reset Form
     setDescription("");
     setAmount("");
     onClose();
@@ -47,7 +46,7 @@ export default function AddTransactionModal({
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 relative">
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <span>+ Thêm Giao dịch Mới</span>
+            <span>+ Add New Transaction</span>
           </h3>
           <button
             onClick={onClose}
@@ -58,115 +57,126 @@ export default function AddTransactionModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Type Toggle */}
-          <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs font-semibold">
+          {/* Transaction Type Buttons */}
+          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
             <button
               type="button"
               onClick={() => setType("expense")}
-              className={`py-2 rounded-lg transition-all ${
+              className={`py-2 text-xs font-bold rounded-lg transition-all ${
                 type === "expense"
-                  ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                  ? "bg-rose-500 text-white shadow-md shadow-rose-500/20"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              💸 Chi tiêu (Expense)
+              Expense
             </button>
             <button
               type="button"
               onClick={() => setType("income")}
-              className={`py-2 rounded-lg transition-all ${
+              className={`py-2 text-xs font-bold rounded-lg transition-all ${
                 type === "income"
-                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                  ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              💰 Thu nhập (Income)
+              Income
             </button>
           </div>
 
           {/* Amount */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Số tiền (VNĐ)</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              Amount (VND)
+            </label>
             <input
               type="number"
               required
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="VD: 50000"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm font-semibold focus:outline-none focus:border-emerald-500/60"
+              placeholder="e.g. 50000"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Mô tả giao dịch</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              Description
+            </label>
             <input
               type="text"
               required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="VD: Ăn phở trưa, Tiền nước máy..."
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/60"
+              placeholder="e.g. Starbucks Latte"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           {/* Category & Wallet Grid */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Danh mục</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                Category
+              </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-emerald-500/60"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
               >
-                <option value="Ăn uống">Ăn uống</option>
-                <option value="Di chuyển">Di chuyển</option>
-                <option value="Mua sắm">Mua sắm</option>
-                <option value="Giải trí">Giải trí</option>
-                <option value="Tiện ích">Tiện ích</option>
-                <option value="Thu nhập / Lương">Thu nhập / Lương</option>
+                <option value="Food & Dining">🍲 Food & Dining</option>
+                <option value="Transportation">🚗 Transportation</option>
+                <option value="Shopping">🛍️ Shopping</option>
+                <option value="Entertainment">🎬 Entertainment</option>
+                <option value="Utilities">⚡ Utilities</option>
+                <option value="Salary & Income">💵 Salary & Income</option>
+                <option value="Miscellaneous">📦 Miscellaneous</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Ví tài chính</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                Wallet
+              </label>
               <select
                 value={wallet}
                 onChange={(e) => setWallet(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-emerald-500/60"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
               >
-                <option value="Ví tiền mặt">Ví tiền mặt</option>
-                <option value="ATM Vietcombank">ATM Vietcombank</option>
-                <option value="Ví MoMo">Ví MoMo</option>
+                <option value="Cash Wallet">💵 Cash Wallet</option>
+                <option value="Bank Account">💳 Bank Account</option>
+                <option value="E-Wallet">📱 E-Wallet</option>
               </select>
             </div>
           </div>
 
           {/* Date */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Ngày giao dịch</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              Date
+            </label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-emerald-500/60"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
-          {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3 pt-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700"
+              className="w-1/2 py-2.5 rounded-xl border border-slate-800 text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all"
             >
-              Hủy
+              Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/30"
+              className="w-1/2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs font-bold text-slate-950 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
             >
-              Lưu Giao dịch
+              Save Transaction
             </button>
           </div>
         </form>

@@ -23,25 +23,24 @@ export default function SmartAIInput({ onAddTransaction }: SmartAIInputProps) {
       let parsed = {
         description: inputText,
         amount: 50000,
-        category: "Ăn uống",
-        wallet: "Ví tiền mặt",
+        category: "Food & Dining",
+        wallet: "Cash Wallet",
         date: new Date().toISOString().split("T")[0],
         confidence: 0.94,
       };
 
       const textLower = inputText.toLowerCase();
-      if (textLower.includes("xăng") || textLower.includes("xe")) {
-        parsed.category = "Di chuyển";
+      if (textLower.includes("gas") || textLower.includes("fuel") || textLower.includes("uber") || textLower.includes("taxi")) {
+        parsed.category = "Transportation";
         parsed.amount = 50000;
-      } else if (textLower.includes("shopee") || textLower.includes("áo") || textLower.includes("quần")) {
-        parsed.category = "Mua sắm";
+      } else if (textLower.includes("amazon") || textLower.includes("shirt") || textLower.includes("shoes") || textLower.includes("shop")) {
+        parsed.category = "Shopping";
         parsed.amount = 250000;
-      } else if (textLower.includes("lương") || textLower.includes("thưởng")) {
-        parsed.category = "Thu nhập / Lương";
+      } else if (textLower.includes("salary") || textLower.includes("bonus") || textLower.includes("income")) {
+        parsed.category = "Salary & Income";
         parsed.amount = 15000000;
       }
 
-      // Try extract numbers from string
       const numberMatches = inputText.match(/\d+/g);
       if (numberMatches) {
         let numStr = numberMatches.join("");
@@ -54,7 +53,7 @@ export default function SmartAIInput({ onAddTransaction }: SmartAIInputProps) {
 
       setExtractedData(parsed);
       setIsAnalyzing(false);
-    }, 900);
+    }, 800);
   };
 
   const handleConfirmSave = () => {
@@ -63,106 +62,106 @@ export default function SmartAIInput({ onAddTransaction }: SmartAIInputProps) {
       id: Date.now(),
       description: extractedData.description,
       amount: extractedData.amount,
-      type: extractedData.category.includes("Thu nhập") ? "income" : "expense",
+      type: extractedData.category === "Salary & Income" ? "income" : "expense",
       category: extractedData.category,
       wallet: extractedData.wallet,
       date: extractedData.date,
     });
-
-    setInputText("");
     setExtractedData(null);
+    setInputText("");
   };
 
   return (
-    <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 shadow-xl relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute -top-12 -left-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 backdrop-blur-md relative overflow-hidden shadow-xl">
+      <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
+      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base border border-emerald-500/30">
-            🪄
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            ✨
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              Smart AI Input (NLP)
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                Core AI Feature
-              </span>
+            <h3 className="font-bold text-slate-100 text-sm md:text-base">
+              AI Smart Input (Natural Language)
             </h3>
             <p className="text-xs text-slate-400">
-              Nhập câu thoại tự nhiên Tiếng Việt (VD: <span className="text-emerald-300 italic">"Vừa đổ xăng 50k"</span>, <span className="text-emerald-300 italic">"Ăn phở trưa 45.000đ"</span>)
+              Type naturally (e.g. <span className="text-emerald-400/90 italic">"Bought lunch for $5.50"</span> or <span className="text-emerald-400/90 italic">"Spent $20 on gas"</span>)
             </p>
           </div>
         </div>
+        <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+          NLP Classifier Active
+        </span>
       </div>
 
       {/* Input Form */}
-      <form onSubmit={handleAnalyze} className="flex items-center gap-3">
-        <div className="relative flex-1">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Ví dụ: Vừa chuyển khoản 150k tiền cà phê họp nhóm ngày hôm qua..."
-            className="w-full px-5 py-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20 text-sm transition-all"
-          />
-        </div>
+      <form onSubmit={handleAnalyze} className="relative flex items-center">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="E.g., Bought lunch with coffee 50k..."
+          className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-4 py-3.5 pr-28 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all shadow-inner"
+        />
         <button
           type="submit"
           disabled={isAnalyzing || !inputText.trim()}
-          className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-600/30 flex items-center gap-2 disabled:opacity-50 transition-all active:scale-95 whitespace-nowrap"
+          className="absolute right-2 px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-500 text-slate-950 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20 active:scale-95"
         >
           {isAnalyzing ? (
             <>
-              <svg className="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin -ml-1 mr-1 h-3.5 w-3.5 text-slate-950" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span>Đang phân tích AI...</span>
+              Parsing...
             </>
           ) : (
             <>
-              <span>Phân tích AI</span>
-              <span>✨</span>
+              <span>Extract</span>
+              <span>→</span>
             </>
           )}
         </button>
       </form>
 
-      {/* Extracted AI Result Dialog Banner */}
+      {/* Extracted Card Confirmation */}
       {extractedData && (
-        <div className="mt-4 p-4 rounded-xl bg-slate-950 border border-emerald-500/40 animate-fade-in flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 text-xs">
-            <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-              Độ tin cậy AI: {(extractedData.confidence * 100).toFixed(0)}%
+        <div className="mt-4 p-4 rounded-xl bg-slate-950/90 border border-emerald-500/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in fade-in duration-300">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">
+                AI Detected:
+              </span>
+              <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                {(extractedData.confidence * 100).toFixed(0)}% Confidence
+              </span>
             </div>
-            <div className="space-y-0.5">
-              <p className="text-slate-300 font-medium">
-                Mô tả: <span className="font-bold text-white">{extractedData.description}</span>
-              </p>
-              <div className="flex items-center gap-3 text-slate-400">
-                <span>Số tiền: <strong className="text-emerald-400">{extractedData.amount.toLocaleString("vi-VN")} ₫</strong></span>
-                <span>•</span>
-                <span>Danh mục: <strong className="text-slate-200">{extractedData.category}</strong></span>
-                <span>•</span>
-                <span>Ngày: <strong className="text-slate-200">{extractedData.date}</strong></span>
-              </div>
+            <div className="text-sm font-medium text-slate-200">
+              "{extractedData.description}"
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs text-slate-400 pt-1">
+              <span>Amount: <b className="text-slate-100">{extractedData.amount.toLocaleString()} ₫</b></span>
+              <span>•</span>
+              <span>Category: <b className="text-emerald-400">{extractedData.category}</b></span>
+              <span>•</span>
+              <span>Wallet: <b className="text-slate-200">{extractedData.wallet}</b></span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full md:w-auto">
             <button
               onClick={() => setExtractedData(null)}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 bg-slate-800 border border-slate-700 hover:bg-slate-700"
+              className="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all border border-slate-700/60"
             >
-              Hủy
+              Cancel
             </button>
             <button
               onClick={handleConfirmSave}
-              className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/30"
+              className="flex-1 md:flex-none px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20 active:scale-95"
             >
-              ✓ Xác nhận & Lưu
+              Confirm & Save
             </button>
           </div>
         </div>

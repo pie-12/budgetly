@@ -5,16 +5,16 @@ import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 
 const initialBudgets = [
-  { id: 1, category: "Ăn uống", limit: 3000000, spent: 2450000, color: "bg-amber-500" },
-  { id: 2, category: "Di chuyển", limit: 1000000, spent: 650000, color: "bg-blue-500" },
-  { id: 3, category: "Mua sắm", limit: 2000000, spent: 1850000, color: "bg-purple-500" },
-  { id: 4, category: "Giải trí", limit: 1500000, spent: 900000, color: "bg-rose-500" },
+  { id: 1, category: "Food & Dining", limit: 3000000, spent: 2450000, color: "bg-amber-500" },
+  { id: 2, category: "Transportation", limit: 1000000, spent: 650000, color: "bg-blue-500" },
+  { id: 3, category: "Shopping", limit: 2000000, spent: 1850000, color: "bg-purple-500" },
+  { id: 4, category: "Entertainment", limit: 1500000, spent: 900000, color: "bg-rose-500" },
 ];
 
 export default function BudgetsPage() {
   const [budgets, setBudgets] = useState(initialBudgets);
   const [showModal, setShowModal] = useState(false);
-  const [category, setCategory] = useState("Ăn uống");
+  const [category, setCategory] = useState("Food & Dining");
   const [limit, setLimit] = useState("");
 
   const handleSetBudget = (e: React.FormEvent) => {
@@ -37,14 +37,14 @@ export default function BudgetsPage() {
         <main className="flex-1 p-8 space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-slate-100">Cài đặt & Quản lý Ngân sách</h2>
-              <p className="text-xs text-slate-400 mt-1">Thiết lập hạn mức chi tiêu hàng tháng cho từng danh mục</p>
+              <h2 className="text-2xl font-bold text-slate-100">Budget Management</h2>
+              <p className="text-xs text-slate-400 mt-1">Configure spending limits per category for the current month</p>
             </div>
             <button
               onClick={() => setShowModal(true)}
               className="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30"
             >
-              + Thiết lập Ngân sách
+              + Configure Budget
             </button>
           </div>
 
@@ -58,77 +58,92 @@ export default function BudgetsPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${b.color}`}></div>
-                      <h3 className="font-bold text-slate-100 text-base">{b.category}</h3>
+                      <h4 className="font-bold text-base text-slate-100">{b.category}</h4>
                     </div>
-                    <span className={`text-xs font-extrabold px-2.5 py-1 rounded-lg border ${
-                      isWarning ? "bg-rose-500/20 text-rose-400 border-rose-500/30" : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                    }`}>
-                      {percentage.toFixed(1)}% Hạn mức
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded ${
+                        isWarning
+                          ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                          : "bg-emerald-500/20 text-emerald-400"
+                      }`}
+                    >
+                      {percentage.toFixed(0)}% Utilized
                     </span>
                   </div>
 
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between text-slate-400">
-                      <span>Đã chi: <strong className="text-slate-200">{b.spent.toLocaleString("vi-VN")} ₫</strong></span>
-                      <span>Hạn mức: <strong className="text-slate-200">{b.limit.toLocaleString("vi-VN")} ₫</strong></span>
-                    </div>
-                    <div className="w-full h-3 rounded-full bg-slate-950 overflow-hidden">
-                      <div
-                        className={`h-full ${isWarning ? "bg-gradient-to-r from-amber-500 to-rose-500" : "bg-emerald-500"} transition-all`}
-                        style={{ width: `${percentage}%` }}
-                      ></div>
-                    </div>
+                  <div className="flex justify-between items-baseline text-xs text-slate-400">
+                    <span>
+                      Spent: <b className="text-slate-100">{b.spent.toLocaleString("en-US")} ₫</b>
+                    </span>
+                    <span>
+                      Cap: <b className="text-slate-200">{b.limit.toLocaleString("en-US")} ₫</b>
+                    </span>
+                  </div>
+
+                  {/* Visual Progress Bar */}
+                  <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div
+                      className={`h-full ${isWarning ? "bg-rose-500" : b.color} transition-all duration-300`}
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                    <span>Remaining: {Math.max(b.limit - b.spent, 0).toLocaleString("en-US")} ₫</span>
+                    {isWarning && <span className="text-rose-400 font-semibold">⚠️ Nearing Limit</span>}
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Set Budget Modal */}
+          {/* Modal */}
           {showModal && (
             <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-              <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <h3 className="text-lg font-bold">Thiết lập Ngân sách Tháng</h3>
+              <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 relative">
+                <h3 className="text-lg font-bold text-slate-100 mb-4">Set Budget Cap</h3>
                 <form onSubmit={handleSetBudget} className="space-y-4">
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1">Danh mục</label>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">
+                      Category
+                    </label>
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
                     >
-                      <option value="Ăn uống">Ăn uống</option>
-                      <option value="Di chuyển">Di chuyển</option>
-                      <option value="Mua sắm">Mua sắm</option>
-                      <option value="Giải trí">Giải trí</option>
+                      <option value="Food & Dining">🍲 Food & Dining</option>
+                      <option value="Transportation">🚗 Transportation</option>
+                      <option value="Shopping">🛍️ Shopping</option>
+                      <option value="Entertainment">🎬 Entertainment</option>
                     </select>
                   </div>
-
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1">Hạn mức tiền tối đa (VNĐ)</label>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">
+                      Monthly Limit (VND)
+                    </label>
                     <input
                       type="number"
                       required
                       value={limit}
                       onChange={(e) => setLimit(e.target.value)}
-                      placeholder="VD: 3000000"
-                      className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100"
+                      placeholder="e.g. 3000000"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
-
-                  <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                  <div className="flex gap-3 pt-3">
                     <button
                       type="button"
                       onClick={() => setShowModal(false)}
-                      className="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-400"
+                      className="w-1/2 py-2.5 rounded-xl border border-slate-800 text-xs font-semibold text-slate-400 hover:text-slate-200"
                     >
-                      Hủy
+                      Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-xl text-xs bg-emerald-600 text-white font-bold"
+                      className="w-1/2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs font-bold text-slate-950"
                     >
-                      Cập nhật Ngân sách
+                      Save Budget
                     </button>
                   </div>
                 </form>

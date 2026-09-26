@@ -8,12 +8,12 @@ import AddTransactionModal from "@/components/modals/AddTransactionModal";
 import OCRScanModal from "@/components/modals/OCRScanModal";
 
 const initialTransactions: Transaction[] = [
-  { id: 1, description: "Ăn bún chả trưa", amount: 45000, type: "expense", category: "Ăn uống", wallet: "Ví tiền mặt", date: "2026-09-24" },
-  { id: 2, description: "Đổ xăng xe máy", amount: 50000, type: "expense", category: "Di chuyển", wallet: "ATM Vietcombank", date: "2026-09-23" },
-  { id: 3, description: "Nhận lương tháng 9", amount: 15000000, type: "income", category: "Thu nhập / Lương", wallet: "ATM Vietcombank", date: "2026-09-01" },
-  { id: 4, description: "Mua trà sữa GongCha", amount: 65000, type: "expense", category: "Ăn uống", wallet: "Ví MoMo", date: "2026-09-22" },
-  { id: 5, description: "Thanh toán tiền điện thoại", amount: 200000, type: "expense", category: "Tiện ích", wallet: "Ví MoMo", date: "2026-09-20" },
-  { id: 6, description: "Mua quần áo mới ở Shopee", amount: 450000, type: "expense", category: "Mua sắm", wallet: "ATM Vietcombank", date: "2026-09-18" },
+  { id: 1, description: "Traditional lunch with coworkers", amount: 45000, type: "expense", category: "Food & Dining", wallet: "Cash Wallet", date: "2026-09-24" },
+  { id: 2, description: "Motorbike gas refill", amount: 50000, type: "expense", category: "Transportation", wallet: "Bank Account", date: "2026-09-23" },
+  { id: 3, description: "Monthly salary deposit", amount: 15000000, type: "income", category: "Salary & Income", wallet: "Bank Account", date: "2026-09-01" },
+  { id: 4, description: "Milk tea drink order", amount: 65000, type: "expense", category: "Food & Dining", wallet: "E-Wallet", date: "2026-09-22" },
+  { id: 5, description: "Mobile internet renewal", amount: 200000, type: "expense", category: "Utilities", wallet: "E-Wallet", date: "2026-09-20" },
+  { id: 6, description: "Online sportswear shopping", amount: 450000, type: "expense", category: "Shopping", wallet: "Bank Account", date: "2026-09-18" },
 ];
 
 export default function TransactionsPage() {
@@ -39,9 +39,9 @@ export default function TransactionsPage() {
         />
         <main className="flex-1 p-8 space-y-8">
           <div>
-            <h2 className="text-2xl font-bold text-slate-100">Quản lý Giao dịch Chi tiết</h2>
+            <h2 className="text-2xl font-bold text-slate-100">Transaction Management</h2>
             <p className="text-xs text-slate-400 mt-1">
-              Xem toàn bộ lịch sử thu/chi, lọc theo loại, ngày tháng và tìm kiếm từ khóa
+              Complete history of financial ledger entries with instant filtering and search
             </p>
           </div>
 

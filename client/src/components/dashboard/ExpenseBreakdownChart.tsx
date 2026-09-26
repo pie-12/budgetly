@@ -21,11 +21,11 @@ export default function ExpenseBreakdownChart({
       <div>
         <div className="flex items-center justify-between mb-5">
           <h3 className="font-bold text-slate-100 text-base flex items-center gap-2">
-            <span>Phân bổ chi tiêu</span>
-            <span className="text-xs font-normal text-slate-400">(Theo Danh mục)</span>
+            <span>Expense Breakdown</span>
+            <span className="text-xs font-normal text-slate-400">(By Category)</span>
           </h3>
           <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-            Tháng 9/2026
+            Sep 2026
           </span>
         </div>
 
@@ -38,7 +38,7 @@ export default function ExpenseBreakdownChart({
                 key={idx}
                 className={`h-full ${cat.color} transition-all duration-300`}
                 style={{ width: `${percentage}%` }}
-                title={`${cat.name}: ${cat.amount.toLocaleString("vi-VN")} ₫ (${percentage.toFixed(1)}%)`}
+                title={`${cat.name}: ${cat.amount.toLocaleString("en-US")} ₫ (${percentage.toFixed(1)}%)`}
               />
             );
           })}
@@ -60,8 +60,8 @@ export default function ExpenseBreakdownChart({
                   <span className="text-slate-400 font-medium">
                     {percentage.toFixed(1)}%
                   </span>
-                  <span className="font-bold text-slate-100 min-w-[90px] text-right">
-                    {cat.amount.toLocaleString("vi-VN")} ₫
+                  <span className="font-bold text-slate-100 min-w-[70px] text-right">
+                    {cat.amount.toLocaleString("en-US")} ₫
                   </span>
                 </div>
               </div>
@@ -70,11 +70,9 @@ export default function ExpenseBreakdownChart({
         </div>
       </div>
 
-      <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-        <span>Tổng chi danh mục:</span>
-        <strong className="text-slate-200 font-bold text-sm">
-          {totalExpense.toLocaleString("vi-VN")} ₫
-        </strong>
+      <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <span>Total Tracked Expenses</span>
+        <span className="font-bold text-slate-200 text-sm">{totalExpense.toLocaleString("en-US")} ₫</span>
       </div>
     </div>
   );

@@ -6,9 +6,8 @@ interface AIForecastAlertProps {
 }
 
 export default function AIForecastAlert({ monthlyExpense, monthlyBudget }: AIForecastAlertProps) {
-  // Simple AI forecast calculation logic (FR-10 spec)
   const daysInMonth = 30;
-  const currentDay = 15; // Mid month simulation
+  const currentDay = 15;
   const avgDailySpend = monthlyExpense / currentDay;
   const projectedTotal = monthlyExpense + avgDailySpend * (daysInMonth - currentDay);
   const percentUsed = (monthlyExpense / monthlyBudget) * 100;
@@ -37,7 +36,7 @@ export default function AIForecastAlert({ monthlyExpense, monthlyBudget }: AIFor
           <div>
             <div className="flex items-center gap-2">
               <h4 className="font-bold text-slate-100 text-sm">
-                AI Spending Forecast & Alerts (Dự báo chi tiêu AI)
+                AI Spending Forecast & Alerts
               </h4>
               <span
                 className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider ${
@@ -46,23 +45,23 @@ export default function AIForecastAlert({ monthlyExpense, monthlyBudget }: AIFor
                     : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                 }`}
               >
-                {isOverBudgetRisk ? "Cảnh báo cao" : "Tiến trình ổn định"}
+                {isOverBudgetRisk ? "High Risk" : "On Track"}
               </span>
             </div>
 
             <p className="text-xs text-slate-300 mt-1 leading-relaxed">
               {isOverBudgetRisk ? (
                 <>
-                  Với tốc độ chi tiêu hiện tại (~
-                  <strong className="text-rose-400">{avgDailySpend.toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫/ngày</strong>
-                  ), AI dự báo tổng chi tiêu cuối tháng sẽ đạt{" "}
-                  <strong className="text-rose-400">{projectedTotal.toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫</strong> (Vượt ngân sách{" "}
-                  {(projectedTotal - monthlyBudget).toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫). Hãy tiết kiệm thêm trong 2 tuần tới!
+                  At your current spend rate (~
+                  <strong className="text-rose-400">{avgDailySpend.toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫/day</strong>
+                  ), AI projects end-of-month spend will reach{" "}
+                  <strong className="text-rose-400">{projectedTotal.toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫</strong> (Exceeding budget by{" "}
+                  {(projectedTotal - monthlyBudget).toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫). Consider curbing non-essential expenses!
                 </>
               ) : (
                 <>
-                  Tốc độ chi tiêu trung bình của bạn ở mức{" "}
-                  <strong className="text-emerald-400">{avgDailySpend.toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫/ngày</strong>. Dự báo cuối tháng tổng chi tiêu nằm trong hạn mức an toàn ({monthlyBudget.toLocaleString("vi-VN")} ₫).
+                  Your average daily spending is at{" "}
+                  <strong className="text-emerald-400">{avgDailySpend.toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫/day</strong>. Month-end forecast remains safely within your limit ({monthlyBudget.toLocaleString("en-US")} ₫).
                 </>
               )}
             </p>
@@ -70,7 +69,7 @@ export default function AIForecastAlert({ monthlyExpense, monthlyBudget }: AIFor
         </div>
 
         <div className="text-right shrink-0">
-          <span className="text-xs text-slate-400 block font-medium">Tiến trình ngân sách</span>
+          <span className="text-xs text-slate-400 block font-medium">Budget Pace</span>
           <span className={`text-lg font-extrabold ${isOverBudgetRisk ? "text-rose-400" : "text-emerald-400"}`}>
             {percentUsed.toFixed(1)}%
           </span>
