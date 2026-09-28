@@ -16,3 +16,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - English internationalization across UI components and navigation modals.
 - Common responsive layouts and styles for client dashboard.
+
+## [0.4.0] - 2026-09-28
+### Added
+- Pydantic validation schemas for transaction parsing.
+- RESTful CRUD router endpoints for financial analytics.
