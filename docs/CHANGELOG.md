@@ -21,3 +21,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Pydantic validation schemas for transaction parsing.
 - RESTful CRUD router endpoints for financial analytics.
+
+## [0.5.0] - 2026-09-30
+### Added
+- Verified end-to-end API service connector layer.
+- Finalized system integration and release readiness checklist.
