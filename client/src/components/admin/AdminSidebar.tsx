@@ -108,7 +108,7 @@ export default function AdminSidebar() {
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
         <div className="px-3 pb-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-          Quản trị hệ thống
+          System Administration
         </div>
         {adminNavItems.map((item) => {
           const Icon = item.icon;
@@ -150,7 +150,7 @@ export default function AdminSidebar() {
       {/* System Status Banner */}
       <div className="p-3 mx-3 mb-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
         <div className="flex items-center justify-between text-xs mb-1.5">
-          <span className="text-slate-400 font-medium">Trạng thái Server</span>
+          <span className="text-slate-400 font-medium">Server Status</span>
           <span className="text-emerald-400 font-semibold flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 99.98%
           </span>
@@ -167,7 +167,7 @@ export default function AdminSidebar() {
           className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition-all border border-slate-700/50"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Trở về Trang Người Dùng</span>
+          <span>Back to User Site</span>
         </Link>
 
         <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-900 border border-slate-800">

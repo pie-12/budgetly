@@ -28,14 +28,14 @@ interface Category {
 }
 
 const initialCategories: Category[] = [
-  { id: "CAT-01", name: "Ăn uống & Nhà hàng", type: "expense", icon: "🍲", color: "bg-amber-500", description: "Bữa ăn, quán cà phê, giao đồ ăn", usageCount: 14250, isSystemDefault: true },
-  { id: "CAT-02", name: "Di chuyển & Xăng xe", type: "expense", icon: "🚗", color: "bg-blue-500", description: "Xăng máy, Grab, taxi, bảo dưỡng", usageCount: 8900, isSystemDefault: true },
-  { id: "CAT-03", name: "Thu nhập / Lương", type: "income", icon: "💼", color: "bg-emerald-500", description: "Tiền lương cố định tháng", usageCount: 5400, isSystemDefault: true },
-  { id: "CAT-04", name: "Mua sắm & Thời trang", type: "expense", icon: "🛍️", color: "bg-purple-500", description: "Shopee, Lazada, quần áo, phụ kiện", usageCount: 11200, isSystemDefault: true },
-  { id: "CAT-05", name: "Giải trí & Du lịch", type: "expense", icon: "🎬", color: "bg-rose-500", description: "Xem phim, vé du lịch, game", usageCount: 4300, isSystemDefault: true },
-  { id: "CAT-06", name: "Hóa đơn & Tiện ích", type: "expense", icon: "⚡", color: "bg-teal-500", description: "Điện, nước, internet, chung cư", usageCount: 3800, isSystemDefault: true },
-  { id: "CAT-07", name: "Thưởng & Freelance", type: "income", icon: "🎁", color: "bg-yellow-500", description: "Thu nhập dự án phụ & tiền thưởng", usageCount: 2100, isSystemDefault: true },
-  { id: "CAT-08", name: "Đầu tư & Crypto", type: "income", icon: "📈", color: "bg-indigo-500", description: "Cổ phiếu, vàng, lãi tiết kiệm", usageCount: 1950, isSystemDefault: false },
+  { id: "CAT-01", name: "Food & Dining", type: "expense", icon: "🍲", color: "bg-amber-500", description: "Meals, cafes, food delivery", usageCount: 14250, isSystemDefault: true },
+  { id: "CAT-02", name: "Transport & Fuel", type: "expense", icon: "🚗", color: "bg-blue-500", description: "Fuel, ride-hailing, taxi, maintenance", usageCount: 8900, isSystemDefault: true },
+  { id: "CAT-03", name: "Income / Salary", type: "income", icon: "💼", color: "bg-emerald-500", description: "Fixed monthly salary", usageCount: 5400, isSystemDefault: true },
+  { id: "CAT-04", name: "Shopping & Fashion", type: "expense", icon: "🛍️", color: "bg-purple-500", description: "Shopee, Lazada, clothes, accessories", usageCount: 11200, isSystemDefault: true },
+  { id: "CAT-05", name: "Entertainment & Travel", type: "expense", icon: "🎬", color: "bg-rose-500", description: "Movies, travel tickets, games", usageCount: 4300, isSystemDefault: true },
+  { id: "CAT-06", name: "Bills & Utilities", type: "expense", icon: "⚡", color: "bg-teal-500", description: "Electricity, water, internet, apartment", usageCount: 3800, isSystemDefault: true },
+  { id: "CAT-07", name: "Bonuses & Freelance", type: "income", icon: "🎁", color: "bg-yellow-500", description: "Side project income & bonuses", usageCount: 2100, isSystemDefault: true },
+  { id: "CAT-08", name: "Investments & Crypto", type: "income", icon: "📈", color: "bg-indigo-500", description: "Stocks, gold, savings interest", usageCount: 1950, isSystemDefault: false },
 ];
 
 export default function AdminCategoriesPage() {
@@ -76,12 +76,12 @@ export default function AdminCategoriesPage() {
     setIsModalOpen(false);
     setName("");
     setDescription("");
-    showNotification(`Đã thêm thành công danh mục hệ thống "${name}"`);
+    showNotification(`System category "${name}" added successfully`);
   };
 
   const handleDeleteCategory = (id: string) => {
     setCategories(categories.filter((c) => c.id !== id));
-    showNotification("Đã xóa danh mục khỏi hệ thống");
+    showNotification("Category deleted from the system");
   };
 
   const filteredCategories = categories.filter((c) => {
@@ -95,8 +95,8 @@ export default function AdminCategoriesPage() {
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="🏷️ Quản Lý Danh Mục Thu Chi Mặc Định"
-        subtitle="Quản lý bộ danh mục mẫu cho người dùng, biểu tượng và gán phân loại"
+        title="🏷️ Default Income & Expense Category Management"
+        subtitle="Manage the default category set, icons, and classification for users"
       />
 
       <div className="p-8 space-y-6 max-w-7xl mx-auto">
@@ -115,7 +115,7 @@ export default function AdminCategoriesPage() {
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Tìm danh mục..."
+                placeholder="Search categories..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -127,9 +127,9 @@ export default function AdminCategoriesPage() {
               onChange={(e) => setTypeFilter(e.target.value)}
               className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
             >
-              <option value="All">Tất cả loại (Thu & Chi)</option>
-              <option value="expense">Khoản Chi (Expense)</option>
-              <option value="income">Khoản Thu (Income)</option>
+              <option value="All">All types (Income & Expense)</option>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
             </select>
           </div>
 
@@ -138,7 +138,7 @@ export default function AdminCategoriesPage() {
             className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all shrink-0"
           >
             <Plus className="w-4 h-4" />
-            <span>Thêm Danh Mục Mới</span>
+            <span>Add New Category</span>
           </button>
         </div>
 
@@ -166,7 +166,7 @@ export default function AdminCategoriesPage() {
                             : "bg-rose-500/10 text-rose-400 border-rose-500/20"
                         }`}
                       >
-                        {cat.type === "income" ? "Khoản Thu" : "Khoản Chi"}
+                        {cat.type === "income" ? "Income" : "Expense"}
                       </span>
                     </div>
                   </div>
@@ -177,14 +177,14 @@ export default function AdminCategoriesPage() {
 
               <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
                 <div className="text-[11px] text-slate-400">
-                  <span className="font-mono font-bold text-slate-200">{cat.usageCount.toLocaleString()}</span> lượt dùng
+                  <span className="font-mono font-bold text-slate-200">{cat.usageCount.toLocaleString()}</span> uses
                 </div>
 
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleDeleteCategory(cat.id)}
                     className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
-                    title="Xóa danh mục"
+                    title="Delete category"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -205,18 +205,18 @@ export default function AdminCategoriesPage() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-white mb-1">Thêm Danh Mục Hệ Thống Mới</h3>
+            <h3 className="text-lg font-bold text-white mb-1">Add New System Category</h3>
             <p className="text-xs text-slate-400 mb-5">
-              Danh mục này sẽ hiển thị làm mặc định cho toàn bộ người dùng app
+              This category will be shown as a default for all app users
             </p>
 
             <form onSubmit={handleCreateCategory} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Tên Danh Mục</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Category Name</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ví dụ: Tiền Học Phí"
+                  placeholder="e.g. Tuition Fees"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -224,19 +224,19 @@ export default function AdminCategoriesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Loại Thu / Chi</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Type (Income / Expense)</label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as "income" | "expense")}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                 >
-                  <option value="expense">Khoản Chi (Expense)</option>
-                  <option value="income">Khoản Thu (Income)</option>
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Emoji Biểu Tượng</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Emoji Icon</label>
                 <input
                   type="text"
                   value={icon}
@@ -246,10 +246,10 @@ export default function AdminCategoriesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Mô Tả Danh Mục</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Category Description</label>
                 <textarea
                   rows={2}
-                  placeholder="Mô tả phạm vi áp dụng của danh mục này..."
+                  placeholder="Describe the scope of this category..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -262,13 +262,13 @@ export default function AdminCategoriesPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300"
                 >
-                  Hủy
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30"
                 >
-                  Tạo Danh Mục
+                  Create Category
                 </button>
               </div>
             </form>

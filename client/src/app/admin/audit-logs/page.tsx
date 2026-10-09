@@ -34,7 +34,7 @@ const initialLogs: AuditLog[] = [
     target: "AI_THRESHOLD_SETTING",
     severity: "Info",
     ipAddress: "14.226.12.8",
-    details: "Thay đổi ngưỡng OCR Confidence Threshold từ 0.85 lên 0.90",
+    details: "Changed OCR Confidence Threshold from 0.85 to 0.90",
   },
   {
     id: "LOG-8802",
@@ -44,7 +44,7 @@ const initialLogs: AuditLog[] = [
     target: "user_fake99@gmail.com",
     severity: "Danger",
     ipAddress: "113.161.42.19",
-    details: "Khóa tài khoản do phát hiện hành vi spam giao dịch ảo",
+    details: "Account locked after detecting fake transaction spam behavior",
   },
   {
     id: "LOG-8803",
@@ -54,7 +54,7 @@ const initialLogs: AuditLog[] = [
     target: "PostgreSQL Production DB",
     severity: "Info",
     ipAddress: "127.0.0.1",
-    details: "Tự động sao lưu Snapshot DB thành công (Dung lượng: 1.2 GB)",
+    details: "Automatic DB Snapshot backup succeeded (Size: 1.2 GB)",
   },
   {
     id: "LOG-8804",
@@ -64,7 +64,7 @@ const initialLogs: AuditLog[] = [
     target: "Finance Auditor Role",
     severity: "Warning",
     ipAddress: "14.226.12.8",
-    details: "Thêm quyền Export Data cho vai trò Finance Auditor",
+    details: "Added Export Data permission for the Finance Auditor role",
   },
   {
     id: "LOG-8805",
@@ -74,7 +74,7 @@ const initialLogs: AuditLog[] = [
     target: "admin@budgetly.io",
     severity: "Critical",
     ipAddress: "185.220.101.5",
-    details: "Phát hiện 5 lần đăng nhập sai mật khẩu liên tiếp từ IP lạ (Tor exit node)",
+    details: "Detected 5 consecutive failed login attempts from an unknown IP (Tor exit node)",
   },
 ];
 
@@ -104,8 +104,8 @@ export default function AdminAuditLogsPage() {
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="📝 Nhật Ký Hoạt Động & Audit Logs Bảo Mật"
-        subtitle="Theo dõi toàn bộ vết thao tác admin, thay đổi cấu hình và cảnh báo an ninh hệ thống"
+        title="📝 Activity & Security Audit Logs"
+        subtitle="Track all admin actions, configuration changes, and system security alerts"
       />
 
       <div className="p-8 space-y-6 max-w-7xl mx-auto">
@@ -124,7 +124,7 @@ export default function AdminAuditLogsPage() {
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Tìm actor, action, chi tiết audit..."
+                placeholder="Search actor, action, audit details..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -136,20 +136,20 @@ export default function AdminAuditLogsPage() {
               onChange={(e) => setSeverityFilter(e.target.value)}
               className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
             >
-              <option value="All">Tất cả mức độ rủi ro</option>
-              <option value="Info">Info (Thông thường)</option>
-              <option value="Warning">Warning (Cảnh báo)</option>
-              <option value="Danger">Danger (Nguy hiểm)</option>
-              <option value="Critical">Critical (Nghiêm trọng)</option>
+              <option value="All">All severity levels</option>
+              <option value="Info">Info (Normal)</option>
+              <option value="Warning">Warning</option>
+              <option value="Danger">Danger</option>
+              <option value="Critical">Critical</option>
             </select>
           </div>
 
           <button
-            onClick={() => showNotification("Đã xuất kho nhật ký Audit Log (.log/.csv)")}
+            onClick={() => showNotification("Exported Audit Log archive (.log/.csv)")}
             className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition-all shrink-0"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-            <span>Tải File Log CSV</span>
+            <span>Download Log CSV</span>
           </button>
         </div>
 
@@ -159,12 +159,12 @@ export default function AdminAuditLogsPage() {
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/70 border-b border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Mã Log & Thời Gian</th>
-                  <th className="px-6 py-4">Tài khoản thực hiện (Actor)</th>
-                  <th className="px-6 py-4">Hành động (Action)</th>
-                  <th className="px-6 py-4">Mức độ (Severity)</th>
-                  <th className="px-6 py-4">Địa chỉ IP</th>
-                  <th className="px-6 py-4">Chi tiết thao tác</th>
+                  <th className="px-6 py-4">Log ID & Time</th>
+                  <th className="px-6 py-4">Actor Account</th>
+                  <th className="px-6 py-4">Action</th>
+                  <th className="px-6 py-4">Severity</th>
+                  <th className="px-6 py-4">IP Address</th>
+                  <th className="px-6 py-4">Action Details</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">

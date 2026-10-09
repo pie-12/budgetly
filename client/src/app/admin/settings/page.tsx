@@ -43,14 +43,14 @@ export default function AdminSettingsPage() {
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    showNotification("Đã lưu thành công cấu hình cài đặt hệ thống!");
+    showNotification("System settings saved successfully!");
   };
 
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="⚙️ Cài Đặt Hệ Thống & Cấu Hình Quản Trị"
-        subtitle="Cấu hình tổng thể ứng dụng, AI Engine, Email SMTP và các tham số an ninh"
+        title="⚙️ System Settings & Admin Configuration"
+        subtitle="Configure the overall app, AI Engine, SMTP email, and security parameters"
       />
 
       <div className="p-8 space-y-6 max-w-7xl mx-auto">
@@ -67,16 +67,16 @@ export default function AdminSettingsPage() {
           <div className="p-4 bg-rose-950/80 border border-rose-500/40 rounded-2xl flex items-center justify-between text-rose-200 text-xs">
             <div className="flex items-center gap-2 font-semibold">
               <ShieldAlert className="w-5 h-5 text-rose-400" />
-              <span>CẢNH BÁO: Chế độ bảo trì (Maintenance Mode) đang ĐƯỢC BẬT! Người dùng thông thường sẽ không thể truy cập app.</span>
+              <span>WARNING: Maintenance Mode is ON! Regular users will not be able to access the app.</span>
             </div>
             <button
               onClick={() => {
                 setMaintenanceMode(false);
-                showNotification("Đã tắt chế độ bảo trì hệ thống");
+                showNotification("System maintenance mode turned off");
               }}
               className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold"
             >
-              Tắt Bảo Trì
+              Turn Off Maintenance
             </button>
           </div>
         )}
@@ -92,7 +92,7 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Globe className="w-4 h-4" />
-            <span>Cấu Hình Chung</span>
+            <span>General</span>
           </button>
 
           <button
@@ -128,7 +128,7 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Lock className="w-4 h-4" />
-            <span>Bảo Mật & Session</span>
+            <span>Security & Session</span>
           </button>
         </div>
 
@@ -137,10 +137,10 @@ export default function AdminSettingsPage() {
           {/* TAB 1: General */}
           {activeTab === "general" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">Cấu Hình Chung Hệ Thống</h3>
+              <h3 className="text-base font-bold text-slate-100">General System Configuration</h3>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Tên Ứng Dụng</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">App Name</label>
                 <input
                   type="text"
                   value={appName}
@@ -150,7 +150,7 @@ export default function AdminSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Email Hỗ Trợ Hỗ Trợ Khách Hàng</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Customer Support Email</label>
                 <input
                   type="email"
                   value={supportEmail}
@@ -168,7 +168,7 @@ export default function AdminSettingsPage() {
                     className="w-4 h-4 accent-indigo-600 rounded"
                   />
                   <span className="text-xs font-semibold text-slate-200">
-                    Bật chế độ bảo trì hệ thống (Maintenance Mode)
+                    Enable system maintenance mode
                   </span>
                 </label>
               </div>
@@ -178,23 +178,23 @@ export default function AdminSettingsPage() {
           {/* TAB 2: AI */}
           {activeTab === "ai" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">Cấu Hình AI Engine & OCR Assistant</h3>
+              <h3 className="text-base font-bold text-slate-100">AI Engine & OCR Assistant Configuration</h3>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Mô Hình AI Mặc Định</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Default AI Model</label>
                 <select
                   value={aiModel}
                   onChange={(e) => setAiModel(e.target.value)}
                   className="w-full max-w-md px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                 >
-                  <option value="gemini-3.6-flash">Google Gemini 3.6 Flash (Nhanh & Tối ưu)</option>
-                  <option value="gemini-3.6-pro">Google Gemini 3.6 Pro (Phân tích nâng cao)</option>
+                  <option value="gemini-3.6-flash">Google Gemini 3.6 Flash (Fast & optimized)</option>
+                  <option value="gemini-3.6-pro">Google Gemini 3.6 Pro (Advanced analytics)</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Ngưỡng Độ Chính Xác Tối Thiểu OCR Scan ({aiConfidence}%)
+                  Minimum OCR Scan Confidence Threshold ({aiConfidence}%)
                 </label>
                 <input
                   type="range"
@@ -211,7 +211,7 @@ export default function AdminSettingsPage() {
           {/* TAB 3: Email */}
           {activeTab === "email" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">Cấu Hình Máy Chủ Gửi Email SMTP</h3>
+              <h3 className="text-base font-bold text-slate-100">SMTP Email Server Configuration</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
                 <div>
@@ -239,11 +239,11 @@ export default function AdminSettingsPage() {
           {/* TAB 4: Security */}
           {activeTab === "security" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">Bảo Mật & Quản Lý Phiên Đăng Nhập</h3>
+              <h3 className="text-base font-bold text-slate-100">Security & Login Session Management</h3>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Thời Gian Hết Hạn Phiên Đăng Nhập (Session Timeout - Phút)
+                  Session Timeout (Minutes)
                 </label>
                 <input
                   type="number"
@@ -262,7 +262,7 @@ export default function AdminSettingsPage() {
                     className="w-4 h-4 accent-indigo-600 rounded"
                   />
                   <span className="text-xs font-semibold text-slate-200">
-                    Bắt buộc xác thực 2 lớp (2FA) đối với tài khoản Admin
+                    Require two-factor authentication (2FA) for Admin accounts
                   </span>
                 </label>
               </div>
@@ -275,7 +275,7 @@ export default function AdminSettingsPage() {
               className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all"
             >
               <Save className="w-4 h-4" />
-              <span>Lưu Tất Cả Cài Đặt</span>
+              <span>Save All Settings</span>
             </button>
           </div>
         </form>

@@ -9,8 +9,8 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({
-  title = "Bảng điều khiển Quản trị",
-  subtitle = "Theo dõi hệ thống & quản lý tài nguyên realtime",
+  title = "Administration Dashboard",
+  subtitle = "Realtime system monitoring & resource management",
 }: AdminHeaderProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -41,7 +41,7 @@ export default function AdminHeader({
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Tìm user, transaction ID, audit log..."
+            placeholder="Search user, transaction ID, audit log..."
             className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
           />
         </div>
@@ -51,7 +51,7 @@ export default function AdminHeader({
           onClick={handleRefresh}
           disabled={isRefreshing}
           className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/50 transition-all flex items-center gap-1.5 text-xs font-medium"
-          title="Làm mới dữ liệu hệ thống"
+          title="Refresh system data"
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-indigo-400" : ""}`} />
           <span className="hidden sm:inline">Refresh</span>
@@ -79,7 +79,7 @@ export default function AdminHeader({
       {showToast && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-950 border border-emerald-500/40 text-emerald-300 rounded-xl shadow-2xl animate-fade-in text-xs font-medium">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>Dữ liệu hệ thống đã được đồng bộ mới nhất!</span>
+          <span>System data has been synced to the latest version!</span>
         </div>
       )}
     </header>

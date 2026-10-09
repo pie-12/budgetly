@@ -36,7 +36,7 @@ interface User {
 const initialUsers: User[] = [
   {
     id: "USR-1001",
-    name: "Nguyễn Tùng Lâm",
+    name: "Nguyen Tung Lam",
     email: "lam23it138@budgetly.io",
     role: "Super Admin",
     status: "Active",
@@ -46,7 +46,7 @@ const initialUsers: User[] = [
   },
   {
     id: "USR-1002",
-    name: "Trần Minh Hòa",
+    name: "Tran Minh Hoa",
     email: "hoa.tran@gmail.com",
     role: "Premium User",
     status: "Active",
@@ -56,7 +56,7 @@ const initialUsers: User[] = [
   },
   {
     id: "USR-1003",
-    name: "Lê Hoàng Nam",
+    name: "Le Hoang Nam",
     email: "nam.le99@yahoo.com",
     role: "Free User",
     status: "Active",
@@ -66,7 +66,7 @@ const initialUsers: User[] = [
   },
   {
     id: "USR-1004",
-    name: "Phạm Khánh Linh",
+    name: "Pham Khanh Linh",
     email: "linh.pham@outlook.com",
     role: "Premium User",
     status: "Active",
@@ -76,7 +76,7 @@ const initialUsers: User[] = [
   },
   {
     id: "USR-1005",
-    name: "Vũ Quốc Anh",
+    name: "Vu Quoc Anh",
     email: "spammer_spam99@temp-mail.com",
     role: "Free User",
     status: "Suspended",
@@ -86,7 +86,7 @@ const initialUsers: User[] = [
   },
   {
     id: "USR-1006",
-    name: "Đặng Thị Phương",
+    name: "Dang Thi Phuong",
     email: "phuong.dt@techcorp.vn",
     role: "Admin",
     status: "Active",
@@ -121,7 +121,7 @@ export default function AdminUsersPage() {
         if (u.id === userId) {
           const newStatus = u.status === "Active" ? "Suspended" : "Active";
           showNotification(
-            `Tài khoản ${u.email} đã được ${newStatus === "Active" ? "mở khóa" : "khóa tạm thời"}`
+            `Account ${u.email} has been ${newStatus === "Active" ? "unlocked" : "suspended"}`
           );
           return { ...u, status: newStatus };
         }
@@ -132,7 +132,7 @@ export default function AdminUsersPage() {
 
   const handleDeleteUser = (userId: string) => {
     setUsers((prev) => prev.filter((u) => u.id !== userId));
-    showNotification("Đã xóa tài khoản khỏi hệ thống");
+    showNotification("Account deleted from the system");
   };
 
   const handleCreateUser = (e: React.FormEvent) => {
@@ -154,7 +154,7 @@ export default function AdminUsersPage() {
     setIsAddModalOpen(false);
     setNewName("");
     setNewEmail("");
-    showNotification(`Đã tạo thành công tài khoản ${newEmail}`);
+    showNotification(`Account ${newEmail} created successfully`);
   };
 
   // Filtered users
@@ -173,8 +173,8 @@ export default function AdminUsersPage() {
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="👤 Quản Lý Người Dùng Hệ Thống"
-        subtitle="Danh sách tài khoản, phân quyền, trạng thái khóa và số dư người dùng"
+        title="👤 System User Management"
+        subtitle="Account list, roles, lock status, and user balances"
       />
 
       <div className="p-8 space-y-6 max-w-7xl mx-auto">
@@ -190,7 +190,7 @@ export default function AdminUsersPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Tổng Người Dùng</p>
+              <p className="text-xs text-slate-400 font-medium">Total Users</p>
               <h3 className="text-2xl font-bold text-slate-100 mt-1">{users.length}</h3>
             </div>
             <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
@@ -200,7 +200,7 @@ export default function AdminUsersPage() {
 
           <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Đang Hoạt Động</p>
+              <p className="text-xs text-slate-400 font-medium">Active</p>
               <h3 className="text-2xl font-bold text-emerald-400 mt-1">
                 {users.filter((u) => u.status === "Active").length}
               </h3>
@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
 
           <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Tài Khoản Premium</p>
+              <p className="text-xs text-slate-400 font-medium">Premium Accounts</p>
               <h3 className="text-2xl font-bold text-purple-400 mt-1">
                 {users.filter((u) => u.role === "Premium User").length}
               </h3>
@@ -224,7 +224,7 @@ export default function AdminUsersPage() {
 
           <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Tài Khoản Bị Khóa</p>
+              <p className="text-xs text-slate-400 font-medium">Suspended Accounts</p>
               <h3 className="text-2xl font-bold text-rose-400 mt-1">
                 {users.filter((u) => u.status === "Suspended").length}
               </h3>
@@ -243,7 +243,7 @@ export default function AdminUsersPage() {
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Tìm tên, email, user ID..."
+                placeholder="Search name, email, user ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
@@ -256,7 +256,7 @@ export default function AdminUsersPage() {
               onChange={(e) => setRoleFilter(e.target.value)}
               className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
             >
-              <option value="All">Tất cả vai trò</option>
+              <option value="All">All roles</option>
               <option value="Super Admin">Super Admin</option>
               <option value="Admin">Admin</option>
               <option value="Premium User">Premium User</option>
@@ -269,9 +269,9 @@ export default function AdminUsersPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
             >
-              <option value="All">Tất cả trạng thái</option>
-              <option value="Active">Hoạt động (Active)</option>
-              <option value="Suspended">Bị khóa (Suspended)</option>
+              <option value="All">All statuses</option>
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
             </select>
           </div>
 
@@ -280,7 +280,7 @@ export default function AdminUsersPage() {
             className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all shrink-0"
           >
             <Plus className="w-4 h-4" />
-            <span>Thêm Người Dùng Mới</span>
+            <span>Add New User</span>
           </button>
         </div>
 
@@ -290,19 +290,19 @@ export default function AdminUsersPage() {
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/70 border-b border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">ID & Người dùng</th>
-                  <th className="px-6 py-4">Vai trò (Role)</th>
-                  <th className="px-6 py-4">Trạng thái</th>
-                  <th className="px-6 py-4">Số dư ước tính</th>
-                  <th className="px-6 py-4">Ngày tham gia</th>
-                  <th className="px-6 py-4 text-right">Thao tác</th>
+                  <th className="px-6 py-4">ID & User</th>
+                  <th className="px-6 py-4">Role</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Estimated Balance</th>
+                  <th className="px-6 py-4">Joined Date</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-12 text-slate-500 text-sm">
-                      Không tìm thấy người dùng phù hợp với bộ lọc.
+                      No users match the current filters.
                     </td>
                   </tr>
                 ) : (
@@ -379,7 +379,7 @@ export default function AdminUsersPage() {
                           <button
                             onClick={() => setSelectedUser(user)}
                             className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-indigo-400 rounded-lg transition-colors"
-                            title="Xem chi tiết"
+                            title="View details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -391,7 +391,7 @@ export default function AdminUsersPage() {
                                 ? "text-slate-400 hover:text-rose-400"
                                 : "text-rose-400 hover:text-emerald-400"
                             }`}
-                            title={user.status === "Active" ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+                            title={user.status === "Active" ? "Lock account" : "Unlock account"}
                           >
                             {user.status === "Active" ? (
                               <Lock className="w-4 h-4" />
@@ -403,7 +403,7 @@ export default function AdminUsersPage() {
                           <button
                             onClick={() => handleDeleteUser(user.id)}
                             className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-rose-400 rounded-lg transition-colors"
-                            title="Xóa người dùng"
+                            title="Delete user"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -428,18 +428,18 @@ export default function AdminUsersPage() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-white mb-1">Thêm Người Dùng Mới</h3>
+            <h3 className="text-lg font-bold text-white mb-1">Add New User</h3>
             <p className="text-xs text-slate-400 mb-5">
-              Tạo tài khoản người dùng hoặc gán quyền admin trực tiếp
+              Create a user account or assign admin rights directly
             </p>
 
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Họ & Tên</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ví dụ: Nguyễn Văn A"
+                  placeholder="e.g. Nguyen Van A"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -447,7 +447,7 @@ export default function AdminUsersPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Địa chỉ Email</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
                 <input
                   type="email"
                   required
@@ -459,7 +459,7 @@ export default function AdminUsersPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Vai trò (Role)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Role</label>
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as User["role"])}
@@ -478,13 +478,13 @@ export default function AdminUsersPage() {
                   onClick={() => setIsAddModalOpen(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300"
                 >
-                  Hủy
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30"
                 >
-                  Xác Nhận Tạo Account
+                  Confirm Create Account
                 </button>
               </div>
             </form>
@@ -528,17 +528,17 @@ export default function AdminUsersPage() {
                 <span className="font-mono text-slate-200">{selectedUser.id}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Số Dư Tổng</span>
+                <span className="text-slate-400">Total Balance</span>
                 <span className="font-mono font-bold text-emerald-400">
                   {selectedUser.balance.toLocaleString("vi-VN")} ₫
                 </span>
               </div>
               <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Ngày Đăng Ký</span>
+                <span className="text-slate-400">Signup Date</span>
                 <span className="font-mono text-slate-200">{selectedUser.joinedDate}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Thiết Bị Đăng Nhập Gần Nhất</span>
+                <span className="text-slate-400">Last Login Device</span>
                 <span className="text-slate-300">Chrome / macOS Sonoma (IP: 14.226.12.8)</span>
               </div>
             </div>
@@ -548,7 +548,7 @@ export default function AdminUsersPage() {
                 onClick={() => setSelectedUser(null)}
                 className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"
               >
-                Đóng Chi Tiết
+                Close Details
               </button>
             </div>
           </div>

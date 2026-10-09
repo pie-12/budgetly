@@ -42,41 +42,41 @@ export default function AdminDashboardPage() {
 
   const statCards = [
     {
-      title: "Tổng Người Dùng",
+      title: "Total Users",
       value: "1,248",
       change: "+14.2%",
       isPositive: true,
-      subtext: "128 người dùng mới tháng này",
+      subtext: "128 new users this month",
       icon: Users,
       color: "from-blue-600 to-indigo-600",
       textColor: "text-blue-400",
     },
     {
-      title: "Tổng Giao Dịch Hệ Thống",
+      title: "Total System Transactions",
       value: "45,890",
       change: "+22.5%",
       isPositive: true,
-      subtext: "Tổng giá trị: 4.85 Tỷ VNĐ",
+      subtext: "Total value: 4.85B VND",
       icon: Receipt,
       color: "from-emerald-600 to-teal-600",
       textColor: "text-emerald-400",
     },
     {
-      title: "Cảnh Báo Nghi Vấn Fraud",
+      title: "Suspected Fraud Alerts",
       value: "12",
       change: "-5%",
       isPositive: true,
-      subtext: "Cần admin kiểm tra ngay",
+      subtext: "Requires immediate admin review",
       icon: AlertTriangle,
       color: "from-rose-600 to-pink-600",
       textColor: "text-rose-400",
     },
     {
-      title: "Lượt Scan AI OCR",
+      title: "AI OCR Scans",
       value: "8,940",
       change: "+38.4%",
       isPositive: true,
-      subtext: "Độ chính xác AI: 98.6%",
+      subtext: "AI accuracy: 98.6%",
       icon: Zap,
       color: "from-purple-600 to-amber-600",
       textColor: "text-purple-400",
@@ -84,29 +84,29 @@ export default function AdminDashboardPage() {
   ];
 
   const quickModules = [
-    { title: "👤 Users", desc: "Quản lý 1,248 tài khoản", href: "/admin/users", count: "1.2k" },
-    { title: "🏷️ Categories", desc: "Quản lý 24 danh mục thu chi", href: "/admin/categories", count: "24" },
-    { title: "💸 Transactions", desc: "Giám sát luồng tiền hệ thống", href: "/admin/transactions", count: "45k" },
-    { title: "🎯 Budgets", desc: "Cảnh báo & hạn mức ngân sách", href: "/admin/budgets", count: "850" },
-    { title: "📈 Reports", desc: "Báo cáo doanh thu & tăng trưởng", href: "/admin/reports", count: "Monthly" },
-    { title: "🔔 Notifications", desc: "Gửi thông báo & Broadcast", href: "/admin/notifications", count: "3 Active" },
-    { title: "📝 Audit Logs", desc: "Nhật ký bảo mật & truy cập", href: "/admin/audit-logs", count: "Live" },
-    { title: "👑 Roles & Permissions", desc: "Phân quyền quản trị hệ thống", href: "/admin/roles", count: "5 Roles" },
-    { title: "⚙️ Settings", desc: "Cấu hình AI, Email & Security", href: "/admin/settings", count: "v2.4" },
+    { title: "👤 Users", desc: "Manage 1,248 accounts", href: "/admin/users", count: "1.2k" },
+    { title: "🏷️ Categories", desc: "Manage 24 income & expense categories", href: "/admin/categories", count: "24" },
+    { title: "💸 Transactions", desc: "Monitor system money flow", href: "/admin/transactions", count: "45k" },
+    { title: "🎯 Budgets", desc: "Budget alerts & limits", href: "/admin/budgets", count: "850" },
+    { title: "📈 Reports", desc: "Revenue & growth reports", href: "/admin/reports", count: "Monthly" },
+    { title: "🔔 Notifications", desc: "Send notifications & broadcasts", href: "/admin/notifications", count: "3 Active" },
+    { title: "📝 Audit Logs", desc: "Security & access logs", href: "/admin/audit-logs", count: "Live" },
+    { title: "👑 Roles & Permissions", desc: "System administration permissions", href: "/admin/roles", count: "5 Roles" },
+    { title: "⚙️ Settings", desc: "AI, Email & Security configuration", href: "/admin/settings", count: "v2.4" },
   ];
 
   const recentLogs = [
-    { id: 1, user: "admin_lam", action: "UPDATE_CONFIG", target: "System AI Threshold", time: "2 phút trước", status: "success" },
-    { id: 2, user: "mod_hoa", action: "LOCK_USER", target: "user_fake99@gmail.com", time: "15 phút trước", status: "danger" },
-    { id: 3, user: "admin_lam", action: "CREATE_CATEGORY", target: "Đầu tư Crypto", time: "1 giờ trước", status: "success" },
-    { id: 4, user: "system_cron", action: "AUTO_BACKUP", target: "DB PostgreSQL Snapshot", time: "3 giờ trước", status: "info" },
+    { id: 1, user: "admin_lam", action: "UPDATE_CONFIG", target: "System AI Threshold", time: "2 minutes ago", status: "success" },
+    { id: 2, user: "mod_hoa", action: "LOCK_USER", target: "user_fake99@gmail.com", time: "15 minutes ago", status: "danger" },
+    { id: 3, user: "admin_lam", action: "CREATE_CATEGORY", target: "Crypto Investment", time: "1 hour ago", status: "success" },
+    { id: 4, user: "system_cron", action: "AUTO_BACKUP", target: "DB PostgreSQL Snapshot", time: "3 hours ago", status: "info" },
   ];
 
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="📊 Bảng Điều Khiển Quản Trị Hệ Thống"
-        subtitle="Tổng quan hoạt động, hiệu năng và các tính năng quản trị chính"
+        title="📊 System Admin Dashboard"
+        subtitle="Overview of activity, performance, and key admin features"
       />
 
       <div className="p-8 space-y-8 max-w-7xl mx-auto">
@@ -114,13 +114,13 @@ export default function AdminDashboardPage() {
         {backupStatus === "running" && (
           <div className="p-4 bg-indigo-950/80 border border-indigo-500/40 rounded-2xl flex items-center gap-3 text-indigo-200 animate-pulse text-sm">
             <Activity className="w-5 h-5 text-indigo-400 animate-spin" />
-            <span>Hệ thống đang tiến hành sao lưu dữ liệu PostgreSQL Snapshot...</span>
+            <span>System backup of PostgreSQL Snapshot in progress...</span>
           </div>
         )}
         {backupStatus === "completed" && (
           <div className="p-4 bg-emerald-950/80 border border-emerald-500/40 rounded-2xl flex items-center gap-3 text-emerald-200 text-sm">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            <span>Sao lưu dữ liệu thành công! Bản sao lưu đã lưu vào kho lưu trữ an toàn.</span>
+            <span>Backup completed successfully! The backup has been saved to secure storage.</span>
           </div>
         )}
 
@@ -173,9 +173,9 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                <span>🚀 Các Phân Hệ Quản Trị Trung Tâm</span>
+                <span>🚀 Core Admin Modules</span>
               </h2>
-              <p className="text-xs text-slate-400">Truy cập nhanh 10 danh mục quản lý được yêu cầu</p>
+              <p className="text-xs text-slate-400">Quick access to the 10 required management modules</p>
             </div>
           </div>
 
@@ -213,13 +213,13 @@ export default function AdminDashboardPage() {
                   <Server className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-base">Hạ Tầng & Hiệu Năng Server</h3>
-                  <p className="text-xs text-slate-400">Giám sát tài nguyên máy chủ realtime</p>
+                  <h3 className="font-bold text-slate-100 text-base">Server Infrastructure & Performance</h3>
+                  <p className="text-xs text-slate-400">Realtime server resource monitoring</p>
                 </div>
               </div>
               <span className="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Tất cả node hoạt động tốt
+                All nodes operational
               </span>
             </div>
 
@@ -267,7 +267,7 @@ export default function AdminDashboardPage() {
             {/* Live activity log snippet */}
             <div className="mt-6 pt-4 border-t border-slate-800">
               <h4 className="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider">
-                Nhật ký thao tác vừa diễn ra (Audit Stream)
+                Recent Activity Log (Audit Stream)
               </h4>
               <div className="space-y-2">
                 {recentLogs.map((log) => (
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-2.5">
                       <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
                       <span className="font-semibold text-slate-300">{log.user}</span>
-                      <span className="text-slate-500">đã thực hiện</span>
+                      <span className="text-slate-500">performed</span>
                       <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-mono text-[11px] border border-indigo-500/20">
                         {log.action}
                       </span>
@@ -296,8 +296,8 @@ export default function AdminDashboardPage() {
           {/* Quick Actions Panel */}
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
             <div>
-              <h3 className="font-bold text-slate-100 text-base mb-1">Thao Tác Nhanh Quản Trị</h3>
-              <p className="text-xs text-slate-400 mb-6">Thực thi công việc thường dùng chỉ với 1 click</p>
+              <h3 className="font-bold text-slate-100 text-base mb-1">Quick Admin Actions</h3>
+              <p className="text-xs text-slate-400 mb-6">Run common tasks with a single click</p>
 
               <div className="space-y-3">
                 <Link
@@ -305,7 +305,7 @@ export default function AdminDashboardPage() {
                   className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 transition-all font-medium text-xs"
                 >
                   <Send className="w-4 h-4 text-indigo-400" />
-                  <span>Gửi Thông Báo Broadcast Toàn Hệ Thống</span>
+                  <span>Send System-wide Broadcast Notification</span>
                 </Link>
 
                 <Link
@@ -313,7 +313,7 @@ export default function AdminDashboardPage() {
                   className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 transition-all font-medium text-xs"
                 >
                   <PlusCircle className="w-4 h-4 text-emerald-400" />
-                  <span>Thêm Danh Mục Mới Cho Người Dùng</span>
+                  <span>Add New Category for Users</span>
                 </Link>
 
                 <Link
@@ -321,7 +321,7 @@ export default function AdminDashboardPage() {
                   className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 transition-all font-medium text-xs"
                 >
                   <UserPlus className="w-4 h-4 text-blue-400" />
-                  <span>Tạo Tài Khoản Quản Trị Viên / Auditor</span>
+                  <span>Create Admin / Auditor Account</span>
                 </Link>
 
                 <button
@@ -330,14 +330,14 @@ export default function AdminDashboardPage() {
                   className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 transition-all font-medium text-xs text-left"
                 >
                   <FileSpreadsheet className="w-4 h-4 text-amber-400" />
-                  <span>Chạy Sao Lưu Cơ Sở Dữ Liệu Tức Thời</span>
+                  <span>Run Immediate Database Backup</span>
                 </button>
               </div>
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-800 text-center">
               <p className="text-[11px] text-slate-500">
-                Cần hỗ trợ kỹ thuật? Liên hệ bộ phận Infrastructure Support
+                Need technical support? Contact the Infrastructure Support team
               </p>
             </div>
           </div>

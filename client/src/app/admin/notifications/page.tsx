@@ -29,9 +29,9 @@ interface SystemNotification {
 const initialNotifications: SystemNotification[] = [
   {
     id: "NOTIF-01",
-    title: "Cập nhật hệ thống AI Smart Assistant v2.4",
-    message: "Hệ thống AI nhận diện hóa đơn đã được nâng cấp độ chính xác lên 98.6%. Thử ngay!",
-    targetAudience: "Tất cả người dùng (1,248 users)",
+    title: "AI Smart Assistant v2.4 system update",
+    message: "The invoice recognition AI has been upgraded to 98.6% accuracy. Try it now!",
+    targetAudience: "All users (1,248 users)",
     sentDate: "2026-10-06 10:00",
     deliveredCount: 1248,
     readRate: "89.4%",
@@ -39,9 +39,9 @@ const initialNotifications: SystemNotification[] = [
   },
   {
     id: "NOTIF-02",
-    title: "Cảnh báo bảo trì server định kỳ",
-    message: "Hệ thống sẽ tạm thời bảo trì vào lúc 02:00 AM ngày 08/10/2026 trong khoảng 15 phút.",
-    targetAudience: "Tất cả người dùng",
+    title: "Scheduled server maintenance notice",
+    message: "The system will be temporarily unavailable for maintenance at 02:00 AM on 08/10/2026 for about 15 minutes.",
+    targetAudience: "All users",
     sentDate: "2026-10-08 02:00",
     deliveredCount: 0,
     readRate: "0%",
@@ -49,9 +49,9 @@ const initialNotifications: SystemNotification[] = [
   },
   {
     id: "NOTIF-03",
-    title: "Ưu đãi nâng cấp Premium giảm 30%",
-    message: "Dành riêng cho thành viên gói Free đăng ký trong tuần này.",
-    targetAudience: "Người dùng Free Tier",
+    title: "30% off Premium upgrade offer",
+    message: "Exclusive for Free tier members who subscribe this week.",
+    targetAudience: "Free Tier users",
     sentDate: "2026-10-01 14:30",
     deliveredCount: 920,
     readRate: "72.1%",
@@ -67,7 +67,7 @@ export default function AdminNotificationsPage() {
   // Form State
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [audience, setAudience] = useState("Tất cả người dùng");
+  const [audience, setAudience] = useState("All Users");
 
   const showNotification = (msg: string) => {
     setToastMessage(msg);
@@ -93,14 +93,14 @@ export default function AdminNotificationsPage() {
     setIsBroadcastModalOpen(false);
     setTitle("");
     setMessage("");
-    showNotification("Đã gửi thành công thông báo Broadcast toàn hệ thống!");
+    showNotification("System-wide broadcast notification sent successfully!");
   };
 
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="🔔 Quản Lý Thông Báo & Broadcast Hệ Thống"
-        subtitle="Gửi thông báo hàng loạt tới người dùng, đặt lịch nhắc nhở và quản lý mẫu tin nhắn"
+        title="🔔 System Notifications & Broadcast Management"
+        subtitle="Send bulk notifications to users, schedule reminders, and manage message templates"
       />
 
       <div className="p-8 space-y-8 max-w-7xl mx-auto">
@@ -117,10 +117,10 @@ export default function AdminNotificationsPage() {
           <div>
             <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-indigo-400" />
-              <span>Gửi Thông Báo Mới (Broadcast Center)</span>
+              <span>Send New Notification (Broadcast Center)</span>
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Phát thông tin cập nhật, cảnh báo hoặc khuyến mãi đến hàng ngàn người dùng cùng lúc
+              Broadcast updates, alerts, or promotions to thousands of users at once
             </p>
           </div>
 
@@ -129,7 +129,7 @@ export default function AdminNotificationsPage() {
             className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/25 transition-all"
           >
             <Send className="w-4 h-4" />
-            <span>Tạo Broadcast Mới</span>
+            <span>Create New Broadcast</span>
           </button>
         </div>
 
@@ -137,8 +137,8 @@ export default function AdminNotificationsPage() {
         <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
           <div className="p-6 border-b border-slate-800 flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-slate-100 text-base">Lịch Sử Gửi Thông Báo</h3>
-              <p className="text-xs text-slate-400">Danh sách các chiến dịch thông báo đã phát hành</p>
+              <h3 className="font-bold text-slate-100 text-base">Notification History</h3>
+              <p className="text-xs text-slate-400">List of published notification campaigns</p>
             </div>
           </div>
 
@@ -146,13 +146,13 @@ export default function AdminNotificationsPage() {
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/70 border-b border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Mã & Tiêu đề</th>
-                  <th className="px-6 py-4">Nội dung tóm tắt</th>
-                  <th className="px-6 py-4">Đối tượng nhận</th>
-                  <th className="px-6 py-4">Số lượng gửi</th>
-                  <th className="px-6 py-4">Tỷ lệ mở</th>
-                  <th className="px-6 py-4">Thời gian</th>
-                  <th className="px-6 py-4 text-right">Trạng thái</th>
+                  <th className="px-6 py-4">ID & Title</th>
+                  <th className="px-6 py-4">Summary</th>
+                  <th className="px-6 py-4">Target Audience</th>
+                  <th className="px-6 py-4">Delivered</th>
+                  <th className="px-6 py-4">Open Rate</th>
+                  <th className="px-6 py-4">Time</th>
+                  <th className="px-6 py-4 text-right">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
@@ -187,7 +187,7 @@ export default function AdminNotificationsPage() {
                             : "bg-amber-500/10 text-amber-400 border-amber-500/30"
                         }`}
                       >
-                        {n.status === "Sent" ? "Đã gửi" : "Lên lịch"}
+                        {n.status === "Sent" ? "Sent" : "Scheduled"}
                       </span>
                     </td>
                   </tr>
@@ -208,20 +208,20 @@ export default function AdminNotificationsPage() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-white mb-1">Gửi Thông Báo Broadcast</h3>
+            <h3 className="text-lg font-bold text-white mb-1">Send Broadcast Notification</h3>
             <p className="text-xs text-slate-400 mb-5">
-              Nội dung sẽ xuất hiện trực tiếp trong ứng dụng di động & web của người dùng
+              The content will appear directly in the user's mobile & web app
             </p>
 
             <form onSubmit={handleSendBroadcast} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Tiêu Đề Thông Báo
+                  Notification Title
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ví dụ: Nâng cấp hệ thống AI thành công"
+                  placeholder="e.g. AI system upgrade completed"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -230,27 +230,27 @@ export default function AdminNotificationsPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Đối Tượng Nhận
+                  Target Audience
                 </label>
                 <select
                   value={audience}
                   onChange={(e) => setAudience(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                 >
-                  <option value="Tất cả người dùng">Tất cả người dùng (All - 1,248 users)</option>
-                  <option value="Người dùng Premium">Người dùng Premium Only</option>
-                  <option value="Người dùng Free Tier">Người dùng Free Tier Only</option>
+                  <option value="All Users">All Users (1,248 users)</option>
+                  <option value="Premium Users">Premium Users Only</option>
+                  <option value="Free Tier Users">Free Tier Users Only</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Nội Dung Chi Tiết
+                  Message Content
                 </label>
                 <textarea
                   rows={4}
                   required
-                  placeholder="Nhập thông điệp truyền tải tới người dùng..."
+                  placeholder="Enter the message to send to users..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -263,14 +263,14 @@ export default function AdminNotificationsPage() {
                   onClick={() => setIsBroadcastModalOpen(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300"
                 >
-                  Hủy
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30 flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Phát Thông Báo Ngay</span>
+                  <span>Send Notification Now</span>
                 </button>
               </div>
             </form>

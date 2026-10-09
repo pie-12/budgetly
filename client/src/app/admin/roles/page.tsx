@@ -36,7 +36,7 @@ const initialRoles: Role[] = [
   {
     id: "ROLE-01",
     name: "Super Admin",
-    description: "Toàn quyền quản trị cao nhất hệ thống, cấu hình server và phân quyền",
+    description: "Top-level system administration, server configuration, and permissions",
     usersCount: 2,
     isSystem: true,
     permissions: {
@@ -52,7 +52,7 @@ const initialRoles: Role[] = [
   {
     id: "ROLE-02",
     name: "System Admin",
-    description: "Quản lý người dùng, danh mục và cấu hình vận hành hàng ngày",
+    description: "Manage users, categories, and daily operations configuration",
     usersCount: 5,
     isSystem: true,
     permissions: {
@@ -68,7 +68,7 @@ const initialRoles: Role[] = [
   {
     id: "ROLE-03",
     name: "Finance Auditor",
-    description: "Chỉ có quyền xem & kiểm toán giao dịch, xuất báo cáo doanh thu",
+    description: "View & audit transactions and export revenue reports only",
     usersCount: 3,
     isSystem: false,
     permissions: {
@@ -84,7 +84,7 @@ const initialRoles: Role[] = [
   {
     id: "ROLE-04",
     name: "Community Support",
-    description: "Hỗ trợ mở/khóa tài khoản người dùng và gửi thông báo hỗ trợ",
+    description: "Help lock/unlock user accounts and send support notifications",
     usersCount: 8,
     isSystem: false,
     permissions: {
@@ -118,7 +118,7 @@ export default function AdminRolesPage() {
       prev.map((r) => {
         if (r.id === roleId) {
           if (r.isSystem && r.name === "Super Admin") {
-            showNotification("Không thể thay đổi quyền tối cao của Super Admin!");
+            showNotification("Super Admin's supreme permissions cannot be changed!");
             return r;
           }
           const updated = {
@@ -128,7 +128,7 @@ export default function AdminRolesPage() {
               [permKey]: !r.permissions[permKey],
             },
           };
-          showNotification(`Đã cập nhật ma trận phân quyền cho vai trò "${r.name}"`);
+          showNotification(`Permission matrix updated for role "${r.name}"`);
           return updated;
         }
         return r;
@@ -161,24 +161,24 @@ export default function AdminRolesPage() {
     setIsAddRoleModalOpen(false);
     setNewRoleName("");
     setNewRoleDesc("");
-    showNotification(`Đã tạo vai trò quản trị mới "${newRoleName}"`);
+    showNotification(`New admin role "${newRoleName}" created`);
   };
 
   const permissionLabels: { key: keyof Role["permissions"]; label: string }[] = [
-    { key: "manageUsers", label: "Quản lý Người Dùng (Lock/Role)" },
-    { key: "manageCategories", label: "Quản lý Danh Mục Thu Chi" },
-    { key: "manageTransactions", label: "Giám sát & Flag Giao dịch" },
-    { key: "exportReports", label: "Xuất Báo cáo & Thống kê" },
-    { key: "manageNotifications", label: "Phát Thông báo Broadcast" },
-    { key: "viewAuditLogs", label: "Xem Nhật ký Audit Logs" },
-    { key: "manageSettings", label: "Thay đổi Cấu hình Server" },
+    { key: "manageUsers", label: "Manage Users (Lock/Role)" },
+    { key: "manageCategories", label: "Manage Income & Expense Categories" },
+    { key: "manageTransactions", label: "Monitor & Flag Transactions" },
+    { key: "exportReports", label: "Export Reports & Analytics" },
+    { key: "manageNotifications", label: "Send Broadcast Notifications" },
+    { key: "viewAuditLogs", label: "View Audit Logs" },
+    { key: "manageSettings", label: "Change Server Configuration" },
   ];
 
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="👑 Quản Lý Vai Trò & Phân Quyền (Roles & Permissions)"
-        subtitle="Ma trận phân quyền chi tiết cho ban quản trị, auditor và nhân viên hỗ trợ"
+        title="👑 Roles & Permissions Management"
+        subtitle="Detailed permission matrix for admins, auditors, and support staff"
       />
 
       <div className="p-8 space-y-8 max-w-7xl mx-auto">
@@ -193,8 +193,8 @@ export default function AdminRolesPage() {
         {/* Roles overview cards */}
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-100">Danh Sách Vai Trò Quản Trị</h3>
-            <p className="text-xs text-slate-400">Có {roles.length} vai trò đang hoạt động</p>
+            <h3 className="text-lg font-bold text-slate-100">Admin Roles List</h3>
+            <p className="text-xs text-slate-400">{roles.length} roles currently active</p>
           </div>
 
           <button
@@ -202,27 +202,27 @@ export default function AdminRolesPage() {
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>Thêm Vai Trò Mới</span>
+            <span>Add New Role</span>
           </button>
         </div>
 
         {/* Permission Matrix Table */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
           <div className="p-6 border-b border-slate-800">
-            <h3 className="font-bold text-slate-100 text-base">Ma Trận Phân Quyền Chi Tiết (Permission Matrix)</h3>
-            <p className="text-xs text-slate-400">Click vào checkbox để bật/tắt quyền tương ứng cho từng vai trò</p>
+            <h3 className="font-bold text-slate-100 text-base">Detailed Permission Matrix</h3>
+            <p className="text-xs text-slate-400">Click a checkbox to toggle the corresponding permission for each role</p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/70 border-b border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Tên Quyền Hạn (Permission)</th>
+                  <th className="px-6 py-4">Permission Name</th>
                   {roles.map((r) => (
                     <th key={r.id} className="px-6 py-4 text-center">
                       <div className="font-bold text-slate-200">{r.name}</div>
                       <span className="text-[10px] text-slate-400 font-normal">
-                        ({r.usersCount} tài khoản)
+                        ({r.usersCount} accounts)
                       </span>
                     </th>
                   ))}
@@ -268,16 +268,16 @@ export default function AdminRolesPage() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-white mb-1">Tạo Vai Trò Quản Trị Mới</h3>
-            <p className="text-xs text-slate-400 mb-5">Định nghĩa vai trò mới cho nhân sự vận hành hệ thống</p>
+            <h3 className="text-lg font-bold text-white mb-1">Create New Admin Role</h3>
+            <p className="text-xs text-slate-400 mb-5">Define a new role for system operations staff</p>
 
             <form onSubmit={handleCreateRole} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Tên Vai Trò</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Role Name</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ví dụ: Security Auditor"
+                  placeholder="e.g. Security Auditor"
                   value={newRoleName}
                   onChange={(e) => setNewRoleName(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -285,10 +285,10 @@ export default function AdminRolesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Mô Tả Nhiệm Vụ</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Role Description</label>
                 <textarea
                   rows={3}
-                  placeholder="Mô tả phạm vi công việc..."
+                  placeholder="Describe the scope of responsibilities..."
                   value={newRoleDesc}
                   onChange={(e) => setNewRoleDesc(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -301,13 +301,13 @@ export default function AdminRolesPage() {
                   onClick={() => setIsAddRoleModalOpen(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300"
                 >
-                  Hủy
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30"
                 >
-                  Tạo Vai Trò
+                  Create Role
                 </button>
               </div>
             </form>

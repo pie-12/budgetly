@@ -2,7 +2,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export const metadata = {
   title: "Admin Dashboard | Budgetly Management",
-  description: "Hệ thống quản trị và giám sát ứng dụng quản lý tài chính Budgetly",
+  description: "Administration and monitoring system for the Budgetly finance management app",
 };
 
 export default function AdminLayout({
