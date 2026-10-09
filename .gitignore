@@ -26,6 +26,11 @@ venv.bak/
 htmlcov/
 .alembic/
 
+# Local database files (SQLite fallback)
+*.db
+*.db-journal
+*.sqlite3
+
 # Environment variables
 .env
 .env.local
