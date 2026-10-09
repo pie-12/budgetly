@@ -95,7 +95,7 @@ export default function SmartAIInput({ wallets, categories, onCreated }: SmartAI
               AI Smart Input (Natural Language)
             </h3>
             <p className="text-xs text-slate-400">
-              Type naturally (e.g. <span className="text-emerald-400/90 italic">"Ăn phở trưa 45k"</span> or <span className="text-emerald-400/90 italic">"Đổ xăng 50k"</span>)
+              Type naturally (e.g. <span className="text-emerald-400/90 italic">"Lunch with teammates 45k"</span> or <span className="text-emerald-400/90 italic">"Gas refill 50k"</span>)
             </p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function SmartAIInput({ wallets, categories, onCreated }: SmartAI
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="E.g., Ăn trưa với đồng nghiệp 45k..."
+          placeholder="E.g., Lunch with teammates 45k..."
           className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-4 py-3.5 pr-28 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all shadow-inner"
         />
         <button

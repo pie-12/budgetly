@@ -6,7 +6,7 @@ T = TypeVar("T")
 class APIResponse(BaseModel, Generic[T]):
     success: bool = True
     data: Optional[T] = None
-    message: str = "Thao tác thành công"
+    message: str = "Operation completed successfully"
 
 class ErrorDetail(BaseModel):
     code: str

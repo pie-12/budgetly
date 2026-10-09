@@ -10,7 +10,7 @@ class SmartInputResponse(BaseModel):
     amount: Decimal
     category: str
     type: str  # "INCOME" or "EXPENSE"
-    suggested_wallet: Optional[str] = "Ví tiền mặt"
+    suggested_wallet: Optional[str] = "Cash Wallet"
     confidence_score: float
 
 class OCRScanResponse(BaseModel):
@@ -19,7 +19,7 @@ class OCRScanResponse(BaseModel):
     total_amount: Decimal
     confidence_score: float
     items: Optional[List[str]] = []
-    suggested_category: str = "Ăn uống"
+    suggested_category: str = "Food & Dining"
 
 class AIForecastResponse(BaseModel):
     forecast_total: Decimal
