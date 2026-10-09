@@ -10,8 +10,9 @@ export default function AIForecastAlert({ monthlyExpense, monthlyBudget }: AIFor
   const currentDay = 15;
   const avgDailySpend = monthlyExpense / currentDay;
   const projectedTotal = monthlyExpense + avgDailySpend * (daysInMonth - currentDay);
-  const percentUsed = (monthlyExpense / monthlyBudget) * 100;
-  const isOverBudgetRisk = projectedTotal > monthlyBudget * 0.9;
+  const safeBudget = monthlyBudget > 0 ? monthlyBudget : 0;
+  const percentUsed = safeBudget > 0 ? (monthlyExpense / safeBudget) * 100 : 0;
+  const isOverBudgetRisk = safeBudget > 0 && projectedTotal > safeBudget * 0.9;
 
   return (
     <div

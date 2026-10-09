@@ -1,54 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import SummaryCards from "@/components/dashboard/SummaryCards";
 import SmartAIInput from "@/components/dashboard/SmartAIInput";
 import AIForecastAlert from "@/components/dashboard/AIForecastAlert";
 import ExpenseBreakdownChart from "@/components/dashboard/ExpenseBreakdownChart";
-import RecentTransactions, { Transaction } from "@/components/dashboard/RecentTransactions";
+import RecentTransactions from "@/components/dashboard/RecentTransactions";
 import AddTransactionModal from "@/components/modals/AddTransactionModal";
 import OCRScanModal from "@/components/modals/OCRScanModal";
-
-const initialTransactions: Transaction[] = [
-  { id: 1, description: "Team lunch at downtown cafe", amount: 45000, type: "expense", category: "Food & Dining", wallet: "Cash Wallet", date: "2026-09-24" },
-  { id: 2, description: "Gas station refill", amount: 50000, type: "expense", category: "Transportation", wallet: "Bank Account", date: "2026-09-24" },
-  { id: 3, description: "Monthly salary deposit", amount: 15000000, type: "income", category: "Salary & Income", wallet: "Bank Account", date: "2026-09-01" },
-  { id: 4, description: "Online clothing order", amount: 350000, type: "expense", category: "Shopping", wallet: "Bank Account", date: "2026-09-23" },
-  { id: 5, description: "Coffee meeting with teammates", amount: 65000, type: "expense", category: "Food & Dining", wallet: "E-Wallet", date: "2026-09-22" },
-  { id: 6, description: "Mobile internet subscription", amount: 200000, type: "expense", category: "Utilities", wallet: "E-Wallet", date: "2026-09-20" },
-];
-
-const mockCategoryBreakdown = [
-  { name: "Food & Dining", amount: 3450000, color: "bg-amber-500", icon: "🍲" },
-  { name: "Transportation", amount: 850000, color: "bg-blue-500", icon: "🚗" },
-  { name: "Shopping", amount: 2150000, color: "bg-purple-500", icon: "🛍️" },
-  { name: "Entertainment", amount: 1100000, color: "bg-rose-500", icon: "🎬" },
-  { name: "Utilities", amount: 700000, color: "bg-teal-500", icon: "⚡" },
-];
+import {
+  api,
+  ApiAnalyticsSummary,
+  ApiCategory,
+  ApiWallet,
+  getErrorMessage,
+  mapApiTransaction,
+  toNumber,
+  UiTransaction,
+} from "@/services/api";
 
 export default function Home() {
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
+  const [summary, setSummary] = useState<ApiAnalyticsSummary | null>(null);
+  const [transactions, setTransactions] = useState<UiTransaction[]>([]);
+  const [wallets, setWallets] = useState<ApiWallet[]>([]);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isOCRModalOpen, setIsOCRModalOpen] = useState(false);
 
-  // Financial Summary Aggregations
-  const totalBalance = 24500000;
-  const monthlyIncome = 15000000;
-  const monthlyExpense = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 8250000);
-  const monthlyBudget = 15000000;
-  const remainingBudget = Math.max(monthlyBudget - monthlyExpense, 0);
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [summaryRes, transactionsRes, walletsRes, categoriesRes] = await Promise.all([
+        api.getSummary(),
+        api.getTransactions(20),
+        api.getWallets(),
+        api.getCategories(),
+      ]);
+      setSummary(summaryRes.data);
+      setTransactions(transactionsRes.data.map(mapApiTransaction));
+      setWallets(walletsRes.data);
+      setCategories(categoriesRes.data);
+    } catch (err) {
+      setError(getErrorMessage(err, "Failed to load the dashboard"));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const handleAddTransaction = (newTx: Transaction) => {
-    setTransactions([newTx, ...transactions]);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleDeleteTransaction = async (id: number | string) => {
+    try {
+      await api.deleteTransaction(String(id));
+      loadData();
+    } catch (err) {
+      setError(getErrorMessage(err, "Failed to delete the transaction"));
+    }
   };
 
-  const handleDeleteTransaction = (id: number | string) => {
-    setTransactions(transactions.filter((tx) => tx.id !== id));
-  };
+  // Live financial summary from the analytics API
+  const totalBalance = toNumber(summary?.total_balance);
+  const monthlyIncome = toNumber(summary?.monthly_income);
+  const monthlyExpense = toNumber(summary?.monthly_expense);
+  const monthlyBudget = toNumber(summary?.monthly_budget);
+  const remainingBudget = toNumber(summary?.remaining_budget);
+  const categoryBreakdown = (summary?.category_breakdown ?? []).map((item) => ({
+    name: item.name,
+    amount: toNumber(item.amount),
+    color: item.color,
+    icon: item.icon,
+  }));
 
   return (
     <div className="flex min-h-screen bg-slate-950 font-sans text-slate-100">
@@ -63,38 +91,60 @@ export default function Home() {
         />
 
         <main className="p-8 space-y-8 flex-1 overflow-y-auto">
-          {/* Top Metric Cards */}
-          <SummaryCards
-            totalBalance={totalBalance}
-            monthlyIncome={monthlyIncome}
-            monthlyExpense={monthlyExpense}
-            remainingBudget={remainingBudget}
-          />
-
-          {/* AI Intelligent NLP Input Bar */}
-          <SmartAIInput onAddTransaction={handleAddTransaction} />
-
-          {/* AI Spending Projection & Alert */}
-          <AIForecastAlert
-            monthlyExpense={monthlyExpense}
-            monthlyBudget={monthlyBudget}
-          />
-
-          {/* Dashboard Visuals Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <RecentTransactions
-                transactions={transactions}
-                onDeleteTransaction={handleDeleteTransaction}
-              />
+          {error && (
+            <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+              <span>⚠ {error}</span>
+              <button
+                onClick={loadData}
+                className="px-3 py-1.5 rounded-lg bg-rose-500/20 border border-rose-500/40 font-semibold hover:bg-rose-500/30 transition-all"
+              >
+                Retry
+              </button>
             </div>
-            <div>
-              <ExpenseBreakdownChart
-                categories={mockCategoryBreakdown}
-                totalExpense={monthlyExpense}
-              />
+          )}
+
+          {isLoading ? (
+            <div className="h-64 flex items-center justify-center rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 text-sm animate-pulse">
+              Loading dashboard...
             </div>
-          </div>
+          ) : (
+            <>
+              {/* Top Metric Cards */}
+              <SummaryCards
+                totalBalance={totalBalance}
+                monthlyIncome={monthlyIncome}
+                monthlyExpense={monthlyExpense}
+                remainingBudget={remainingBudget}
+                walletCount={wallets.length}
+                monthlyBudget={monthlyBudget}
+              />
+
+              {/* AI Intelligent NLP Input Bar */}
+              <SmartAIInput wallets={wallets} categories={categories} onCreated={loadData} />
+
+              {/* AI Spending Projection & Alert */}
+              <AIForecastAlert
+                monthlyExpense={monthlyExpense}
+                monthlyBudget={monthlyBudget}
+              />
+
+              {/* Dashboard Visuals Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <RecentTransactions
+                    transactions={transactions}
+                    onDeleteTransaction={handleDeleteTransaction}
+                  />
+                </div>
+                <div>
+                  <ExpenseBreakdownChart
+                    categories={categoryBreakdown}
+                    totalExpense={monthlyExpense}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </main>
       </div>
 
@@ -102,13 +152,17 @@ export default function Home() {
       <AddTransactionModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onAddTransaction={handleAddTransaction}
+        onCreated={loadData}
+        wallets={wallets}
+        categories={categories}
       />
 
       <OCRScanModal
         isOpen={isOCRModalOpen}
         onClose={() => setIsOCRModalOpen(false)}
-        onAddTransaction={handleAddTransaction}
+        onCreated={loadData}
+        wallets={wallets}
+        categories={categories}
       />
     </div>
   );

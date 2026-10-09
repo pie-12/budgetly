@@ -5,6 +5,8 @@ interface SummaryCardsProps {
   monthlyIncome: number;
   monthlyExpense: number;
   remainingBudget: number;
+  walletCount?: number;
+  monthlyBudget?: number;
 }
 
 export default function SummaryCards({
@@ -12,12 +14,17 @@ export default function SummaryCards({
   monthlyIncome,
   monthlyExpense,
   remainingBudget,
+  walletCount,
+  monthlyBudget,
 }: SummaryCardsProps) {
   const cards = [
     {
       title: "Total Balance",
       amount: totalBalance,
-      subtext: "Across 3 connected wallets",
+      subtext:
+        typeof walletCount === "number"
+          ? `Across ${walletCount} connected wallets`
+          : "Across connected wallets",
       gradient: "from-emerald-500/10 to-teal-500/5",
       borderColor: "border-emerald-500/30",
       textColor: "text-emerald-400",
@@ -30,7 +37,7 @@ export default function SummaryCards({
     {
       title: "Monthly Income",
       amount: monthlyIncome,
-      subtext: "+12.5% vs last month",
+      subtext: "Total for the current month",
       gradient: "from-blue-500/10 to-indigo-500/5",
       borderColor: "border-blue-500/30",
       textColor: "text-blue-400",
@@ -43,7 +50,7 @@ export default function SummaryCards({
     {
       title: "Monthly Expenses",
       amount: monthlyExpense,
-      subtext: "48 tracked transactions",
+      subtext: "Tracked this month",
       gradient: "from-rose-500/10 to-pink-500/5",
       borderColor: "border-rose-500/30",
       textColor: "text-rose-400",
@@ -56,7 +63,10 @@ export default function SummaryCards({
     {
       title: "Remaining Budget",
       amount: remainingBudget,
-      subtext: "Monthly limit: $15,000,000",
+      subtext:
+        typeof monthlyBudget === "number"
+          ? `Monthly limit: ${monthlyBudget.toLocaleString("en-US")} ₫`
+          : "Monthly limit",
       gradient: "from-amber-500/10 to-orange-500/5",
       borderColor: "border-amber-500/30",
       textColor: "text-amber-400",
