@@ -1,143 +1,143 @@
 # User Stories & Acceptance Criteria (AC) - Budgetly
 
-Tài liệu liệt kê danh sách các câu chuyện người dùng (User Stories) cùng tiêu chí nghiệm thu (Acceptance Criteria - AC) chi tiết cho ứng dụng Budgetly, phân chia theo các Epic chính.
+This document lists the User Stories together with detailed Acceptance Criteria (AC) for the Budgetly application, organized by main Epics.
 
 ---
 
-## 📌 Epic 1: Đăng nhập & Xác thực Nguời dùng (Authentication & User Profile)
+## 📌 Epic 1: Login & User Authentication (Authentication & User Profile)
 
-### User Story 1.1: Đăng ký tài khoản mới
-- **Là** một người dùng mới,
-- **Tôi muốn** đăng ký tài khoản ứng dụng bằng Email và Mật khẩu,
-- **Để** tạo không gian lưu trữ và bảo mật dữ liệu chi tiêu cá nhân của tôi.
-
-**Acceptance Criteria (AC):**
-1. Hệ thống hiển thị form Đăng ký gồm: Email, Mật khẩu, Nhập lại mật khẩu.
-2. Kiểm tra tính hợp lệ của Email và mật khẩu (Mật khẩu phải từ 8 ký tự trở lên).
-3. Nếu email đã tồn tại trong hệ thống, trả về thông báo lỗi *"Email này đã được sử dụng"*.
-4. Sau khi đăng ký thành công, tự động khởi tạo cho người dùng 1 Ví mặc định (*"Ví Tiền mặt"*) và danh sách các Danh mục chi tiêu chuẩn (*Ăn uống, Di chuyển, Mua sắm, v.v.*).
-
-### User Story 1.2: Đăng nhập hệ thống
-- **Là** một người dùng đã có tài khoản,
-- **Tôi muốn** đăng nhập vào ứng dụng bằng Email và Mật khẩu,
-- **Để** truy cập vào Bảng điều khiển (Dashboard) và quản lý tài chính.
+### User Story 1.1: Register a new account
+- **As a** new user,
+- **I want** to register an application account with Email and Password,
+- **So that** I can create a storage space and secure my personal spending data.
 
 **Acceptance Criteria (AC):**
-1. Người dùng nhập đúng Email và Mật khẩu -> Hệ thống trả về JWT Token và chuyển hướng đến trang Dashboard.
-2. Nhập sai Email hoặc Mật khẩu -> Hiển thị cảnh báo *"Email hoặc mật khẩu không chính xác"*.
-3. JWT Token được lưu an toàn tại Client và tự động đính kèm vào HTTP Header `Authorization: Bearer <token>` cho mọi request tiếp theo.
+1. The system displays a Registration form with: Email, Password, Confirm password.
+2. Validate the Email and password (password must be at least 8 characters).
+3. If the email already exists in the system, return the error message *"This email is already in use"*.
+4. After successful registration, automatically create for the user 1 default Wallet (*"Cash Wallet"*) and the standard list of spending Categories (*Food & Dining, Transportation, Shopping, etc.*).
+
+### User Story 1.2: Log in to the system
+- **As a** user with an existing account,
+- **I want** to log in to the application with Email and Password,
+- **So that** I can access the Dashboard and manage my finances.
+
+**Acceptance Criteria (AC):**
+1. The user enters the correct Email and Password -> the system returns a JWT Token and redirects to the Dashboard page.
+2. Wrong Email or Password -> show the warning *"Incorrect email or password"*.
+3. The JWT Token is stored securely on the Client and automatically attached to the HTTP Header `Authorization: Bearer <token>` for all subsequent requests.
 
 ---
 
-## 📌 Epic 2: Quản lý Ví & Danh mục Tài chính (Wallets & Categories)
+## 📌 Epic 2: Wallets & Financial Categories Management (Wallets & Categories)
 
-### User Story 2.1: Tạo và quản lý nhiều Ví tài chính
-- **Là** một người dùng có nhiều nguồn tiền,
-- **Tôi muốn** tạo các ví tài chính riêng biệt (Tiền mặt, Ngân hàng, Ví điện tử),
-- **Để** theo dõi số dư chính xác của từng tài khoản.
-
-**Acceptance Criteria (AC):**
-1. Người dùng có thể tạo Ví mới bằng việc nhập Tên ví và Số dư ban đầu.
-2. Giao dịch Thu sẽ tự động cộng số dư ví tương ứng; giao dịch Chi sẽ tự động trừ số dư ví.
-3. Người dùng có thể chỉnh sửa tên ví hoặc xóa ví (chỉ được xóa khi ví không còn giao dịch liên kết).
-
-### User Story 2.2: Tùy chỉnh Danh mục thu chi
-- **Là** một người dùng có nhu cầu quản lý chi tiết,
-- **Tôi muốn** thêm hoặc tùy chỉnh các danh mục chi tiêu cá nhân,
-- **Để** phân loại các khoản tiền phù hợp với thói quen sinh hoạt của tôi.
+### User Story 2.1: Create and manage multiple financial Wallets
+- **As a** user with multiple funding sources,
+- **I want** to create separate financial wallets (Cash, Bank, E-Wallet),
+- **So that** I can track the exact balance of each account.
 
 **Acceptance Criteria (AC):**
-1. Hệ thống cho phép hiển thị danh sách Danh mục Hệ thống (mặc định) và Danh mục Tùy chỉnh (do user tạo).
-2. Người dùng có thể tạo thêm Danh mục mới, chỉ định loại danh mục là `INCOME` (Thu nhập) hoặc `EXPENSE` (Chi tiêu).
+1. The user can create a new Wallet by entering the Wallet name and Initial balance.
+2. Income transactions automatically add to the corresponding wallet balance; Expense transactions automatically subtract from the wallet balance.
+3. The user can rename a wallet or delete a wallet (a wallet can only be deleted when it has no linked transactions).
+
+### User Story 2.2: Customize income/expense Categories
+- **As a** user who needs detailed management,
+- **I want** to add or customize personal spending categories,
+- **So that** I can classify expenses to match my daily lifestyle.
+
+**Acceptance Criteria (AC):**
+1. The system displays the list of System Categories (default) and Custom Categories (created by the user).
+2. The user can create a new Category and specify the category type as `INCOME` or `EXPENSE`.
 
 ---
 
-## 📌 Epic 3: Ghi nhận Giao dịch Thủ công (Manual Transaction Management)
+## 📌 Epic 3: Manual Transaction Management (Manual Transaction Management)
 
-### User Story 3.1: Thêm mới giao dịch thủ công
-- **Là** một người dùng,
-- **Tôi muốn** nhập thủ công thông tin một giao dịch thu hoặc chi,
-- **Để** lưu vết khoản tiền vừa phát sinh.
-
-**Acceptance Criteria (AC):**
-1. Form thêm giao dịch bao gồm: Số tiền, Loại giao dịch (Thu/Chi), Danh mục, Ví tài chính, Ngày giao dịch, Ghi chú/Mô tả.
-2. Khi ấn *"Lưu"*, hệ thống cập nhật giao dịch vào cơ sở dữ liệu và tự động tính toán lại số dư Ví.
-3. Nếu không chọn Ngày giao dịch, hệ thống tự động lấy Ngày hiện tại làm mặc định.
-
-### User Story 3.2: Danh sách & Lọc giao dịch
-- **Là** một người dùng,
-- **Tôi muốn** xem danh sách lịch sử giao dịch và lọc theo ngày/danh mục,
-- **Để** kiểm tra các khoản tiền đã tiêu trong tháng.
+### User Story 3.1: Add a manual transaction
+- **As a** user,
+- **I want** to manually enter the information of an income or expense transaction,
+- **So that** I can record the money that just changed hands.
 
 **Acceptance Criteria (AC):**
-1. Giao diện danh sách hiển thị phân trang hoặc cuộn vô tận, sắp xếp theo thời gian mới nhất lên đầu.
-2. Bộ lọc cho phép lọc theo khoảng thời gian (Hôm nay, Tuần này, Tháng này, Tùy chỉnh).
-3. Cho phép tìm kiếm giao dịch theo từ khóa mô tả.
+1. The add-transaction form includes: Amount, Transaction type (Income/Expense), Category, Wallet, Transaction date, Notes/Description.
+2. When *"Save"* is pressed, the system saves the transaction to the database and automatically recalculates the Wallet balance.
+3. If no Transaction date is selected, the system defaults to the current date.
+
+### User Story 3.2: Transaction list & filtering
+- **As a** user,
+- **I want** to view the transaction history list and filter by date/category,
+- **So that** I can check the money spent during the month.
+
+**Acceptance Criteria (AC):**
+1. The list interface shows pagination or infinite scroll, sorted with the most recent first.
+2. The filter allows filtering by date range (Today, This week, This month, Custom).
+3. Allow searching transactions by description keyword.
 
 ---
 
-## 📌 Epic 4: Nhập liệu Thông minh bằng AI (AI-Powered Smart Entry)
+## 📌 Epic 4: AI-Powered Smart Entry (AI-Powered Smart Entry)
 
-### User Story 4.1: Nhập liệu câu thoại tự nhiên (NLP Text Input)
-- **Là** một người dùng bận rộn,
-- **Tôi muốn** gõ một câu văn bản tự nhiên mô tả khoản chi (ví dụ: *"vừa ăn trưa 45k"*),
-- **Để** AI tự động phân tích ra Số tiền (45,000đ), Danh mục (*Ăn uống*) mà tôi không cần thao tác qua từng ô chọn.
-
-**Acceptance Criteria (AC):**
-1. UI cung cấp 1 ô nhập liệu thông minh "Smart AI Input" tại Dashboard.
-2. Người dùng gõ chuỗi văn bản và ấn Enter -> Client gửi request đến API `/api/v1/ai/categorize`.
-3. AI Engine trích xuất dữ liệu: `amount`, `category`, `description`, `confidence`.
-4. **Nếu Confidence >= 75%:** Hệ thống tự động điền form và lưu giao dịch, hiển thị thông báo toast thành công kèm nút *"Hoàn tác"*.
-5. **Nếu Confidence < 75%:** Mở popup xác nhận để người dùng kiểm tra, chỉnh sửa thông tin trước khi nhấn lưu.
-
-### User Story 4.2: Nhận diện hóa đơn qua ảnh chụp (OCR Receipt Scan)
-- **Là** một người dùng hay giữ hóa đơn mua hàng,
-- **Tôi muốn** chụp ảnh hóa đơn siêu thị/cửa hàng và tải lên ứng dụng,
-- **Để** AI tự động đọc bill và bóc tách Số tiền tổng, Ngày mua, Tên cửa hàng.
+### User Story 4.1: Natural-language text entry (NLP Text Input)
+- **As a** busy user,
+- **I want** to type a natural sentence describing an expense (e.g., *"just had lunch 45k"*),
+- **So that** AI automatically parses the Amount (45,000₫) and Category (*Food & Dining*) without me having to operate each select field.
 
 **Acceptance Criteria (AC):**
-1. Giao diện cung cấp nút *"Quét Hóa Đơn"* cho phép tải lên tệp ảnh (PNG, JPG) hoặc chụp trực tiếp từ camera di động.
-2. Ảnh được gửi đến API `/api/v1/ai/scan-receipt`. AI Engine thực hiện OCR và bóc tách thông tin cấu trúc JSON.
-3. Hiển thị màn hình Xử lý (Loading indicator) không quá 3 giây.
-4. Thông tin bóc tách được đổ vào Form Giao dịch để người dùng xem lại ảnh gốc bên cạnh form trước khi xác nhận lưu.
-5. Nếu ảnh bị mờ hoặc không đọc được số tiền, hiển thị thông báo lỗi rõ ràng: *"Không thể đọc thông tin hóa đơn. Vui lòng thử lại với ảnh rõ nét hơn"*.
+1. The UI provides a "Smart AI Input" field on the Dashboard.
+2. The user types the text string and presses Enter -> the Client sends a request to the `/api/v1/ai/categorize` API.
+3. The AI Engine extracts: `amount`, `category`, `description`, `confidence`.
+4. **If Confidence >= 75%:** the system automatically fills the form and saves the transaction, showing a success toast with an *"Undo"* button.
+5. **If Confidence < 75%:** open a confirmation popup so the user can review and edit the information before pressing save.
+
+### User Story 4.2: Receipt recognition via photo (OCR Receipt Scan)
+- **As a** user who often keeps purchase receipts,
+- **I want** to photograph a supermarket/store receipt and upload it to the application,
+- **So that** AI automatically reads the receipt and extracts the Total amount, Purchase date, and Store name.
+
+**Acceptance Criteria (AC):**
+1. The interface provides a *"Scan Receipt"* button that allows uploading an image file (PNG, JPG) or taking a photo directly from a mobile camera.
+2. The image is sent to the `/api/v1/ai/scan-receipt` API. The AI Engine performs OCR and extracts the information into structured JSON.
+3. Show a processing screen (Loading indicator) for no more than 3 seconds.
+4. The extracted information is filled into the Transaction Form so the user can review the original photo next to the form before confirming the save.
+5. If the image is blurry or the amount cannot be read, show a clear error message: *"Unable to read the receipt information. Please try again with a clearer photo."*
 
 ---
 
-## 📌 Epic 5: Hạn mức Ngân sách & Cảnh báo (Budgeting & Alerts)
+## 📌 Epic 5: Budgeting & Alerts (Budgeting & Alerts)
 
-### User Story 5.1: Cài đặt Hạn mức Ngân sách tháng
-- **Là** một người dùng muốn quản lý chi tiêu kỷ luật,
-- **Tôi muốn** đặt giới hạn số tiền tối đa được tiêu cho từng danh mục trong tháng (ví dụ: *Ăn uống tối đa 3,000,000đ/tháng*),
-- **Để** hệ thống theo dõi mức chi tiêu của tôi.
+### User Story 5.1: Set monthly Budget limits
+- **As a** user who wants disciplined spending management,
+- **I want** to set the maximum amount allowed per category each month (e.g., *Food & Dining up to 3,000,000₫/month*),
+- **So that** the system can track my spending level.
 
 **Acceptance Criteria (AC):**
-1. Người dùng chọn Danh mục, nhập Hạn mức tiền (Amount Limit) và Tháng áp dụng (YYYY-MM).
-2. Trang Quản lý Ngân sách hiển thị thanh tiến trình (Progress Bar) thể hiện: `% đã chi tiêu = (Tổng chi tiêu danh mục / Hạn mức) * 100%`.
-3. Màu thanh tiến trình thay đổi theo mức độ: Xanh xanh (<70%), Vàng (70-90%), Đỏ (>90% hoặc vượt mức).
+1. The user selects a Category, enters the Amount Limit, and the applicable Month (YYYY-MM).
+2. The Budget management page displays a progress bar showing: `% spent = (Category total spending / Limit) * 100%`.
+3. The progress bar color changes with the level: Green (<70%), Yellow (70-90%), Red (>90% or over limit).
 
 ---
 
-## 📌 Epic 6: Báo cáo & Dự báo AI (Analytics & AI Insights)
+## 📌 Epic 6: Analytics & AI Insights (Analytics & AI Insights)
 
-### User Story 6.1: Báo cáo Thống kê Tài chính
-- **Là** một người dùng,
-- **Tôi muốn** xem biểu đồ tổng hợp thu chi theo tháng,
-- **Để** hiểu rõ thói quen tiêu dùng của bản thân.
-
-**Acceptance Criteria (AC):**
-1. Hiển thị Biểu đồ tròn phân bổ chi tiêu theo Danh mục.
-2. Hiển thị Biểu đồ cột so sánh tổng Thu vs Tổng Chi giữa các tháng.
-3. Cho phép xuất báo cáo thống kê dạng bảng tóm tắt.
-
-### User Story 6.2: AI Dự báo Chi tiêu & Cảnh báo Vượt hạn mức (Predictive Insights)
-- **Là** một người dùng muốn tránh bị thâm hụt tài chính giữa tháng,
-- **Tôi muốn** AI phân tích tốc độ tiêu tiền của tôi và đưa ra cảnh báo sớm,
-- **Để** tôi kịp thời điều chỉnh thói quen sinh hoạt trước khi hết tiền.
+### User Story 6.1: Financial Analytics Reports
+- **As a** user,
+- **I want** to view charts summarizing monthly income and expenses,
+- **So that** I can clearly understand my own spending habits.
 
 **Acceptance Criteria (AC):**
-1. Hệ thống tự động chạy phân tích dự báo (AI Forecast) dựa trên lịch sử 3 tháng gần nhất và tốc độ chi tiêu của các ngày đã qua trong tháng hiện tại.
-2. AI tính toán số tiền chi tiêu dự kiến vào cuối tháng (`projected_month_end_expense`).
-3. Nếu `projected_month_end_expense > budget_limit * 0.9`, ứng dụng hiển thị một Thẻ Cảnh Báo Cực Tím (AI Insight Card) trên Dashboard:
-   > *"⚠️ Cảnh báo từ AI: Với tốc độ chi tiêu hiện tại (~150k/ngày), dự kiến cuối tháng bạn sẽ chi 4,500,000đ cho danh mục Ăn uống (vượt 15% ngân sách 4,000,000đ)."*
-4. Đưa ra gợi ý thông minh từ AI giúp người dùng cắt giảm chi tiêu hợp lý.
+1. Display a pie chart of the spending distribution by Category.
+2. Display a bar chart comparing Total Income vs Total Expense across months.
+3. Allow exporting a statistics report as a summary table.
+
+### User Story 6.2: AI Spending Forecast & Over-Budget Alerts (Predictive Insights)
+- **As a** user who wants to avoid a financial shortfall mid-month,
+- **I want** AI to analyze my spending pace and give early warnings,
+- **So that** I can adjust my daily habits in time before running out of money.
+
+**Acceptance Criteria (AC):**
+1. The system automatically runs the forecast analysis (AI Forecast) based on the last 3 months of history and the spending pace of the days elapsed in the current month.
+2. AI calculates the projected month-end spending (`projected_month_end_expense`).
+3. If `projected_month_end_expense > budget_limit * 0.9`, the application displays a prominent AI Insight Card on the Dashboard:
+   > *"⚠️ AI warning: At the current spending pace (~150k/day), you are projected to spend 4,500,000₫ on Food & Dining by the end of the month (15% over the 4,000,000₫ budget)."*
+4. Provide smart AI suggestions to help the user cut spending sensibly.

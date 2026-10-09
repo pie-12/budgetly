@@ -1,83 +1,83 @@
 # User Flow Specifications - Budgetly
 
-Tài liệu mô tả chi tiết các Luồng thao tác Người dùng (User Flows) trong ứng dụng **Budgetly**, được trực quan hóa bằng sơ đồ **Mermaid**.
+This document describes in detail the User Flows in the **Budgetly** application, visualized with **Mermaid** diagrams.
 
 ---
 
-## 1. Luồng Tổng quan Ứng dụng (Overall Application Navigation Flow)
+## 1. Overall Application Navigation Flow
 
 ```mermaid
 graph TD
-    Start([Người dùng truy cập Web App]) --> CheckAuth{Đã đăng nhập?}
+    Start([User opens the Web App]) --> CheckAuth{Already logged in?}
     
-    CheckAuth -->|Chưa| AuthPage[Trang Đăng ký / Đăng nhập]
-    AuthPage --> AuthSuccess[Nhận JWT Token & Tạo Ví mặc định]
+    CheckAuth -->|No| AuthPage[Register / Login Page]
+    AuthPage --> AuthSuccess[Receive JWT Token & Create Default Wallet]
     AuthSuccess --> Dashboard
     
-    CheckAuth -->|Đã đăng nhập| Dashboard[Bảng điều khiển - Dashboard]
+    CheckAuth -->|Yes| Dashboard[Dashboard]
     
-    Dashboard --> Nav1[Quản lý Ví & Tài khoản]
-    Dashboard --> Nav2[Tạo Giao dịch Mới]
-    Dashboard --> Nav3[Cài đặt Ngân sách]
-    Dashboard --> Nav4[Xem Báo cáo Thống kê & AI Insights]
+    Dashboard --> Nav1[Manage Wallets & Accounts]
+    Dashboard --> Nav2[Create New Transaction]
+    Dashboard --> Nav3[Set Up Budgets]
+    Dashboard --> Nav4[View Analytics Reports & AI Insights]
 ```
 
 ---
 
-## 2. Luồng Nhập Giao dịch: Thủ công vs. AI Thông minh (Transaction Entry Flow)
+## 2. Transaction Entry Flow: Manual vs. Smart AI (Transaction Entry Flow)
 
-Luồng chi tiết thể hiện sự kết hợp giữa 3 phương thức nhập liệu: Thủ công, Văn bản tự nhiên NLP, và Quét hóa đơn OCR kèm cơ chế kiểm tra điểm tin cậy (Confidence Threshold).
+The detailed flow shows the combination of 3 input methods: Manual entry, NLP natural-language text, and OCR receipt scanning, together with a confidence threshold check (Confidence Threshold).
 
 ```mermaid
 graph TD
-    A[Dashboard] --> B{Chọn phương thức nhập liệu}
+    A[Dashboard] --> B{Choose the input method}
     
     %% Branch 1: Manual Entry
-    B -->|Thủ công| C[Mở Form nhập giao dịch chuẩn]
-    C --> C1[Nhập Số tiền, chọn Danh mục, Ví, Ngày]
-    C1 --> SaveDirect[Nhấn Lưu Giao dịch]
+    B -->|Manual| C[Open the standard transaction entry form]
+    C --> C1[Enter Amount, select Category, Wallet, Date]
+    C1 --> SaveDirect[Click Save Transaction]
     
     %% Branch 2: Natural Text NLP
-    B -->|Văn bản NLP| D[Nhập câu văn bản: e.g. 'Ăn phở 45k']
-    D --> E[AI NLP Service phân tích]
-    E --> G{Điểm tin cậy Confidence >= 75%?}
+    B -->|NLP Text| D[Type a sentence: e.g. 'Ate pho 45k']
+    D --> E[AI NLP Service analyzes]
+    E --> G{Confidence score >= 75%?}
     
     %% Branch 3: OCR Receipt Scan
-    B -->|Quét Hóa đơn OCR| F[Tải lên / Chụp ảnh Bill]
-    F --> F1[AI OCR Service bóc tách dữ liệu]
+    B -->|OCR Receipt Scan| F[Upload / Photograph a receipt]
+    F --> F1[AI OCR Service extracts the data]
     F1 --> G
     
     %% Confidence Decisions
-    G -->|Có (High Confidence)| H[Tự động điền Form & Lưu Giao dịch]
-    H --> H1[Hiển thị Toast thành công + Nút Hoàn tác]
+    G -->|Yes (High Confidence)| H[Auto-fill the form & save the transaction]
+    H --> H1[Show success Toast + Undo button]
     
-    G -->|Không (Low Confidence / Ảnh mờ)| I[Hiển thị Pop-up xác nhận dữ liệu]
-    I --> I1[Người dùng kiểm tra / Chỉnh sửa ô mờ]
+    G -->|No (Low Confidence / Blurry image)| I[Show a data confirmation pop-up]
+    I --> I1[User reviews / edits the highlighted fields]
     I1 --> SaveDirect
     
-    SaveDirect --> DBUpdate[Cập nhật Cơ sở dữ liệu & Cập nhật Số dư Ví]
-    DBUpdate --> ReturnDash[Quay lại Dashboard]
+    SaveDirect --> DBUpdate[Update the Database & refresh Wallet balances]
+    DBUpdate --> ReturnDash[Back to Dashboard]
 ```
 
 ---
 
-## 3. Luồng Cài đặt Ngân sách & Cảnh báo Chi tiêu AI (Budgeting & AI Alert Flow)
+## 3. Budgeting & AI Alert Flow
 
-Luồng thể hiện cách hệ thống theo dõi mức chi tiêu của người dùng và phát cảnh báo sớm bằng AI.
+The flow shows how the system monitors the user's spending level and issues early warnings with AI.
 
 ```mermaid
 graph TD
-    A[Trang Quản lý Ngân sách] --> B[Chọn Danh mục & Nhập Hạn mức Tiền cho Tháng]
-    B --> C[Lưu Hạn mức vào Database]
+    A[Budget Management Page] --> B[Select a Category & Enter the Monthly Amount Limit]
+    B --> C[Save the Limit to the Database]
     
-    C --> D[Người dùng phát sinh chi tiêu trong tháng]
-    D --> E[Hệ thống cập nhật Tổng chi tiêu danh mục]
+    C --> D[The user incurs spending during the month]
+    D --> E[The system updates the category's total spending]
     
-    E --> F[Kích hoạt AI Spending Forecast Engine]
-    F --> G[Dự báo chi tiêu đến cuối tháng = Historical Rate * Remaining Days]
+    E --> F[Trigger the AI Spending Forecast Engine]
+    F --> G[Forecast month-end spending = Historical Rate * Remaining Days]
     
-    G --> H{Chi tiêu dự kiến > 90% Ngân sách?}
+    G --> H{Projected spending > 90% of the budget?}
     
-    H -->|Có| I[Tạo Thẻ Cảnh Báo AI trên Dashboard + Đổi màu progress bar sang Đỏ]
-    H -->|Không| J[Hiển thị Tiến trình Ngân sách bình thường - Màu xanh/vàng]
+    H -->|Yes| I[Create an AI Alert Card on the Dashboard + change the progress bar to Red]
+    H -->|No| J[Show the normal budget progress - Green/yellow]
 ```

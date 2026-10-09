@@ -1,21 +1,21 @@
 # System Architecture Specification - Budgetly
 
-Tài liệu thiết kế Kiến trúc Hệ thống cho ứng dụng **Budgetly (Smart Personal Financial Management Platform)**.
+System architecture design document for the **Budgetly (Smart Personal Financial Management Platform)** application.
 
 ---
 
-## 1. Tổng quan Kiến trúc Hệ thống (Architectural Overview)
+## 1. Architectural Overview
 
-Budgetly được thiết kế theo mô hình **Microservices-oriented Monorepo Architecture**, chia tách rõ ràng giữa phân hệ giao diện (Client Frontend), phân hệ nghiệp vụ cốt lõi (Core Backend API), vi dịch vụ trí tuệ nhân tạo (AI Engine Microservice) và cơ sở dữ liệu quan hệ (PostgreSQL Database).
+Budgetly is designed following a **Microservices-oriented Monorepo Architecture** model, with a clear separation between the interface subsystem (Client Frontend), the core business subsystem (Core Backend API), the artificial intelligence microservice (AI Engine Microservice), and the relational database (PostgreSQL Database).
 
-### Các nguyên tắc thiết kế chủ đạo:
-1. **Decoupled AI Engine:** Tách vi dịch vụ AI độc lập khỏi Core Backend giúp độc lập khả năng mở rộng (scale), ngăn chặn việc các tác vụ tính toán nặng AI (OCR, LLM inference) làm nghẽn các yêu cầu CRUD tài chính thông thường.
-2. **Stateless Core Backend:** Core Backend được thiết kế phi trạng thái (Stateless), xác thực người dùng thông qua chuẩn JWT (JSON Web Token), dễ dàng mở rộng theo chiều ngang.
-3. **Single Source of Truth:** Cơ sở dữ liệu PostgreSQL đóng vai trò lưu trữ tập trung duy nhất cho toàn bộ hệ thống.
+### Core design principles:
+1. **Decoupled AI Engine:** Separating the AI microservice from the Core Backend enables independent scaling and prevents heavy AI computation tasks (OCR, LLM inference) from blocking normal financial CRUD requests.
+2. **Stateless Core Backend:** The Core Backend is designed to be stateless and authenticates users via the JWT (JSON Web Token) standard, making horizontal scaling easy.
+3. **Single Source of Truth:** The PostgreSQL database acts as the single centralized data store for the entire system.
 
 ---
 
-## 2. Sơ đồ Kiến trúc Tổng quan (System Architecture Diagram)
+## 2. System Architecture Diagram
 
 ```mermaid
 graph TB
@@ -66,12 +66,12 @@ graph TB
 
 ---
 
-## 3. Luồng Truyền Dữ liệu Tổng thể (Data Flow Diagram)
+## 3. Overall Data Flow Diagram
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Người dùng (Client)
+    actor User as User (Client)
     participant Core as Core Backend (FastAPI :8000)
     participant AI as AI Engine (:8001)
     participant DB as PostgreSQL DB
@@ -84,9 +84,9 @@ sequenceDiagram
     Core-->>User: HTTP 200 (JSON List)
 
     %% Case 2: Smart NLP Input
-    User->>AI: POST /api/v1/ai/categorize {"description": "vừa ăn trưa 50k"}
+    User->>AI: POST /api/v1/ai/categorize {"description": "just had lunch 50k"}
     AI->>LLM: Send Prompt to parse Text
-    LLM-->>AI: Return JSON {amount: 50000, category: "Ăn uống", confidence: 0.95}
+    LLM-->>AI: Return JSON {amount: 50000, category: "Food & Dining", confidence: 0.95}
     AI-->>User: HTTP 200 Parsed JSON
     User->>Core: POST /api/v1/transactions (Confirm & Save)
     Core->>DB: INSERT INTO transactions
@@ -96,48 +96,48 @@ sequenceDiagram
 
 ---
 
-## 4. Chi tiết các Phân hệ & Vai trò (Component Breakdown)
+## 4. Component Breakdown & Responsibilities (Component Breakdown)
 
 ### 4.1. Frontend Client (`/client`)
-- **Công nghệ:** Next.js 14 (TypeScript), Tailwind CSS, Lucide Icons, TanStack Query (React Query).
-- **Trách nhiệm:**
-  - Hiển thị giao diện người dùng responsive, tối ưu trải nghiệm trên di động và máy tính.
-  - Quản lý trạng thái giao diện (UI State) và bộ nhớ đệm API (API Caching).
-  - Gửi request mã hóa JWT Token qua HTTP Headers (`Authorization: Bearer <token>`).
-  - Render các biểu đồ tương tác (Pie Chart, Bar Chart) để trực quan hóa dữ liệu tài chính.
+- **Technology:** Next.js 14 (TypeScript), Tailwind CSS, Lucide Icons, TanStack Query (React Query).
+- **Responsibilities:**
+  - Render a responsive user interface optimized for the mobile and desktop experience.
+  - Manage UI state and API caching.
+  - Send requests carrying the JWT Token via HTTP Headers (`Authorization: Bearer <token>`).
+  - Render interactive charts (Pie Chart, Bar Chart) to visualize financial data.
 
 ### 4.2. Core Backend Service (`/server`)
-- **Công nghệ:** Python 3.11+, FastAPI, SQLAlchemy ORM, Pydantic v2, Alembic, Passlib (`bcrypt`).
-- **Trách nhiệm:**
-  - Xử lý các quy trình nghiệp vụ tài chính (CRUD Ví, Danh mục, Giao dịch, Ngân sách).
-  - Quản lý xác thực & phân quyền người dùng (User Authentication & Authorization).
-  - Đảm bảo tính toàn vẹn dữ liệu quan hệ (Data Integrity & Foreign Key constraints).
-  - Tự động cập nhật số dư Ví khi phát sinh giao dịch mới hoặc điều chỉnh giao dịch cũ.
+- **Technology:** Python 3.11+, FastAPI, SQLAlchemy ORM, Pydantic v2, Alembic, Passlib (`bcrypt`).
+- **Responsibilities:**
+  - Handle financial business processes (CRUD for Wallets, Categories, Transactions, Budgets).
+  - Manage user authentication & authorization (User Authentication & Authorization).
+  - Ensure relational data integrity (Data Integrity & Foreign Key constraints).
+  - Automatically update Wallet balances when new transactions are created or existing transactions are adjusted.
 
 ### 4.3. AI Engine Microservice (`/ai_engine`)
-- **Công nghệ:** Python 3.11+, FastAPI, LangChain, Pytesseract OCR / Pillow, scikit-learn, OpenAI API Client.
-- **Trách nhiệm:**
-  - **NLP Categorization Service:** Đọc hiểu văn bản tiếng Việt tự nhiên, xác định ý định (Intent), số tiền (Amount), ngày (Date), danh mục (Category) và điểm tin cậy (Confidence Score).
-  - **OCR Receipt Parsing Service:** Tiền xử lý ảnh hóa đơn, trích xuất chuỗi ký tự qua OCR engine, đưa qua mô hình ngôn ngữ để chuyển hóa thành JSON cấu trúc chuẩn.
-  - **Analytics & Forecasting Service:** Chạy thuật toán thống kê (Z-score anomaly detection) trên chuỗi dữ liệu giao dịch 3 tháng gần nhất để dự báo chi tiêu và đưa ra cảnh báo sớm.
+- **Technology:** Python 3.11+, FastAPI, LangChain, Pytesseract OCR / Pillow, scikit-learn, OpenAI API Client.
+- **Responsibilities:**
+  - **NLP Categorization Service:** Reads and understands natural-language text; determines the intent, amount, date, category, and confidence score.
+  - **OCR Receipt Parsing Service:** Preprocesses receipt images, extracts the text string via the OCR engine, and passes it through the language model to convert it into standard structured JSON.
+  - **Analytics & Forecasting Service:** Runs statistical algorithms (Z-score anomaly detection) on the transaction data series of the last 3 months to forecast spending and issue early warnings.
 
 ### 4.4. Database Layer (`/server/models`)
-- **Công nghệ:** PostgreSQL 15+.
-- **Trách nhiệm:**
-  - Lưu trữ bền vững dữ liệu tài chính, tài khoản và lịch sử cảnh báo AI.
-  - Cung cấp tính năng Transactional ACID cho các thao tác liên quan đến tiền tệ.
+- **Technology:** PostgreSQL 15+.
+- **Responsibilities:**
+  - Persist financial data, accounts, and AI alert history.
+  - Provide ACID transactional guarantees for currency-related operations.
 
 ---
 
-## 5. Kiến trúc Bảo mật (Security Architecture)
+## 5. Security Architecture
 
-1. **Xác thực JWT Token (JSON Web Token):**
-   - Sử dụng thuật toán `HS256` với khóa bí mật (`SECRET_KEY`).
-   - Token có thời gian hết hạn (Expiration: 24h).
-2. **Mã hóa Mật khẩu (Password Hashing):**
-   - Mật khẩu người dùng được băm bằng thuật toán `bcrypt` trước khi lưu vào DB. Không lưu trữ mật khẩu ở dạng plain text dưới bất kỳ hình thức nào.
-3. **Bảo vệ Cô lập Dữ liệu (Tenant Isolation):**
-   - Mọi câu truy vấn SQL liên quan đến tài chính đều bắt buộc kèm điều kiện `WHERE user_id = :current_user_id` để ngăn chặn truy cập trái phép chéo giữa các người dùng.
+1. **JWT Token Authentication (JSON Web Token):**
+   - Uses the `HS256` algorithm with a secret key (`SECRET_KEY`).
+   - The token has an expiration time (Expiration: 24h).
+2. **Password Hashing:**
+   - User passwords are hashed with the `bcrypt` algorithm before being stored in the DB. Passwords are never stored in plain text in any form.
+3. **Data Isolation Protection (Tenant Isolation):**
+   - Every financial SQL query must include the condition `WHERE user_id = :current_user_id` to prevent unauthorized cross-user access.
 4. **CORS Policy & Environment Security:**
-   - Cấu hình Middleware CORS kiểm soát chính xác danh sách Domain được phép gọi API.
-   - Các API Key nhạy cảm (như OpenAI Key, DB Connection String) được quản lý qua biến môi trường `.env` và bảo mật bằng Docker Secret / `.gitignore`.
+   - Configure CORS middleware to precisely control the list of domains allowed to call the API.
+   - Sensitive API keys (such as the OpenAI Key and DB Connection String) are managed via `.env` environment variables and secured with Docker Secret / `.gitignore`.

@@ -1,21 +1,21 @@
 # Database Schema Specification - Budgetly
 
-Tài liệu thiết kế chi tiết Cơ sở Dữ liệu Quan hệ (Relational Database Schema) cho hệ thống **Budgetly**.
+Detailed relational database schema design document for the **Budgetly** system.
 
 ---
 
-## 1. Sơ đồ Thực thể Phụ thuộc (Entity Relationship Diagram - ERD)
+## 1. Entity Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
-    USERS ||--o{ WALLETS : "sở hữu"
-    USERS ||--o{ CATEGORIES : "tùy chỉnh"
-    USERS ||--o{ BUDGETS : "thiết lập"
-    USERS ||--o{ AI_INSIGHTS_LOG : "nhận cảnh báo"
+    USERS ||--o{ WALLETS : "owns"
+    USERS ||--o{ CATEGORIES : "customizes"
+    USERS ||--o{ BUDGETS : "sets"
+    USERS ||--o{ AI_INSIGHTS_LOG : "receives alerts"
 
-    WALLETS ||--o{ TRANSACTIONS : "chứa"
-    CATEGORIES ||--o{ TRANSACTIONS : "phân loại"
-    CATEGORIES ||--o{ BUDGETS : "áp dụng"
+    WALLETS ||--o{ TRANSACTIONS : "contains"
+    CATEGORIES ||--o{ TRANSACTIONS : "categorizes"
+    CATEGORIES ||--o{ BUDGETS : "applies to"
 
     USERS {
         uuid id PK
@@ -82,112 +82,112 @@ erDiagram
 
 ---
 
-## 2. Chi tiết Danh mục Bảng Dữ liệu (Detailed Table Specifications)
+## 2. Detailed Table Specifications
 
-### 2.1. Bảng `users` (Quản lý Người dùng)
-Lưu trữ thông tin tài khoản người dùng đăng nhập hệ thống.
+### 2.1. `users` Table (User Management)
+Stores account information for users who sign in to the system.
 
-| Tên Cột | Kiểu Dữ Liệu | Ràng Buộc | Mô Tả |
+| Column Name | Data Type | Constraint | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Định danh duy nhất cho người dùng |
-| `email` | `VARCHAR(255)` | `NOT NULL, UNIQUE` | Địa chỉ email đăng nhập |
-| `password_hash` | `VARCHAR(255)` | `NOT NULL` | Chuỗi mã hóa mật khẩu (`bcrypt`) |
-| `full_name` | `VARCHAR(100)` | `NULLABLE` | Họ và tên người dùng |
-| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian tạo tài khoản |
-| `updated_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian cập nhật thông tin |
+| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Unique identifier for the user |
+| `email` | `VARCHAR(255)` | `NOT NULL, UNIQUE` | Login email address |
+| `password_hash` | `VARCHAR(255)` | `NOT NULL` | Hashed password string (`bcrypt`) |
+| `full_name` | `VARCHAR(100)` | `NULLABLE` | User's full name |
+| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Account creation timestamp |
+| `updated_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Profile update timestamp |
 
 ---
 
-### 2.2. Bảng `wallets` (Ví Tài chính)
-Lưu trữ các nguồn tiền / ví tài chính thuộc sở hữu của người dùng.
+### 2.2. `wallets` Table (Financial Wallets)
+Stores the funding sources / financial wallets owned by users.
 
-| Tên Cột | Kiểu Dữ Liệu | Ràng Buộc | Mô Tả |
+| Column Name | Data Type | Constraint | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Định danh duy nhất cho ví |
-| `user_id` | `UUID` | `NOT NULL, FOREIGN KEY -> users(id) ON DELETE CASCADE` | Người sở hữu ví |
-| `name` | `VARCHAR(100)` | `NOT NULL` | Tên ví (ví dụ: Ví tiền mặt, ATM Vietcombank) |
-| `balance` | `DECIMAL(15,2)` | `NOT NULL, DEFAULT 0.00` | Số dư tiền hiện tại trong ví |
-| `currency` | `VARCHAR(10)` | `NOT NULL, DEFAULT 'VND'` | Đơn vị tiền tệ (VND, USD) |
-| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian tạo ví |
-| `updated_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian cập nhật số dư |
+| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Unique identifier for the wallet |
+| `user_id` | `UUID` | `NOT NULL, FOREIGN KEY -> users(id) ON DELETE CASCADE` | Owner of the wallet |
+| `name` | `VARCHAR(100)` | `NOT NULL` | Wallet name (e.g., Cash Wallet, Vietcombank ATM) |
+| `balance` | `DECIMAL(15,2)` | `NOT NULL, DEFAULT 0.00` | Current balance in the wallet |
+| `currency` | `VARCHAR(10)` | `NOT NULL, DEFAULT 'VND'` | Currency unit (VND, USD) |
+| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Wallet creation timestamp |
+| `updated_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Balance update timestamp |
 
 ---
 
-### 2.3. Bảng `categories` (Danh mục Thu Chi)
-Lưu trữ danh mục phân loại giao dịch (Cả danh mục mặc định của hệ thống và danh mục cá nhân hóa).
+### 2.3. `categories` Table (Income/Expense Categories)
+Stores transaction classification categories (both system default categories and personalized categories).
 
-| Tên Cột | Kiểu Dữ Liệu | Ràng Buộc | Mô Tả |
+| Column Name | Data Type | Constraint | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Định danh duy nhất cho danh mục |
-| `user_id` | `UUID` | `NULLABLE, FOREIGN KEY -> users(id) ON DELETE CASCADE` | Null nếu là danh mục chung hệ thống; Khác Null nếu là danh mục tùy chỉnh của User |
-| `name` | `VARCHAR(100)` | `NOT NULL` | Tên danh mục (Ăn uống, Lương, Mua sắm) |
-| `type` | `VARCHAR(20)` | `NOT NULL, CHECK (type IN ('INCOME', 'EXPENSE'))` | Loại danh mục (Thu nhập hoặc Chi tiêu) |
-| `icon` | `VARCHAR(50)` | `NULLABLE` | Tên biểu tượng hiển thị trên UI |
-| `color` | `VARCHAR(20)` | `NULLABLE` | Mã màu HEX hiển thị trên biểu đồ |
-| `is_default` | `BOOLEAN` | `NOT NULL, DEFAULT FALSE` | Đánh dấu danh mục hệ thống mặc định |
-| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian tạo danh mục |
+| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Unique identifier for the category |
+| `user_id` | `UUID` | `NULLABLE, FOREIGN KEY -> users(id) ON DELETE CASCADE` | Null if it is a system-wide category; non-null if it is a user-defined custom category |
+| `name` | `VARCHAR(100)` | `NOT NULL` | Category name (Food & Dining, Salary, Shopping) |
+| `type` | `VARCHAR(20)` | `NOT NULL, CHECK (type IN ('INCOME', 'EXPENSE'))` | Category type (Income or Expense) |
+| `icon` | `VARCHAR(50)` | `NULLABLE` | Icon name displayed in the UI |
+| `color` | `VARCHAR(20)` | `NULLABLE` | HEX color code displayed in charts |
+| `is_default` | `BOOLEAN` | `NOT NULL, DEFAULT FALSE` | Marks a system default category |
+| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Category creation timestamp |
 
 ---
 
-### 2.4. Bảng `transactions` (Giao dịch Thu Chi)
-Lưu trữ thông tin chi tiết từng khoản giao dịch phát sinh.
+### 2.4. `transactions` Table (Income/Expense Transactions)
+Stores detailed information for each transaction that occurs.
 
-| Tên Cột | Kiểu Dữ Liệu | Ràng Buộc | Mô Tả |
+| Column Name | Data Type | Constraint | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Định danh duy nhất cho giao dịch |
-| `wallet_id` | `UUID` | `NOT NULL, FOREIGN KEY -> wallets(id) ON DELETE CASCADE` | Ví phát sinh giao dịch |
-| `category_id` | `UUID` | `NOT NULL, FOREIGN KEY -> categories(id) ON DELETE RESTRICT` | Danh mục của giao dịch |
-| `amount` | `DECIMAL(15,2)` | `NOT NULL, CHECK (amount > 0)` | Số tiền giao dịch (luôn > 0) |
-| `transaction_type`| `VARCHAR(20)` | `NOT NULL, CHECK (transaction_type IN ('INCOME', 'EXPENSE'))` | Loại giao dịch Thu/Chi |
-| `transaction_date`| `TIMESTAMP` | `NOT NULL` | Ngày/giờ phát sinh giao dịch |
-| `description` | `TEXT` | `NULLABLE` | Ghi chú/mô tả chi tiết |
-| `input_method` | `VARCHAR(20)` | `NOT NULL, DEFAULT 'MANUAL'` | Phương thức nhập: `MANUAL`, `NLP`, `OCR` |
-| `ai_confidence_score`| `FLOAT` | `NULLABLE` | Điểm độ tin cậy của AI (từ 0.0 đến 1.0) |
-| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian ghi nhận vào DB |
+| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Unique identifier for the transaction |
+| `wallet_id` | `UUID` | `NOT NULL, FOREIGN KEY -> wallets(id) ON DELETE CASCADE` | Wallet in which the transaction occurred |
+| `category_id` | `UUID` | `NOT NULL, FOREIGN KEY -> categories(id) ON DELETE RESTRICT` | Category of the transaction |
+| `amount` | `DECIMAL(15,2)` | `NOT NULL, CHECK (amount > 0)` | Transaction amount (always > 0) |
+| `transaction_type`| `VARCHAR(20)` | `NOT NULL, CHECK (transaction_type IN ('INCOME', 'EXPENSE'))` | Transaction type: Income/Expense |
+| `transaction_date`| `TIMESTAMP` | `NOT NULL` | Date/time the transaction occurred |
+| `description` | `TEXT` | `NULLABLE` | Notes/detailed description |
+| `input_method` | `VARCHAR(20)` | `NOT NULL, DEFAULT 'MANUAL'` | Input method: `MANUAL`, `NLP`, `OCR` |
+| `ai_confidence_score`| `FLOAT` | `NULLABLE` | AI confidence score (from 0.0 to 1.0) |
+| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Time recorded in the DB |
 
 ---
 
-### 2.5. Bảng `budgets` (Hạn mức Ngân sách)
-Lưu trữ cài đặt giới hạn chi tiêu theo danh mục cho từng tháng.
+### 2.5. `budgets` Table (Budget Limits)
+Stores per-category spending limits for each month.
 
-| Tên Cột | Kiểu Dữ Liệu | Ràng Buộc | Mô Tả |
+| Column Name | Data Type | Constraint | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Định danh duy nhất |
-| `user_id` | `UUID` | `NOT NULL, FOREIGN KEY -> users(id) ON DELETE CASCADE` | Người cài đặt ngân sách |
-| `category_id` | `UUID` | `NOT NULL, FOREIGN KEY -> categories(id) ON DELETE CASCADE` | Danh mục được giới hạn |
-| `amount_limit` | `DECIMAL(15,2)` | `NOT NULL, CHECK (amount_limit > 0)` | Số tiền hạn mức tối đa |
-| `month_year` | `VARCHAR(7)` | `NOT NULL` | Tháng năm áp dụng (Định dạng `YYYY-MM`) |
-| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian cài đặt |
+| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Unique identifier |
+| `user_id` | `UUID` | `NOT NULL, FOREIGN KEY -> users(id) ON DELETE CASCADE` | User who sets the budget |
+| `category_id` | `UUID` | `NOT NULL, FOREIGN KEY -> categories(id) ON DELETE CASCADE` | Category being limited |
+| `amount_limit` | `DECIMAL(15,2)` | `NOT NULL, CHECK (amount_limit > 0)` | Maximum limit amount |
+| `month_year` | `VARCHAR(7)` | `NOT NULL` | Applicable month (format `YYYY-MM`) |
+| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Time the budget was set |
 
 ---
 
-### 2.6. Bảng `ai_insights_log` (Lịch sử Cảnh báo AI)
-Lưu trữ các thông báo dự báo chi tiêu và phát hiện bất thường do AI tính toán.
+### 2.6. `ai_insights_log` Table (AI Alert History)
+Stores spending forecast notifications and anomaly detections computed by the AI.
 
-| Tên Cột | Kiểu Dữ Liệu | Ràng Buộc | Mô Tả |
+| Column Name | Data Type | Constraint | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | Định danh thông báo AI |
-| `user_id` | `UUID` | `NOT NULL, FOREIGN KEY -> users(id) ON DELETE CASCADE` | Người nhận cảnh báo |
-| `insight_type` | `VARCHAR(50)` | `NOT NULL` | Loại cảnh báo (`OVERSPEND_WARNING`, `ANOMALY`) |
-| `message` | `TEXT` | `NOT NULL` | Nội dung câu cảnh báo hiển thị cho user |
-| `metrics_data` | `JSONB` | `NULLABLE` | Dữ liệu chỉ số kỹ thuật kèm theo (forecasted_amount, z_score) |
-| `is_read` | `BOOLEAN` | `NOT NULL, DEFAULT FALSE` | Trạng thái đã đọc hay chưa |
-| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời gian tạo cảnh báo |
+| `id` | `UUID` | `PRIMARY KEY, DEFAULT gen_random_uuid()` | AI notification identifier |
+| `user_id` | `UUID` | `NOT NULL, FOREIGN KEY -> users(id) ON DELETE CASCADE` | Alert recipient |
+| `insight_type` | `VARCHAR(50)` | `NOT NULL` | Alert type (`OVERSPEND_WARNING`, `ANOMALY`) |
+| `message` | `TEXT` | `NOT NULL` | Alert message content displayed to the user |
+| `metrics_data` | `JSONB` | `NULLABLE` | Accompanying technical metric data (forecasted_amount, z_score) |
+| `is_read` | `BOOLEAN` | `NOT NULL, DEFAULT FALSE` | Read status |
+| `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Time the alert was created |
 
 ---
 
-## 3. Chỉ Mộc & Tối Ưu Truy Vấn (Indexes Specification)
+## 3. Indexes & Query Optimization (Indexes Specification)
 
-Để đảm bảo hiệu năng cao cho các truy vấn thống kê tài chính, cơ sở dữ liệu được đánh chỉ mục (Index) tại các cột chiến lược:
+To ensure high performance for financial statistics queries, the database is indexed on strategic columns:
 
 ```sql
--- 1. Index tối ưu tìm kiếm giao dịch theo thời gian và người dùng/ví
+-- 1. Index optimizing transaction lookups by time and user/wallet
 CREATE INDEX idx_transactions_wallet_date ON transactions(wallet_id, transaction_date DESC);
 CREATE INDEX idx_transactions_category_date ON transactions(category_id, transaction_date DESC);
 
--- 2. Index tối ưu lọc ngân sách theo tháng
+-- 2. Index optimizing budget filtering by month
 CREATE INDEX idx_budgets_user_month ON budgets(user_id, month_year);
 
--- 3. Index danh mục người dùng
+-- 3. User category index
 CREATE INDEX idx_categories_user ON categories(user_id);
 ```

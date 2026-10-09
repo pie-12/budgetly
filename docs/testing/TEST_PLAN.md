@@ -1,12 +1,12 @@
 # Master Test Plan & Quality Assurance Specification - Budgetly
 
-Tài liệu Kế hoạch Kiểm thử & Đảm bảo Chất lượng Phần mềm (Test Plan & QA Specification) cho đồ án **Budgetly**.
+Test Plan & Software Quality Assurance specification document for the **Budgetly** course project.
 
 ---
 
-## 1. Mục tiêu & Chiến lược Kiểm thử (Testing Strategy)
+## 1. Testing Strategy & Objectives (Testing Strategy)
 
-Chiến lược kiểm thử cho hệ thống Budgetly áp dụng mô hình **Tháp Kiểm thử (Testing Pyramid)** với 4 cấp độ:
+The testing strategy for the Budgetly system applies the **Testing Pyramid** model with 4 levels:
 
 ```
         / \
@@ -22,39 +22,39 @@ Chiến lược kiểm thử cho hệ thống Budgetly áp dụng mô hình **Th
 
 ---
 
-## 2. Môi trường & Công cụ Kiểm thử (Test Environment & Tools)
+## 2. Test Environment & Tools
 
-| Cấp độ Test | Phân hệ | Công cụ / Library sử dụng |
+| Test Level | Subsystem | Tool / Library Used |
 | :--- | :--- | :--- |
 | **Unit Test** | Core Server (`/server`) | `pytest`, `pytest-asyncio`, `SQLAlchemy Test Database (SQLite in-memory)` |
 | **Unit Test** | AI Engine (`/ai_engine`) | `pytest`, `unittest.mock` |
 | **Frontend Test** | Client (`/client`) | `Jest`, `@testing-library/react` |
 | **API Integration** | Core Backend API | `HTTPX AsyncClient`, `Postman / Bruno` |
 | **AI Evaluation** | AI Subsystem | Custom Benchmark Script (`evaluate_ai.py`) |
-| **UAT (Chấp nhận)** | Toàn hệ thống | Kiểm thử thủ công trên trình duyệt web theo kịch bản UAT |
+| **UAT (Acceptance)** | Entire system | Manual testing in a web browser following UAT scenarios |
 
 ---
 
-## 3. Ma trận Test Case Tự động API Integration (API Integration Test Matrix)
+## 3. API Integration Test Matrix
 
-Các test case tự động được viết trong thư mục `server/tests/` và `ai_engine/tests/`:
+The automated test cases are written in the `server/tests/` and `ai_engine/tests/` directories:
 
-| Mã Test Case | Phân hệ | Tên Kịch bản Kiểm thử | Đầu vào (Input) | Kết quả Mong đợi (Expected Output) |
+| Test Case ID | Subsystem | Test Scenario Name | Input | Expected Output |
 | :--- | :--- | :--- | :--- | :--- |
-| **TC-AUTH-01** | Auth | Đăng ký thành công | Email hợp lệ, Mật khẩu >= 8 ký tự | HTTP 201 Created, Trả về User ID & tạo Ví mặc định |
-| **TC-AUTH-02** | Auth | Đăng ký trùng Email | Email đã tồn tại trong DB | HTTP 400 Bad Request, Thống báo lỗi *"Email đã được sử dụng"* |
-| **TC-AUTH-03** | Auth | Đăng nhập đúng thông tin | Email & Password chính xác | HTTP 200 OK, Trả về JWT Access Token hợp lệ |
-| **TC-AUTH-04** | Auth | Đăng nhập sai Mật khẩu | Mật khẩu không chính xác | HTTP 401 Unauthorized |
-| **TC-WAL-01** | Wallet | Tạo Ví tài chính mới | Tên: "Ví MoMo", Balance: 500,000đ | HTTP 201 Created, Ví lưu vào DB đúng user_id |
-| **TC-TX-01** | Transaction | Thêm Giao dịch Chi tiêu | Wallet ID, Amount: 50k, Category: "Ăn uống" | HTTP 201 Created, Số dư Ví giảm 50,000đ |
-| **TC-AI-01** | AI Engine | Phân tích NLP văn bản chuẩn | `"Vừa đổ xăng 50k"` | HTTP 200 OK, `{amount: 50000, category: "Di chuyển", confidence > 0.85}` |
-| **TC-AI-02** | AI Engine | Phân tích OCR ảnh hóa đơn | File ảnh `sample_receipt.jpg` | HTTP 200 OK, Trích xuất đúng số tiền tổng |
+| **TC-AUTH-01** | Auth | Successful registration | Valid email, password >= 8 characters | HTTP 201 Created, returns User ID & creates default Wallet |
+| **TC-AUTH-02** | Auth | Registration with a duplicate Email | Email already exists in the DB | HTTP 400 Bad Request, error message *"Email is already in use"* |
+| **TC-AUTH-03** | Auth | Login with correct credentials | Correct Email & Password | HTTP 200 OK, returns a valid JWT Access Token |
+| **TC-AUTH-04** | Auth | Login with a wrong Password | Incorrect password | HTTP 401 Unauthorized |
+| **TC-WAL-01** | Wallet | Create a new financial Wallet | Name: "MoMo Wallet", Balance: 500,000₫ | HTTP 201 Created, wallet saved to the DB under the correct user_id |
+| **TC-TX-01** | Transaction | Add an Expense transaction | Wallet ID, Amount: 50k, Category: "Food & Dining" | HTTP 201 Created, Wallet balance decreases by 50,000₫ |
+| **TC-AI-01** | AI Engine | Parse standard NLP text | `"Just refueled 50k"` | HTTP 200 OK, `{amount: 50000, category: "Transportation", confidence > 0.85}` |
+| **TC-AI-02** | AI Engine | Parse an OCR receipt image | Image file `sample_receipt.jpg` | HTTP 200 OK, correctly extracts the total amount |
 
 ---
 
-## 4. Bộ Test-set Đánh giá Độ chính xác AI (AI Accuracy Benchmark Test Suite)
+## 4. AI Accuracy Benchmark Test Suite
 
-Dưới đây là mẫu kịch bản kiểm thử đánh giá độ chính xác của mạch xử lý NLP trên tập dữ liệu tiếng Việt:
+Below is a sample test scenario for evaluating the accuracy of the NLP pipeline on the benchmark dataset:
 
 ```python
 # ai_engine/tests/test_nlp_accuracy.py
@@ -62,11 +62,11 @@ import pytest
 from src.main import categorize_transaction
 
 BENCHMARK_DATA = [
-    ("Ăn phở bò sáng 45k", 45000, "Ăn uống"),
-    ("Đổ xăng xe máy 50000đ", 50000, "Di chuyển"),
-    ("Mua sắm quần áo ở Zara 1.2tr", 1200000, "Mua sắm"),
-    ("Tiền điện tháng 9 850k", 850000, "Tiền nhà / Điện nước"),
-    ("Nhận lương tháng 9 15 triệu", 15000000, "Thu nhập / Lương"),
+    ("Breakfast beef pho 45k", 45000, "Food & Dining"),
+    ("Motorbike refuel 50000₫", 50000, "Transportation"),
+    ("Clothes shopping at Zara 1.2tr", 1200000, "Shopping"),
+    ("Electricity bill for September 850k", 850000, "Utilities"),
+    ("Received September salary 15 million", 15000000, "Salary & Income"),
 ]
 
 @pytest.mark.parametrize("input_text, expected_amount, expected_category", BENCHMARK_DATA)
@@ -79,22 +79,22 @@ def test_nlp_categorization_accuracy(input_text, expected_amount, expected_categ
 
 ---
 
-## 5. Ma trận Kiểm thử Nghiệm thu Người dùng (Manual UAT Test Matrix)
+## 5. Manual UAT Test Matrix
 
-Phục vụ việc demo và đánh giá thực tế đồ án môn học trước hội đồng:
+Used for the demo and hands-on evaluation of the course project in front of the review panel:
 
-### Kịch bản UAT-01: Luồng Đăng ký & Khởi tạo Tài chính
-1. **Thao tác:** Người dùng mở Web App -> Bấm "Đăng ký" -> Nhập email `student@example.com` và mật khẩu -> Bấm "Tạo tài khoản".
-2. **Kỳ vọng:** Đăng ký thành công, chuyển hướng thẳng vào Dashboard. Trong danh sách Ví hiển thị sẵn *"Ví Tiền mặt"* với số dư 0đ.
+### UAT-01 Scenario: Registration & Financial Onboarding Flow
+1. **Action:** The user opens the Web App -> clicks "Register" -> enters the email `student@example.com` and a password -> clicks "Create account".
+2. **Expected:** Registration succeeds and redirects straight to the Dashboard. The Wallet list already shows *"Cash Wallet"* with a 0₫ balance.
 
-### Kịch bản UAT-02: Luồng Nhập liệu Tự động bằng AI NLP
-1. **Thao tác:** Tại ô "Smart AI Input" trên Dashboard, gõ *"mua trà sữa 50k ngày hôm qua"*, ấn Enter.
-2. **Kỳ vọng:** 
-   - Màn hình hiển thị trạng thái xử lý trong ~1 giây.
-   - Hiển thị Toast thông báo *"Đã lưu giao dịch: 50,000đ - Danh mục: Ăn uống"*.
-   - Kiểm tra số dư ví tự động giảm 50,000đ.
-   - Biểu đồ hình tròn chi tiêu cập nhật thêm mảng *"Ăn uống"*.
+### UAT-02 Scenario: Automatic Entry Flow via AI NLP
+1. **Action:** In the "Smart AI Input" field on the Dashboard, type *"bought milk tea 50k yesterday"* and press Enter.
+2. **Expected:**
+   - The screen shows a processing state for ~1 second.
+   - A Toast notification appears: *"Transaction saved: 50,000₫ - Category: Food & Dining"*.
+   - Verify that the wallet balance automatically decreases by 50,000₫.
+   - The spending pie chart updates with an *"Food & Dining"* slice.
 
-### Kịch bản UAT-03: Luồng Cảnh báo Vượt Ngân sách
-1. **Thao tác:** Người dùng cài đặt Ngân sách Ăn uống = 1,000,000đ/tháng. Nhập chuỗi giao dịch ăn uống với tổng chi hiện tại = 950,000đ khi mới ở tuần thứ 2 của tháng.
-2. **Kỳ vọng:** Dashboard xuất hiện Thẻ Cảnh Báo AI Nổi Bật (Màu Đỏ/Tím) kèm nội dung cảnh báo tốc độ chi tiêu quá nhanh có nguy cơ vượt hạn mức.
+### UAT-03 Scenario: Over-Budget Alert Flow
+1. **Action:** The user sets a Food & Dining budget = 1,000,000₫/month. Enters a series of food transactions with current total spending = 950,000₫ while only in the 2nd week of the month.
+2. **Expected:** A prominent AI Alert Card (Red/Purple) appears on the Dashboard with a warning that the spending pace is too fast and risks exceeding the limit.

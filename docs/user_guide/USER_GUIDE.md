@@ -1,85 +1,85 @@
-# User Guide - Hướng Dẫn Sử Dụng Budgetly
+# User Guide - Budgetly
 
-> **Tài liệu Hướng dẫn Sử dụng Chi tiết dành cho Người dùng cuối & Hội đồng Đánh giá Đồ án**  
-> **Ứng dụng:** Budgetly - Smart Personal Financial Management Platform  
-
----
-
-## 1. Hướng dẫn Đăng ký & Đăng nhập (Getting Started)
-
-### Bước 1: Mở ứng dụng
-Truy cập đường dẫn ứng dụng tại trình duyệt web: `http://localhost:3000`.
-
-### Bước 2: Đăng ký Tài khoản
-1. Tại màn hình Đăng nhập, bấm vào liên kết **"Chưa có tài khoản? Đăng ký ngay"**.
-2. Nhập **Họ và tên**, **Email** và **Mật khẩu** (tối thiểu 8 ký tự).
-3. Bấm **"Đăng ký"**. Hệ thống sẽ tự động tạo tài khoản và tạo sẵn cho bạn một **"Ví Tiền mặt"** khởi tạo.
-
-### Bước 3: Đăng nhập
-1. Nhập Email và Mật khẩu vừa đăng ký.
-2. Bấm **"Đăng nhập"** để truy cập vào **Bảng điều khiển (Dashboard)**.
+> **Detailed User Guide for End Users & the Project Evaluation Panel**  
+> **Application:** Budgetly - Smart Personal Financial Management Platform  
 
 ---
 
-## 2. Quản lý Ví Tài chính & Danh mục (Wallets & Categories)
+## 1. Getting Started (Registration & Login)
 
-### 2.1. Thêm Ví tài chính mới
-1. Trên thanh điều hướng trái, chọn mục **"Ví tài chính"**.
-2. Bấm nút **"+ Thêm Ví Mới"**.
-3. Nhập **Tên ví** (Ví dụ: *ATM Vietcombank*, *Ví MoMo*), chọn đơn vị tiền tệ và nhập **Số dư ban đầu**.
-4. Bấm **"Lưu"**.
+### Step 1: Open the application
+Open the application URL in your web browser: `http://localhost:3000`.
 
-### 2.2. Quản lý Danh mục Chi tiêu
-1. Vào mục **"Danh mục"**.
-2. Xem danh sách danh mục mặc định (*Ăn uống, Di chuyển, Mua sắm, v.v.*).
-3. Bạn có thể bấm **"+ Tạo Danh mục Tùy chỉnh"** để tạo thêm các mục phù hợp với cá nhân (Ví dụ: *Tiền nuôi mèo*).
+### Step 2: Register an account
+1. On the Login screen, click the link **"Don't have an account? Sign up now"**.
+2. Enter your **Full name**, **Email**, and **Password** (minimum 8 characters).
+3. Click **"Register"**. The system will automatically create your account and set up a **"Cash Wallet"** for you.
 
----
-
-## 3. Thao tác Thêm Giao dịch Chi tiêu (Transaction Entry)
-
-Budgetly cung cấp **3 phương thức nhập liệu linh hoạt**:
-
-### 🔹 Cách 1: Nhập liệu Thông minh bằng AI NLP (Khuyên dùng - Nhanh nhất)
-1. Tại màn hình Dashboard, tìm ô nhập liệu **"Smart AI Input"** (Có biểu tượng ngôi sao AI 🪄).
-2. Gõ một câu mô tả tự nhiên tiếng Việt bằng giọng nói hoặc bàn phím.  
-   *Ví dụ mẫu:*
-   - `"Vừa đổ xăng 50k"`
-   - `"Ăn bún chả trưa 45.000đ"`
-   - `"Mua quần áo ở Shopee 250k ngày hôm qua"`
-3. Ấn **Enter** hoặc bấm biểu tượng gửi.
-4. AI sẽ tự động phân tích và hiển thị thông báo Toast thành công với dữ liệu đã được tự động gắn danh mục chuẩn xác!
-
-### 🔹 Cách 2: Quét Hóa đơn bằng AI OCR (Tải lên ảnh Bill)
-1. Bấm nút **"📷 Quét Hóa Đơn"**.
-2. Chọn tệp ảnh hóa đơn mua hàng từ máy tính hoặc chụp ảnh từ điện thoại.
-3. Chờ AI xử lý trong 1-2 giây.
-4. Hệ thống hiển thị Form giao dịch được điền sẵn thông tin (Tên cửa hàng, Số tiền tổng, Ngày mua) bên cạnh ảnh bill gốc để bạn đối soát.
-5. Bấm **"Xác nhận & Lưu"**.
-
-### 🔹 Cách 3: Nhập thủ công truyền thống
-1. Bấm nút **"+ Thêm Giao dịch Thủ công"**.
-2. Nhập Số tiền, chọn Loại (Thu nhập / Chi tiêu), chọn Danh mục, Ví tài chính và Ngày.
-3. Bấm **"Lưu"**.
+### Step 3: Log in
+1. Enter the Email and Password you just registered with.
+2. Click **"Log in"** to access the **Dashboard**.
 
 ---
 
-## 4. Quản lý Ngân sách & Xem Cảnh báo AI (Budgets & AI Insights)
+## 2. Managing Wallets & Categories (Wallets & Categories)
 
-### 4.1. Đặt Ngân sách Tháng
-1. Truy cập mục **"Ngân sách"**.
-2. Chọn danh mục cần giới hạn (Ví dụ: *Ăn uống*) và nhập **Số tiền hạn mức tối đa** trong tháng (Ví dụ: *3,000,000đ*).
-3. Bấm **"Thiết lập Ngân sách"**.
+### 2.1. Add a new financial Wallet
+1. On the left navigation bar, select **"Wallets"**.
+2. Click the **"+ Add New Wallet"** button.
+3. Enter the **Wallet name** (e.g., *Vietcombank ATM*, *MoMo Wallet*), choose the currency, and enter the **Initial balance**.
+4. Click **"Save"**.
 
-### 4.2. Theo dõi Cảnh báo Chi tiêu từ AI
-- Khi mở Dashboard, hãy chú ý đến thẻ **"AI Financial Insight"**.
-- Nếu bạn chi tiêu quá nhanh ở đầu tháng, AI sẽ tự động tính toán và đưa ra cảnh báo màu đỏ:
-  > *"⚠️ Cảnh báo: Với tốc độ chi tiêu hiện tại (~150k/ngày), dự kiến cuối tháng bạn sẽ vượt ngân sách Ăn uống 400,000đ. Hãy chú ý tiết kiệm trong 2 tuần tới!"*
+### 2.2. Managing spending Categories
+1. Go to **"Categories"**.
+2. View the list of default categories (*Food & Dining, Transportation, Shopping, etc.*).
+3. You can click **"+ Create Custom Category"** to add items that fit you personally (e.g., *Cat food*).
 
 ---
 
-## 5. Xem Báo cáo & Thống kê Tài chính (Analytics)
+## 3. Adding Expense Transactions (Transaction Entry)
 
-1. Mở mục **"Báo cáo & Thống kê"**.
-2. Xem **Biểu đồ hình tròn** thể hiện tỷ trọng chi tiêu (Giúp bạn biết tiền của mình đang tiêu tốn nhiều nhất vào đâu).
-3. Xem **Biểu đồ thu chi theo thời gian** để đánh giá tổng tiền tích lũy qua các tháng.
+Budgetly offers **3 flexible input methods**:
+
+### 🔹 Method 1: Smart AI NLP Input (Recommended - Fastest)
+1. On the Dashboard, find the **"Smart AI Input"** field (with the AI star icon 🪄).
+2. Type a natural sentence with your voice or keyboard.  
+   *Sample examples:*
+   - `"Just refueled 50k"`
+   - `"Had noodles for lunch 45,000₫"`
+   - `"Bought clothes on Shopee 250k yesterday"`
+3. Press **Enter** or click the send icon.
+4. AI will automatically analyze and show a success Toast with the data correctly auto-categorized!
+
+### 🔹 Method 2: Receipt Scanning with AI OCR (Upload a receipt photo)
+1. Click the **"📷 Scan Receipt"** button.
+2. Choose a purchase receipt image file from your computer or take a photo from your phone.
+3. Wait for AI to process for 1-2 seconds.
+4. The system shows a pre-filled Transaction form (Store name, Total amount, Purchase date) next to the original receipt photo so you can cross-check.
+5. Click **"Confirm & Save"**.
+
+### 🔹 Method 3: Traditional manual entry
+1. Click the **"+ Add Manual Transaction"** button.
+2. Enter the Amount, select the Type (Income / Expense), choose the Category, Wallet, and Date.
+3. Click **"Save"**.
+
+---
+
+## 4. Managing Budgets & Viewing AI Insights (Budgets & AI Insights)
+
+### 4.1. Set a monthly Budget
+1. Go to **"Budgets"**.
+2. Select the category to limit (e.g., *Food & Dining*) and enter the **maximum limit amount** for the month (e.g., *3,000,000₫*).
+3. Click **"Set Budget"**.
+
+### 4.2. Tracking spending alerts from AI
+- When you open the Dashboard, pay attention to the **"AI Financial Insight"** card.
+- If you spend too fast early in the month, AI will automatically calculate and show a red warning:
+  > *"⚠️ Warning: At the current spending pace (~150k/day), you are projected to exceed your Food & Dining budget by 400,000₫ by the end of the month. Be careful to save over the next 2 weeks!"*
+
+---
+
+## 5. Viewing Reports & Financial Analytics (Analytics)
+
+1. Open **"Reports & Analytics"**.
+2. View the **Pie chart** showing the share of spending (which helps you see where most of your money goes).
+3. View the **income/expense chart over time** to assess your total accumulation across months.

@@ -1,54 +1,54 @@
 # AI Specifications & Model Documentation - Budgetly
 
-> **Tài liệu Đặc tả Mạch Xử lý & Mô hình Trí tuệ Nhân tạo (AI/ML Subsystem)**  
-> **Dự án:** Budgetly - Smart Personal Financial Management Platform  
+> **AI Processing Pipeline & Model Specification (AI/ML Subsystem)**  
+> **Project:** Budgetly - Smart Personal Financial Management Platform  
 
 ---
 
-## 1. Tổng quan Kiến trúc Mạch AI (AI Subsystem Overview)
+## 1. AI Subsystem Overview
 
-Trong dự án Budgetly, thành phần Trí tuệ Nhân tạo (AI Engine) đóng vai trò là **tính năng cốt lõi (Core Highlight Requirement)** giúp tạo nên sự khác biệt so với các phần mềm quản lý tài chính truyền thống.
+In the Budgetly project, the Artificial Intelligence component (AI Engine) serves as a **Core Highlight Requirement** that differentiates the product from traditional personal finance management software.
 
-Mạch AI được xây dựng như một vi dịch vụ độc lập (`/ai_engine`), giao tiếp qua RESTful API với các nhiệm vụ chính:
-1. **NLP Natural Text Transaction Parser:** Đọc hiểu văn bản tiếng Việt tự nhiên để trích xuất giao dịch cấu trúc.
-2. **OCR Receipt Scanner & Structurer:** Trích xuất văn bản từ ảnh hóa đơn và chuẩn hóa thành đối tượng JSON.
-3. **Predictive Spending Analytics & Anomaly Detector:** Phân tích chuỗi thời gian chi tiêu để dự báo và phát hiện điểm bất thường.
+The AI subsystem is built as an independent microservice (`/ai_engine`) that communicates over RESTful APIs, with the following main responsibilities:
+1. **NLP Natural Text Transaction Parser:** Reads and understands natural-language text to extract structured transactions.
+2. **OCR Receipt Scanner & Structurer:** Extracts text from receipt images and normalizes it into JSON objects.
+3. **Predictive Spending Analytics & Anomaly Detector:** Analyzes spending time series to forecast and detect anomalies.
 
 ---
 
-## 2. Tính năng 1: NLP Smart Transaction Categorization Engine
+## 2. Feature 1: NLP Smart Transaction Categorization Engine
 
-### 2.1. Mục tiêu & Luồng xử lý
-Chuyển đổi chuỗi đầu vào không cấu trúc tiếng Việt (ví dụ: *"hôm qua tiêu 120k ăn đồ nướng với bạn"*) thành đối tượng dữ liệu tài chính chuẩn:
-- **Số tiền (`amount`):** `120000` (Tự động quy đổi `k`, `ngàn`, `củ`, `tr`, `đ` sang con số nguyên).
-- **Danh mục (`category`):** `Ăn uống`.
-- **Ngày giao dịch (`transaction_date`):** Ngày hôm qua (Tự động tính dựa trên ngày hiện tại).
-- **Loại giao dịch (`transaction_type`):** `EXPENSE`.
-- **Điểm tin cậy (`confidence`):** `0.94` (Từ 0.0 đến 1.0).
+### 2.1. Objective & Processing Flow
+Convert an unstructured input string (e.g., *"yesterday spent 120k on BBQ with friends"*) into a standard financial data object:
+- **Amount (`amount`):** `120000` (automatically converts `k`, `thousand`, `million`, `₫` shorthands into an integer).
+- **Category (`category`):** `Food & Dining`.
+- **Transaction date (`transaction_date`):** yesterday (calculated automatically from the current date).
+- **Transaction type (`transaction_type`):** `EXPENSE`.
+- **Confidence score (`confidence`):** `0.94` (from 0.0 to 1.0).
 
-### 2.2. Kỹ thuật triển khai & Prompt Engineering
-Sử dụng mô hình ngôn ngữ lớn (LLM) kết hợp **Few-Shot Prompting** và **Structured Output (JSON Schema Verification)** để đảm bảo dữ liệu đầu ra luôn tuân thủ chính xác kiểu dữ liệu mong muốn.
+### 2.2. Implementation Techniques & Prompt Engineering
+Uses a large language model (LLM) combined with **Few-Shot Prompting** and **Structured Output (JSON Schema Verification)** to ensure the output always strictly conforms to the expected data types.
 
-#### Cấu trúc System Prompt Mẫu:
+#### Sample System Prompt Structure:
 ```text
-Bạn là một trợ lý AI chuyên nghiệp về tài chính cá nhân tiếng Việt.
-Nhiệm vụ của bạn là phân tích câu văn bản mô tả giao dịch của người dùng và trích xuất thành định dạng JSON chuẩn.
+You are a professional AI assistant for personal finance.
+Your task is to analyze sentences describing user transactions and extract them into a standard JSON format.
 
-Hệ thống danh mục chuẩn bao gồm:
-- Ăn uống (Food & Dining)
-- Di chuyển (Transportation)
-- Mua sắm (Shopping)
-- Giải trí (Entertainment)
-- Tiền nhà / Điện nước (Bills & Utilities)
-- Sức khỏe (Healthcare)
-- Thu nhập / Lương (Income)
+The standard category taxonomy includes:
+- Food & Dining
+- Transportation
+- Shopping
+- Entertainment
+- Utilities
+- Healthcare
+- Salary & Income
 
-Quy tắc xử lý đơn vị tiền tệ tiếng Việt:
-- "k", "ngàn", "nghìn" -> nhân với 1,000. (VD: 50k -> 50000)
-- "tr", "triệu" -> nhân với 1,000,000. (VD: 1.5tr -> 1500000)
-- "củ" -> nhân với 1,000,000. (VD: 2 củ -> 2000000)
+Currency unit handling rules:
+- "k", "thousand" -> multiply by 1,000. (e.g., 50k -> 50000)
+- "tr", "million" -> multiply by 1,000,000. (e.g., 1.5tr -> 1500000)
+- Casual shorthand for a million -> multiply by 1,000,000. (e.g., 2 million -> 2000000)
 
-Yêu cầu đầu ra bắt buộc dạng JSON:
+The required output format must be JSON:
 {
   "amount": number,
   "category": string,
@@ -59,70 +59,70 @@ Yêu cầu đầu ra bắt buộc dạng JSON:
 }
 ```
 
-### 2.3. Thuật toán Tính điểm Tin cậy & Cơ chế Fallback (Confidence Thresholding)
-- **Công thức điểm tin cậy (`confidence`):** Được tính dựa trên độ rõ ràng của cả 3 yếu tố: Số tiền được trích xuất (Amount Clarity), Danh mục khớp với Tập từ vựng chuẩn (Taxonomy Match), và Ý định Thu/Chi (Intent Confidence).
-- **Ngưỡng hành động (Threshold Rules):**
-  - **`Confidence >= 0.75` (High Confidence):** Tự động điền biểu mẫu và tự động lưu giao dịch vào DB. Hiển thị thông báo Toast kèm nút *"Hoàn tác"*.
-  - **`Confidence < 0.75` (Low Confidence):** Mở cửa sổ Pop-up hiển thị dữ liệu gợi ý. Bắt buộc người dùng xem lại và nhấn nút *"Xác nhận Lưu"* thủ công.
+### 2.3. Confidence Score Algorithm & Fallback Mechanism (Confidence Thresholding)
+- **Confidence score formula (`confidence`):** computed from the clarity of all 3 factors: the extracted amount (Amount Clarity), the category match against the standard vocabulary (Taxonomy Match), and the Income/Expense intent (Intent Confidence).
+- **Threshold Rules:**
+  - **`Confidence >= 0.75` (High Confidence):** automatically fills the form and saves the transaction to the DB. Shows a Toast notification with an *"Undo"* button.
+  - **`Confidence < 0.75` (Low Confidence):** opens a pop-up showing the suggested data. The user must review it and manually press the *"Confirm Save"* button.
 
 ---
 
-## 3. Tính năng 2: OCR Receipt Scanning & Information Extraction
+## 3. Feature 2: OCR Receipt Scanning & Information Extraction
 
-### 3.1. Kiến trúc Mạch xử lý Ảnh Hóa đơn
-Mạch xử lý bao gồm 3 công đoạn nối tiếp:
+### 3.1. Receipt Image Processing Pipeline Architecture
+The pipeline consists of 3 sequential stages:
 
 ```mermaid
 graph LR
-    Img[Ảnh Hóa đơn Tải lên] --> Preproc[Tiền xử lý Ảnh OpenCV/Pillow]
+    Img[Uploaded Receipt Image] --> Preproc[Image Preprocessing OpenCV/Pillow]
     Preproc --> OCR[Tesseract OCR Engine / Vision API]
-    OCR --> RawText[Văn bản thô Raw Text]
+    OCR --> RawText[Raw Text Output]
     RawText --> LLMPARSE[LLM Structured Parser]
-    LLMPARSE --> StructJSON[JSON Giao dịch Cấu trúc]
+    LLMPARSE --> StructJSON[Structured Transaction JSON]
 ```
 
-### 3.2. Tiền xử lý Ảnh (Image Preprocessing)
-- Chuyển ảnh về ảnh xám (Grayscale).
-- Áp dụng kỹ thuật khử nhiễu và tăng độ tương phản (Adaptive Thresholding / Contrast Enhancement) để làm rõ chữ in trên giấy in nhiệt hóa đơn.
+### 3.2. Image Preprocessing
+- Convert the image to grayscale.
+- Apply noise reduction and contrast enhancement techniques (Adaptive Thresholding / Contrast Enhancement) to make the printed text on thermal receipt paper clear.
 
-### 3.3. Trích xuất Cấu trúc từ Văn bản Thô (Post-OCR Parsing)
-Chuỗi văn bản thô trích xuất từ OCR thường chứa lỗi chính tả hoặc khoảng trắng thừa. AI Engine chuyển chuỗi thô này qua mô hình ngôn ngữ để bóc tách các trường:
-- `merchant_name`: Tên siêu thị / Cửa hàng.
-- `total_amount`: Số tiền tổng thanh toán (`TONG CONG`, `TOTAL`, `THANH TOAN`).
-- `transaction_date`: Ngày in hóa đơn.
+### 3.3. Structured Extraction from Raw Text (Post-OCR Parsing)
+Raw text strings extracted by OCR often contain typos or extra whitespace. The AI Engine passes this raw string through the language model to extract the fields:
+- `merchant_name`: Supermarket / store name.
+- `total_amount`: Total payment amount (`TOTAL`, `GRAND TOTAL`, `AMOUNT DUE`).
+- `transaction_date`: Receipt print date.
 
 ---
 
-## 4. Tính năng 3: Dự báo Chi tiêu & Phát hiện Bất thường (Predictive Analytics)
+## 4. Feature 3: Spending Forecast & Anomaly Detection (Predictive Analytics)
 
-### 4.1. Mô hình Dự báo Chi tiêu Cuối tháng (Month-End Spending Forecast)
-Dựa trên chuỗi thời gian chi tiêu $X = [x_1, x_2, ..., x_t]$ của các ngày đã qua trong tháng $m$:
+### 4.1. Month-End Spending Forecast Model
+Based on the spending time series $X = [x_1, x_2, ..., x_t]$ of the days elapsed so far in month $m$:
 
-$$\text{Tốc độ chi tiêu trung bình ngày (Daily Velocity)} = \bar{v} = \frac{\sum_{i=1}^{t} x_i}{t}$$
+$$\text{Average Daily Velocity} = \bar{v} = \frac{\sum_{i=1}^{t} x_i}{t}$$
 
-$$\text{Tổng chi tiêu dự báo cuối tháng (Projected Total)} = \sum_{i=1}^{t} x_i + \bar{v} \times (D - t)$$
+$$\text{Projected Total} = \sum_{i=1}^{t} x_i + \bar{v} \times (D - t)$$
 
-*(Trong đó $D$ là tổng số ngày trong tháng $m$, $t$ là số ngày đã trôi qua).*
+*(Where $D$ is the total number of days in month $m$, and $t$ is the number of days elapsed.)*
 
-### 4.2. Thuật toán Phát hiện Bất thường (Z-Score Anomaly Detection)
-Để phát hiện một khoản chi tiêu bất thường đột biến so với lịch sử thói quen của người dùng:
+### 4.2. Anomaly Detection Algorithm (Z-Score Anomaly Detection)
+To detect a sudden spending spike compared with the user's historical habits:
 
 $$Z = \frac{x_i - \mu}{\sigma}$$
 
-- $\mu$: Trung bình chi tiêu theo ngày trong 90 ngày quá khứ.
-- $\sigma$: Độ lệch chuẩn chi tiêu.
-- **Quy tắc Cảnh báo:** Nếu $Z > 2.5$ (khoản chi tiêu cao bất thường vượt 2.5 lần độ lệch chuẩn), hệ thống tự động ghi nhận một sự kiện `ANOMALY_DETECTED` và hiển thị lời khuyên cho người dùng.
+- $\mu$: Average daily spending over the past 90 days.
+- $\sigma$: Standard deviation of spending.
+- **Alert Rule:** If $Z > 2.5$ (the expense unusually exceeds 2.5 standard deviations), the system automatically records an `ANOMALY_DETECTED` event and displays advice to the user.
 
 ---
 
-## 5. Kế hoạch Đánh giá & Chỉ số Đo lường Mô hình (Evaluation & Metrics)
+## 5. Evaluation Plan & Model Metrics (Evaluation & Metrics)
 
-Để phục vụ việc báo cáo kết quả trong Đồ án môn học, mạch AI sẽ được đánh giá qua tập dữ liệu thử nghiệm (Test-set gồm 100 mẫu văn bản tiếng Việt và 30 mẫu ảnh hóa đơn thực tế):
+To support the results report for the course project, the AI subsystem will be evaluated on a benchmark test-set (100 text samples and 30 real receipt images):
 
-| Tính năng AI | Chỉ số Đánh giá (Metric) | Mục tiêu Đồ án (Target Baseline) |
+| AI Feature | Evaluation Metric | Target Baseline |
 | :--- | :--- | :--- |
 | **NLP Categorization** | Multi-class Accuracy & Macro F1-Score | **Accuracy >= 85%**, **F1-Score >= 0.82** |
-| **NLP Amount Parsing** | Exact Match Accuracy (Độ chính xác số tiền) | **>= 92%** |
+| **NLP Amount Parsing** | Exact Match Accuracy (amount accuracy) | **>= 92%** |
 | **OCR Text Extraction** | Character Error Rate (CER) & Total Amount Accuracy | Total Amount Accuracy **>= 88%** |
 | **Spending Forecast** | Mean Absolute Error (MAE) & Mean Absolute Percentage Error (MAPE) | MAPE **<= 12%** |
 | **Latency SLA** | Average API Response Time | NLP **< 1.5s**, OCR **< 3.0s** |

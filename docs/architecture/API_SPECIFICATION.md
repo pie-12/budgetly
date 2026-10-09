@@ -1,35 +1,35 @@
 # REST API Specification - Budgetly
 
-Đặc tả chi tiết các điểm cuối (Endpoints) RESTful API cho hệ thống **Budgetly**.
+Detailed specification of the RESTful API endpoints for the **Budgetly** system.
 
 ---
 
-## 1. Quy chuẩn API Chung (Global Conventions)
+## 1. Global API Conventions
 
 - **Base URL:** `http://localhost:8000/api/v1` (Core API) | `http://localhost:8001/api/v1` (AI Microservice API)
-- **Content-Type:** `application/json` (Ngoại trừ API upload ảnh sử dụng `multipart/form-data`)
-- **Xác thực Authentication:** Chuẩn HTTP Bearer Token trong Header:
+- **Content-Type:** `application/json` (except the image upload API, which uses `multipart/form-data`)
+- **Authentication:** HTTP Bearer Token standard in the Header:
   ```http
   Authorization: Bearer <your_jwt_token>
   ```
 
-### Struct Cấu trúc Phản hồi Chuẩn (Standard Response Format)
-#### Phản hồi Thành công (Success 200/201):
+### Standard Response Format
+#### Success Response (200/201):
 ```json
 {
   "success": true,
   "data": { ... },
-  "message": "Thao tác thành công"
+  "message": "Operation successful"
 }
 ```
 
-#### Phản hồi Lỗi (Error 4xx/5xx):
+#### Error Response (4xx/5xx):
 ```json
 {
   "success": false,
   "error": {
     "code": "INVALID_CREDENTIALS",
-    "message": "Email hoặc mật khẩu không chính xác",
+    "message": "Incorrect email or password",
     "details": null
   }
 }
@@ -37,18 +37,18 @@
 
 ---
 
-## 2. Phân hệ Xác thực & Người dùng (Authentication)
+## 2. Authentication & User Module
 
-### 2.1. Đăng ký tài khoản (Register)
+### 2.1. Register an Account
 - **Endpoint:** `POST /auth/register`
-- **Auth required:** Không
+- **Auth required:** No
 
 #### Request Body:
 ```json
 {
   "email": "user@example.com",
   "password": "SecurePassword123!",
-  "full_name": "Nguyễn Văn A"
+  "full_name": "John Doe"
 }
 ```
 
@@ -59,18 +59,18 @@
   "data": {
     "user_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
     "email": "user@example.com",
-    "full_name": "Nguyễn Văn A",
+    "full_name": "John Doe",
     "created_at": "2026-09-15T10:00:00Z"
   },
-  "message": "Tạo tài khoản thành công"
+  "message": "Account created successfully"
 }
 ```
 
 ---
 
-### 2.2. Đăng nhập (Login)
+### 2.2. Login
 - **Endpoint:** `POST /auth/login`
-- **Auth required:** Không
+- **Auth required:** No
 
 #### Request Body:
 ```json
@@ -91,7 +91,7 @@
     "user": {
       "id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
       "email": "user@example.com",
-      "full_name": "Nguyễn Văn A"
+      "full_name": "John Doe"
     }
   }
 }
@@ -99,11 +99,11 @@
 
 ---
 
-## 3. Phân hệ Quản lý Ví Tài chính (Wallets)
+## 3. Wallets Module
 
-### 3.1. Lấy danh sách Ví
+### 3.1. List Wallets
 - **Endpoint:** `GET /wallets`
-- **Auth required:** Có (Bearer Token)
+- **Auth required:** Yes (Bearer Token)
 
 #### Response (200 OK):
 ```json
@@ -112,14 +112,14 @@
   "data": [
     {
       "id": "11111111-1111-1111-1111-111111111111",
-      "name": "Ví Tiền mặt",
+      "name": "Cash Wallet",
       "balance": 1500000.00,
       "currency": "VND",
       "updated_at": "2026-09-15T08:30:00Z"
     },
     {
       "id": "22222222-2222-2222-2222-222222222222",
-      "name": "Thẻ Vietcombank",
+      "name": "Vietcombank Card",
       "balance": 12500000.00,
       "currency": "VND",
       "updated_at": "2026-09-14T19:20:00Z"
@@ -128,14 +128,14 @@
 }
 ```
 
-### 3.2. Tạo Ví mới
+### 3.2. Create a New Wallet
 - **Endpoint:** `POST /wallets`
-- **Auth required:** Có
+- **Auth required:** Yes
 
 #### Request Body:
 ```json
 {
-  "name": "Ví MoMo",
+  "name": "MoMo Wallet",
   "initial_balance": 500000.00,
   "currency": "VND"
 }
@@ -143,11 +143,11 @@
 
 ---
 
-## 4. Phân hệ Quản lý Giao dịch (Transactions)
+## 4. Transactions Module
 
-### 4.1. Lấy danh sách Giao dịch (Có lọc & Phân trang)
+### 4.1. List Transactions (with Filtering & Pagination)
 - **Endpoint:** `GET /transactions`
-- **Auth required:** Có
+- **Auth required:** Yes
 - **Query Parameters:**
   - `wallet_id` (optional): Filter by wallet UUID.
   - `category_id` (optional): Filter by category UUID.
@@ -164,12 +164,12 @@
     "items": [
       {
         "id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-        "wallet_name": "Ví Tiền mặt",
-        "category_name": "Ăn uống",
+        "wallet_name": "Cash Wallet",
+        "category_name": "Food & Dining",
         "amount": 45000.00,
         "transaction_type": "EXPENSE",
         "transaction_date": "2026-09-15T07:30:00Z",
-        "description": "Ăn phở bò sáng",
+        "description": "Beef pho for breakfast",
         "input_method": "NLP",
         "ai_confidence_score": 0.95
       }
@@ -184,9 +184,9 @@
 }
 ```
 
-### 4.2. Thêm mới Giao dịch
+### 4.2. Create a Transaction
 - **Endpoint:** `POST /transactions`
-- **Auth required:** Có
+- **Auth required:** Yes
 
 #### Request Body:
 ```json
@@ -196,7 +196,7 @@
   "amount": 45000.00,
   "transaction_type": "EXPENSE",
   "transaction_date": "2026-09-15T07:30:00Z",
-  "description": "Ăn phở bò sáng",
+  "description": "Beef pho for breakfast",
   "input_method": "NLP",
   "ai_confidence_score": 0.95
 }
@@ -204,16 +204,16 @@
 
 ---
 
-## 5. Phân hệ Vi dịch vụ AI (AI Microservice Endpoints)
+## 5. AI Microservice Module (AI Microservice Endpoints)
 
-### 5.1. Phân tích Văn bản Tự nhiên (NLP Smart Categorize)
+### 5.1. Natural Language Parsing (NLP Smart Categorize)
 - **Endpoint:** `POST /ai/categorize` *(AI Engine :8001)*
-- **Auth required:** Có
+- **Auth required:** Yes
 
 #### Request Body:
 ```json
 {
-  "description": "vừa đổ xăng 50k xe máy ngày hôm qua"
+  "description": "just refueled the motorbike 50k yesterday"
 }
 ```
 
@@ -223,11 +223,11 @@
   "success": true,
   "data": {
     "parsed_amount": 50000.00,
-    "suggested_category": "Di chuyển",
+    "suggested_category": "Transportation",
     "suggested_category_id": "44444444-4444-4444-4444-444444444444",
     "transaction_type": "EXPENSE",
     "parsed_date": "2026-09-14",
-    "cleaned_description": "Đổ xăng xe máy",
+    "cleaned_description": "Motorbike refuel",
     "confidence": 0.92
   }
 }
@@ -235,24 +235,24 @@
 
 ---
 
-### 5.2. Quét Hóa đơn OCR (Scan Receipt)
+### 5.2. OCR Receipt Scanning (Scan Receipt)
 - **Endpoint:** `POST /ai/scan-receipt` *(AI Engine :8001)*
 - **Content-Type:** `multipart/form-data`
-- **Auth required:** Có
+- **Auth required:** Yes
 
 #### Request Form Data:
-- `file`: File ảnh hóa đơn (PNG, JPG, max 5MB)
+- `file`: Receipt image file (PNG, JPG, max 5MB)
 
 #### Response (200 OK):
 ```json
 {
   "success": true,
   "data": {
-    "merchant_name": "Siêu thị WinMart",
+    "merchant_name": "WinMart Supermarket",
     "total_amount": 185000.00,
     "parsed_date": "2026-09-15",
-    "suggested_category": "Mua sắm / Nhu yếu phẩm",
-    "extracted_text_raw": "WINMART... TONG CONG: 185,000 VND...",
+    "suggested_category": "Shopping / Groceries",
+    "extracted_text_raw": "WINMART... TOTAL: 185,000 VND...",
     "confidence": 0.88
   }
 }
@@ -260,9 +260,9 @@
 
 ---
 
-### 5.3. Dự báo Chi tiêu & Cảnh báo AI (AI Spending Insights)
+### 5.3. Spending Forecast & AI Alerts (AI Spending Insights)
 - **Endpoint:** `GET /ai/insights` *(AI Engine :8001)*
-- **Auth required:** Có
+- **Auth required:** Yes
 
 #### Response (200 OK):
 ```json
@@ -278,9 +278,9 @@
       {
         "type": "OVERSPEND_WARNING",
         "severity": "HIGH",
-        "category": "Ăn uống",
-        "message": "⚠️ Với tốc độ chi tiêu hiện tại (~160k/ngày), bạn dự kiến sẽ tiêu 4,900,000đ cuối tháng này (vượt 400,000đ so với ngân sách 4,500,000đ).",
-        "recommendation": "Nên giảm các khoản chi tiêu ăn tiệm vào 2 tuần cuối tháng."
+        "category": "Food & Dining",
+        "message": "⚠️ At the current spending pace (~160k/day), you are projected to spend 4,900,000₫ by the end of this month (400,000₫ over the 4,500,000₫ budget).",
+        "recommendation": "Consider cutting back on dining out during the last 2 weeks of the month."
       }
     ]
   }

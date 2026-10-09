@@ -1,88 +1,88 @@
 # Sequence Diagrams Specification - Budgetly
 
-Tài liệu thiết kế các Sơ đồ Tuần tự (Sequence Diagrams) mô tả chi tiết tương tác theo thời gian giữa các thành phần trong hệ thống **Budgetly** cho các kịch bản cốt lõi.
+This document specifies the Sequence Diagrams that describe, in detail, the chronological interactions between components of the **Budgetly** system for the core scenarios.
 
 ---
 
-## 1. Kịch bản 1: Đăng nhập & Xác thực JWT (Authentication Flow)
+## 1. Scenario 1: Login & JWT Authentication (Authentication Flow)
 
-Sơ đồ mô tả quy trình người dùng gửi thông tin đăng nhập, Core Backend kiểm tra mật khẩu đã băm và phát hành JWT Token.
+The diagram describes the process in which the user submits login credentials, the Core Backend verifies the hashed password, and a JWT Token is issued.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Người dùng
+    actor User as User
     participant Client as Client (Next.js)
     participant Server as Core Server (FastAPI)
     participant DB as PostgreSQL DB
 
-    User->>Client: 1. Nhập Email & Mật khẩu -> Bấm "Đăng nhập"
+    User->>Client: 1. Enter Email & Password -> Click "Log in"
     Client->>Server: 2. POST /api/v1/auth/login {email, password}
     Server->>DB: 3. SELECT * FROM users WHERE email = :email
-    DB-->>Server: 4. Trả về thông tin user & password_hash
+    DB-->>Server: 4. Return user info & password_hash
     
-    alt Sai Mật khẩu hoặc Không tìm thấy User
-        Server-->>Client: 5a. HTTP 401 Unauthorized {message: "Sai email hoặc mật khẩu"}
-        Client-->>User: 6a. Hiển thị thông báo lỗi trên UI
-    else Đăng nhập Thành công
-        Server->>Server: 5b. Verify bcrypt hash & Tạo JWT Token (expiry 24h)
+    alt Wrong Password or User Not Found
+        Server-->>Client: 5a. HTTP 401 Unauthorized {message: "Incorrect email or password"}
+        Client-->>User: 6a. Display the error message on the UI
+    else Login Successful
+        Server->>Server: 5b. Verify bcrypt hash & Create JWT Token (expiry 24h)
         Server-->>Client: 6b. HTTP 200 OK {access_token, user_info}
-        Client->>Client: 7. Lưu access_token vào localStorage / Cookies
-        Client-->>User: 8. Chuyển hướng đến màn hình Dashboard
+        Client->>Client: 7. Store access_token in localStorage / Cookies
+        Client-->>User: 8. Redirect to the Dashboard screen
     end
 ```
 
 ---
 
-## 2. Kịch bản 2: Nhập Giao dịch Tự động qua NLP Smart Input (NLP Flow)
+## 2. Scenario 2: Automatic Transaction Entry via NLP Smart Input (NLP Flow)
 
-Sơ đồ mô tả quy trình người dùng gõ văn bản tự nhiên, AI Engine phân tích ngữ nghĩa và trích xuất dữ liệu giao dịch cấu trúc.
+The diagram describes the process in which the user types a natural-language sentence, the AI Engine performs semantic analysis, and the structured transaction data is extracted.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Người dùng
+    actor User as User
     participant Client as Client (Next.js)
     participant AI as AI Engine (FastAPI :8001)
     participant LLM as External LLM / LangChain
     participant Core as Core Backend (:8000)
     participant DB as PostgreSQL DB
 
-    User->>Client: 1. Gõ chuỗi: "Đổ xăng 50k xe máy" -> Bấm Enter
+    User->>Client: 1. Type the string: "Refueled motorbike 50k" -> Press Enter
     Client->>AI: 2. POST /api/v1/ai/categorize {description}
-    AI->>LLM: 3. Gửi Prompt trích xuất Entity & Categorize
-    LLM-->>AI: 4. Trả về JSON: {amount: 50000, category: "Di chuyển", confidence: 0.92}
+    AI->>LLM: 3. Send Prompt to extract Entities & Categorize
+    LLM-->>AI: 4. Return JSON: {amount: 50000, category: "Transportation", confidence: 0.92}
     
     AI-->>Client: 5. HTTP 200 OK Parsed Result Data
     
     alt Confidence Score >= 75%
-        Client->>Client: 6a. Tự động điền dữ liệu vào state
-        Client->>Core: 7a. POST /api/v1/transactions (Tự động lưu)
+        Client->>Client: 6a. Automatically fill the data into state
+        Client->>Core: 7a. POST /api/v1/transactions (auto-save)
         Core->>DB: 8a. INSERT INTO transactions & UPDATE wallet balance
         DB-->>Core: 9a. Success
         Core-->>Client: 10a. HTTP 201 Created
-        Client-->>User: 11a. Hiển thị Toast thành công + Nút Hoàn tác
+        Client-->>User: 11a. Show success Toast + Undo button
     else Confidence Score < 75%
-        Client-->>User: 6b. Mở Popup hiển thị dữ liệu gợi ý để User xác nhận
-        User->>Client: 7b. Điều chỉnh ô mờ & Bấm "Xác nhận Lưu"
+        Client-->>User: 6b. Open a popup with the suggested data for the user to confirm
+        User->>Client: 7b. Adjust the highlighted fields & Click "Confirm Save"
         Client->>Core: 8b. POST /api/v1/transactions
         Core->>DB: 9b. INSERT transaction & UPDATE wallet balance
         DB-->>Core: 10b. Success
         Core-->>Client: 11b. HTTP 201 Created
-        Client-->>User: 12b. Hiển thị Toast thành công
+        Client-->>User: 12b. Show success Toast
     end
 ```
 
 ---
 
-## 3. Kịch bản 3: Quét Hóa đơn qua OCR (OCR Receipt Scan Flow)
+## 3. Scenario 3: Receipt Scanning via OCR (OCR Receipt Scan Flow)
 
-Sơ đồ mô tả luồng tải ảnh bill, OCR trích xuất chuỗi thô và LLM chuyển hóa dữ liệu thành giao dịch tài chính.
+The diagram describes the flow of uploading a receipt image, OCR extracting the raw string, and the LLM converting the data into a financial transaction.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Người dùng
+    actor User as User
     participant Client as Client (Next.js)
     participant AI as AI Engine (FastAPI :8001)
     participant OCR as Tesseract OCR Engine
@@ -90,56 +90,56 @@ sequenceDiagram
     participant Core as Core Backend (:8000)
     participant DB as PostgreSQL DB
 
-    User->>Client: 1. Chọn ảnh hóa đơn -> Bấm "Quét Hóa Đơn"
+    User->>Client: 1. Choose a receipt image -> Click "Scan Receipt"
     Client->>AI: 2. POST /api/v1/ai/scan-receipt (multipart/form-data)
-    AI->>OCR: 3. Tiền xử lý ảnh & Bóc tách văn bản thô (Raw OCR Text)
-    OCR-->>AI: 4. Trả về chuỗi Text thô từ ảnh
+    AI->>OCR: 3. Preprocess the image & Extract the raw text (Raw OCR Text)
+    OCR-->>AI: 4. Return the raw Text string from the image
     
-    AI->>LLM: 5. Gửi Raw Text qua LLM đính kèm JSON Schema
-    LLM-->>AI: 6. Trả về JSON: {merchant: "WinMart", total: 185000, date: "2026-09-15", category: "Mua sắm"}
+    AI->>LLM: 5. Send the Raw Text through the LLM together with the JSON Schema
+    LLM-->>AI: 6. Return JSON: {merchant: "WinMart", total: 185000, date: "2026-09-15", category: "Shopping"}
     
     AI-->>Client: 7. HTTP 200 OK Structured Data
-    Client-->>User: 8. Hiển thị ảnh bill song song cùng Form Giao dịch được điền sẵn
+    Client-->>User: 8. Display the receipt image next to the pre-filled Transaction Form
     
-    User->>Client: 9. Kiểm tra & Bấm "Lưu Giao dịch"
+    User->>Client: 9. Review & Click "Save Transaction"
     Client->>Core: 10. POST /api/v1/transactions
     Core->>DB: 11. INSERT transaction & UPDATE wallet balance
     DB-->>Core: 12. Success
     Core-->>Client: 13. HTTP 201 Created
-    Client-->>User: 14. Thông báo Lưu thành công & Cập nhật Dashboard
+    Client-->>User: 14. Save success notification & Dashboard update
 ```
 
 ---
 
-## 4. Kịch bản 4: Phân tích Dự báo Chi tiêu AI (AI Forecasting & Insight Flow)
+## 4. Scenario 4: AI Spending Forecast & Insights (AI Forecasting & Insight Flow)
 
-Sơ đồ mô tả quy trình AI Engine truy vấn dữ liệu chi tiêu lịch sử để tính toán tốc độ tiêu tiền và đưa ra cảnh báo sớm.
+The diagram describes the process in which the AI Engine queries historical spending data to compute the spending velocity and issue early warnings.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Người dùng
+    actor User as User
     participant Client as Client (Next.js)
     participant AI as AI Engine (FastAPI :8001)
     participant Core as Core Backend (:8000)
     participant DB as PostgreSQL DB
 
-    User->>Client: 1. Mở trang Dashboard
+    User->>Client: 1. Open the Dashboard page
     Client->>AI: 2. GET /api/v1/ai/insights
-    AI->>Core: 3. Internal Query: Lấy lịch sử giao dịch 90 ngày & Ngân sách tháng
+    AI->>Core: 3. Internal Query: Fetch 90-day transaction history & monthly budget
     Core->>DB: 4. SELECT sum(amount) FROM transactions GROUP BY category, month
-    DB-->>Core: 5. Trả về tập dữ liệu chuỗi thời gian
-    Core-->>AI: 6. Trả về tập dữ liệu lịch sử
+    DB-->>Core: 5. Return the time-series dataset
+    Core-->>AI: 6. Return the historical dataset
     
-    AI->>AI: 7. Tính Z-Score & Dự báo chi tiêu cuối tháng (Projected Month End)
+    AI->>AI: 7. Compute the Z-Score & Projected Month-End Spend
     
     alt Projected Spent > Budget Limit * 0.9
-        AI->>Core: 8a. Ghi nhận log cảnh báo vào bảng ai_insights_log
+        AI->>Core: 8a. Record the warning log in the ai_insights_log table
         Core->>DB: 9a. INSERT INTO ai_insights_log
         AI-->>Client: 10a. HTTP 200 {has_overspend_risk: true, insights: [Warning Card Data]}
-        Client-->>User: 11a. Render Thẻ Cảnh báo Nổi bật màu tím/đỏ trên Dashboard
-    else Chi tiêu trong tầm kiểm soát
+        Client-->>User: 11a. Render a prominent purple/red Alert Card on the Dashboard
+    else Spending under control
         AI-->>Client: 10b. HTTP 200 {has_overspend_risk: false}
-        Client-->>User: 11b. Render chỉ số Ngân sách an toàn bình thường
+        Client-->>User: 11b. Render the normal safe budget indicator
     end
 ```
