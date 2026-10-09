@@ -1,64 +1,102 @@
 "use client";
 
 import { useState } from "react";
+import {
+  api,
+  ApiCategory,
+  ApiOcrResult,
+  ApiWallet,
+  getErrorMessage,
+  toNumber,
+  TransactionPayload,
+} from "@/services/api";
 
 interface OCRScanModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTransaction: (newTx: any) => void;
+  onCreated?: () => void;
+  wallets: ApiWallet[];
+  categories: ApiCategory[];
 }
 
 export default function OCRScanModal({
   isOpen,
   onClose,
-  onAddTransaction,
+  onCreated,
+  wallets,
+  categories,
 }: OCRScanModalProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [ocrResult, setOcrResult] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [ocrResult, setOcrResult] = useState<ApiOcrResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setSelectedImage(imageUrl);
+      setSelectedImage(URL.createObjectURL(file));
+      setSelectedFile(file);
       setOcrResult(null);
+      setError(null);
     }
   };
 
-  const handleSimulateOCR = () => {
-    if (!selectedImage) return;
-    setIsScanning(true);
+  const handleScanReceipt = async () => {
+    if (!selectedFile) return;
 
-    setTimeout(() => {
-      setOcrResult({
-        merchant: "WinMart Supermarket (Grocery Receipt)",
-        amount: 185000,
-        category: "Food & Dining",
-        date: new Date().toISOString().split("T")[0],
-        confidence: 0.95,
-      });
+    setIsScanning(true);
+    setError(null);
+    try {
+      const response = await api.scanReceipt(selectedFile);
+      setOcrResult(response.data);
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not scan the receipt"));
+    } finally {
       setIsScanning(false);
-    }, 1000);
+    }
   };
 
-  const handleSaveOCRResult = () => {
+  const handleSaveOCRResult = async () => {
     if (!ocrResult) return;
-    onAddTransaction({
-      id: Date.now(),
-      description: ocrResult.merchant,
-      amount: ocrResult.amount,
-      type: "expense",
-      category: ocrResult.category,
-      wallet: "E-Wallet",
-      date: ocrResult.date,
-    });
 
-    setSelectedImage(null);
-    setOcrResult(null);
-    onClose();
+    const wallet = wallets[0];
+    if (!wallet) {
+      setError("Create a wallet first before saving scanned receipts.");
+      return;
+    }
+
+    const category = categories.find(
+      (item) => item.name.toLowerCase() === (ocrResult.suggested_category || "").toLowerCase()
+    );
+
+    setIsSaving(true);
+    setError(null);
+    try {
+      const payload: TransactionPayload = {
+        wallet_id: wallet.id,
+        category_id: category?.id ?? null,
+        amount: toNumber(ocrResult.total_amount),
+        transaction_type: "EXPENSE",
+        description: ocrResult.merchant || "Scanned receipt",
+        transaction_date: ocrResult.date ? `${ocrResult.date}T00:00:00` : new Date().toISOString(),
+        input_method: "OCR",
+        ai_confidence_score: ocrResult.confidence_score,
+      };
+      await api.createTransaction(payload);
+      setSelectedImage(null);
+      setSelectedFile(null);
+      setOcrResult(null);
+      onCreated?.();
+      onClose();
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not save the scanned receipt"));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -132,9 +170,9 @@ export default function OCRScanModal({
           </div>
 
           {/* Trigger Scan Button */}
-          {selectedImage && !ocrResult && (
+          {selectedFile && !ocrResult && (
             <button
-              onClick={handleSimulateOCR}
+              onClick={handleScanReceipt}
               disabled={isScanning}
               className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-500 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-95"
             >
@@ -155,12 +193,18 @@ export default function OCRScanModal({
             </button>
           )}
 
+          {error && (
+            <div className="px-3 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+              ⚠ {error}
+            </div>
+          )}
+
           {/* Extracted Details Box */}
           {ocrResult && (
             <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/40 space-y-3 animate-in fade-in">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
-                  OCR Result (95% Accuracy)
+                  OCR Result ({Math.round(ocrResult.confidence_score * 100)}% confidence)
                 </span>
                 <span className="text-[10px] text-slate-400">Vision API Engine</span>
               </div>
@@ -172,11 +216,13 @@ export default function OCRScanModal({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Total Amount:</span>
-                  <span className="font-bold text-emerald-400 text-sm">{ocrResult.amount.toLocaleString("en-US")} ₫</span>
+                  <span className="font-bold text-emerald-400 text-sm">
+                    {toNumber(ocrResult.total_amount).toLocaleString("en-US")} ₫
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Suggested Category:</span>
-                  <span className="font-semibold text-slate-200">{ocrResult.category}</span>
+                  <span className="font-semibold text-slate-200">{ocrResult.suggested_category}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Transaction Date:</span>
@@ -186,16 +232,20 @@ export default function OCRScanModal({
 
               <div className="pt-2 flex gap-3">
                 <button
-                  onClick={() => setOcrResult(null)}
+                  onClick={() => {
+                    setOcrResult(null);
+                    setError(null);
+                  }}
                   className="w-1/2 py-2 rounded-lg border border-slate-800 text-xs font-medium text-slate-400 hover:text-slate-200"
                 >
                   Rescan
                 </button>
                 <button
                   onClick={handleSaveOCRResult}
-                  className="w-1/2 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 font-bold text-xs text-slate-950 transition-all shadow-md shadow-emerald-500/20 active:scale-95"
+                  disabled={isSaving}
+                  className="w-1/2 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-500 font-bold text-xs text-slate-950 transition-all shadow-md shadow-emerald-500/20 active:scale-95"
                 >
-                  Confirm & Save
+                  {isSaving ? "Saving..." : "Confirm & Save"}
                 </button>
               </div>
             </div>

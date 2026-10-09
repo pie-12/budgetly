@@ -1,44 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  api,
+  ApiCategory,
+  ApiWallet,
+  getErrorMessage,
+  TransactionPayload,
+} from "@/services/api";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTransaction: (newTx: any) => void;
+  onCreated?: () => void;
+  wallets: ApiWallet[];
+  categories: ApiCategory[];
 }
 
 export default function AddTransactionModal({
   isOpen,
   onClose,
-  onAddTransaction,
+  onCreated,
+  wallets,
+  categories,
 }: AddTransactionModalProps) {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<"expense" | "income">("expense");
-  const [category, setCategory] = useState("Food & Dining");
-  const [wallet, setWallet] = useState("Cash Wallet");
+  const [walletId, setWalletId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!walletId && wallets.length > 0) {
+      setWalletId(wallets[0].id);
+    }
+  }, [walletId, wallets]);
+
+  useEffect(() => {
+    if (!categoryId && categories.length > 0) {
+      const preferred = categories.find(
+        (category) => category.type === (type === "income" ? "INCOME" : "EXPENSE")
+      );
+      setCategoryId(preferred?.id ?? categories[0].id);
+    }
+  }, [categoryId, categories, type]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleTypeChange = (nextType: "expense" | "income") => {
+    setType(nextType);
+    const preferred = categories.find(
+      (category) => category.type === (nextType === "income" ? "INCOME" : "EXPENSE")
+    );
+    setCategoryId(preferred?.id ?? "");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description.trim() || !amount) return;
+    if (!description.trim() || !amount || !walletId) return;
 
-    onAddTransaction({
-      id: Date.now(),
-      description: description.trim(),
-      amount: parseFloat(amount),
-      type,
-      category,
-      wallet,
-      date,
-    });
-
-    setDescription("");
-    setAmount("");
-    onClose();
+    setIsSaving(true);
+    setError(null);
+    try {
+      const payload: TransactionPayload = {
+        wallet_id: walletId,
+        category_id: categoryId || null,
+        amount: parseFloat(amount),
+        transaction_type: type === "income" ? "INCOME" : "EXPENSE",
+        description: description.trim(),
+        transaction_date: `${date}T00:00:00`,
+        input_method: "MANUAL",
+      };
+      await api.createTransaction(payload);
+      setDescription("");
+      setAmount("");
+      onCreated?.();
+      onClose();
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not save the transaction"));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -61,7 +106,7 @@ export default function AddTransactionModal({
           <div className="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
             <button
               type="button"
-              onClick={() => setType("expense")}
+              onClick={() => handleTypeChange("expense")}
               className={`py-2 text-xs font-bold rounded-lg transition-all ${
                 type === "expense"
                   ? "bg-rose-500 text-white shadow-md shadow-rose-500/20"
@@ -72,7 +117,7 @@ export default function AddTransactionModal({
             </button>
             <button
               type="button"
-              onClick={() => setType("income")}
+              onClick={() => handleTypeChange("income")}
               className={`py-2 text-xs font-bold rounded-lg transition-all ${
                 type === "income"
                   ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
@@ -120,17 +165,19 @@ export default function AddTransactionModal({
                 Category
               </label>
               <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
               >
-                <option value="Food & Dining">🍲 Food & Dining</option>
-                <option value="Transportation">🚗 Transportation</option>
-                <option value="Shopping">🛍️ Shopping</option>
-                <option value="Entertainment">🎬 Entertainment</option>
-                <option value="Utilities">⚡ Utilities</option>
-                <option value="Salary & Income">💵 Salary & Income</option>
-                <option value="Miscellaneous">📦 Miscellaneous</option>
+                {categories.length === 0 ? (
+                  <option value="">No categories available</option>
+                ) : (
+                  categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.icon} {category.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 
@@ -139,13 +186,19 @@ export default function AddTransactionModal({
                 Wallet
               </label>
               <select
-                value={wallet}
-                onChange={(e) => setWallet(e.target.value)}
+                value={walletId}
+                onChange={(e) => setWalletId(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
               >
-                <option value="Cash Wallet">💵 Cash Wallet</option>
-                <option value="Bank Account">💳 Bank Account</option>
-                <option value="E-Wallet">📱 E-Wallet</option>
+                {wallets.length === 0 ? (
+                  <option value="">No wallets available</option>
+                ) : (
+                  wallets.map((wallet) => (
+                    <option key={wallet.id} value={wallet.id}>
+                      {wallet.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
           </div>
@@ -163,6 +216,18 @@ export default function AddTransactionModal({
             />
           </div>
 
+          {error && (
+            <div className="px-3 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+              ⚠ {error}
+            </div>
+          )}
+
+          {wallets.length === 0 && (
+            <div className="px-3 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300">
+              Create a wallet first before adding transactions.
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex items-center gap-3 pt-3">
             <button
@@ -174,9 +239,10 @@ export default function AddTransactionModal({
             </button>
             <button
               type="submit"
-              className="w-1/2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs font-bold text-slate-950 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+              disabled={isSaving || wallets.length === 0}
+              className="w-1/2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-500 text-xs font-bold text-slate-950 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
             >
-              Save Transaction
+              {isSaving ? "Saving..." : "Save Transaction"}
             </button>
           </div>
         </form>
