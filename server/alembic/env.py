@@ -16,7 +16,7 @@ from db.base import Base
 target_metadata = Base.metadata
 
 def get_url():
-    return os.getenv("DATABASE_URL", "postgresql://budgetly_user:budgetly_secure_password_2026@localhost:5432/budgetly_db")
+    return os.getenv("DATABASE_URL", "postgresql+psycopg2://budgetly_user:budgetly_secure_password_2026@localhost:5432/budgetly_db")
 
 def run_migrations_offline() -> None:
     url = get_url()

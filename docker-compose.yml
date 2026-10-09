@@ -43,7 +43,7 @@ services:
     ports:
       - "${SERVER_PORT:-8000}:8000"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-budgetly_user}:${POSTGRES_PASSWORD:-budgetly_secure_password_2026}@postgres:5432/${POSTGRES_DB:-budgetly_db}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-budgetly_user}:${POSTGRES_PASSWORD:-budgetly_secure_password_2026}@postgres:5432/${POSTGRES_DB:-budgetly_db}
       AI_ENGINE_URL: http://ai_engine:8001
       SECRET_KEY: super_secret_jwt_key_budgetly_2026_change_in_prod
     depends_on:
