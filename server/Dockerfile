@@ -11,8 +11,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy server code into /app/server so 'from server...' imports work seamlessly
+COPY . /app/server
+
+ENV PYTHONPATH=/app
+WORKDIR /app/server
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000"]
