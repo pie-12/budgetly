@@ -141,12 +141,38 @@ export interface BudgetPayload {
 
 // --- Core fetch wrapper ---
 
+const TOKEN_KEY = "budgetly_auth_token";
+const USER_KEY = "budgetly_auth_user";
+
+function readToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(TOKEN_KEY);
+}
+
+function handleUnauthorized(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(TOKEN_KEY);
+  window.localStorage.removeItem(USER_KEY);
+  if (!window.location.pathname.startsWith("/login")) {
+    window.location.href = "/login";
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<ApiEnvelope<T>> {
+  const headers = new Headers(init?.headers);
+  const token = readToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, init);
+    response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
   } catch {
     throw new Error("Could not reach the Budgetly API. Is the backend server running?");
+  }
+
+  if (response.status === 401) {
+    handleUnauthorized();
+    throw new Error("Your session has expired. Please sign in again.");
   }
 
   if (!response.ok) {

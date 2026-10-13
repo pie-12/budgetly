@@ -23,8 +23,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// URL của Core Server FastAPI
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// URL của Core Server FastAPI. Chấp nhận NEXT_PUBLIC_API_URL có hoặc không có hậu tố /api/v1.
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")
+  .replace(/\/+$/, "")
+  .replace(/\/api\/v1$/, "");
 
 const STORAGE_TOKEN_KEY = "budgetly_auth_token";
 const STORAGE_USER_KEY = "budgetly_auth_user";
