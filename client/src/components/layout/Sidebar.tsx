@@ -18,37 +18,37 @@ import {
 
 const navItems = [
   {
-    name: "Bảng điều khiển",
+    name: "Dashboard",
     href: "/",
     icon: LayoutDashboard,
   },
   {
-    name: "Ví tài chính",
+    name: "Wallets",
     href: "/wallets",
     icon: Wallet,
   },
   {
-    name: "Giao dịch",
+    name: "Transactions",
     href: "/transactions",
     icon: ArrowLeftRight,
   },
   {
-    name: "Ngân sách",
+    name: "Budgets",
     href: "/budgets",
     icon: Target,
   },
   {
-    name: "Báo cáo & Thống kê",
+    name: "Reports & Analytics",
     href: "/analytics",
     icon: BarChart3,
   },
   {
-    name: "Cài đặt",
+    name: "Settings",
     href: "/settings",
     icon: Settings,
   },
   {
-    name: "Quản trị hệ thống",
+    name: "System Administration",
     href: "/admin",
     icon: ShieldAlert,
   },
@@ -83,7 +83,7 @@ export default function Sidebar() {
         {/* Navigation Items */}
         <nav className="p-4 space-y-1.5 overflow-y-auto flex-1">
           <div className="px-3 pb-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-            Menu Chính
+            Main Menu
           </div>
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -116,7 +116,7 @@ export default function Sidebar() {
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-slate-200 truncate">
-                  {user.full_name || "Người dùng"}
+                  {user.full_name || "User"}
                 </p>
                 <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
               </div>
@@ -124,7 +124,7 @@ export default function Sidebar() {
 
             <button
               onClick={logout}
-              title="Đăng xuất khỏi hệ thống"
+              title="Sign out of the system"
               className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
             >
               <LogOut className="w-4 h-4" />
@@ -137,14 +137,14 @@ export default function Sidebar() {
               className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Đăng Nhập</span>
+              <span>Sign In</span>
             </Link>
             <Link
               href="/register"
               className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700/60 transition-all"
             >
               <UserPlus className="w-3.5 h-3.5" />
-              <span>Đăng Ký Tài Khoản</span>
+              <span>Create Account</span>
             </Link>
           </div>
         )}

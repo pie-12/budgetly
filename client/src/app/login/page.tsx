@@ -30,7 +30,7 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Nếu đã đăng nhập trước đó thì tự động chuyển về trang chủ
+  // If already logged in, automatically redirect to the home page
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
       router.push("/");
@@ -43,11 +43,11 @@ export default function LoginPage() {
     setSuccessMessage(null);
 
     if (!email.trim()) {
-      setErrorMessage("Vui lòng nhập địa chỉ email");
+      setErrorMessage("Please enter your email address");
       return;
     }
     if (!password) {
-      setErrorMessage("Vui lòng nhập mật khẩu");
+      setErrorMessage("Please enter your password");
       return;
     }
 
@@ -56,16 +56,16 @@ export default function LoginPage() {
     setIsSubmitting(false);
 
     if (result.success) {
-      setSuccessMessage("Đăng nhập thành công! Đang chuyển hướng...");
+      setSuccessMessage("Login successful! Redirecting...");
       setTimeout(() => {
         router.push("/");
       }, 600);
     } else {
-      setErrorMessage(result.message || "Email hoặc mật khẩu không chính xác");
+      setErrorMessage(result.message || "Incorrect email or password");
     }
   };
 
-  // Nút điền nhanh tài khoản demo 1-click
+  // One-click quick-fill button for the demo account
   const handleUseDemoAccount = async () => {
     setEmail("demo@budgetly.app");
     setPassword("123456");
@@ -74,12 +74,12 @@ export default function LoginPage() {
     const result = await login("demo@budgetly.app", "123456");
     setIsSubmitting(false);
     if (result.success) {
-      setSuccessMessage("Đăng nhập tài khoản Demo thành công!");
+      setSuccessMessage("Demo account login successful!");
       setTimeout(() => {
         router.push("/");
       }, 600);
     } else {
-      setErrorMessage(result.message || "Lỗi đăng nhập tài khoản demo");
+      setErrorMessage(result.message || "Demo account login error");
     }
   };
 
@@ -96,7 +96,7 @@ export default function LoginPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md transition-all hover:border-slate-700"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Về Trang Chủ</span>
+          <span>Back to Home</span>
         </Link>
       </div>
 
@@ -107,10 +107,10 @@ export default function LoginPage() {
             B
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            Chào mừng trở lại!
+            Welcome Back!
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-400">
-            Đăng nhập tài khoản <span className="text-emerald-400 font-semibold">Budgetly</span> để tiếp tục quản lý tài chính cá nhân
+            Sign in to your <span className="text-emerald-400 font-semibold">Budgetly</span> account to continue managing your personal finances
           </p>
         </div>
 
@@ -121,7 +121,7 @@ export default function LoginPage() {
             <div className="flex items-center gap-2.5 min-w-0">
               <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 animate-pulse" />
               <div className="min-w-0">
-                <p className="text-xs font-bold text-emerald-300 truncate">Dùng Thử Nhanh (Demo)</p>
+                <p className="text-xs font-bold text-emerald-300 truncate">Quick Try (Demo)</p>
                 <p className="text-[11px] text-slate-400 truncate">demo@budgetly.app / 123456</p>
               </div>
             </div>
@@ -154,7 +154,7 @@ export default function LoginPage() {
             {/* Email Field */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                Địa chỉ Email
+                Email Address
               </label>
               <div className="relative rounded-2xl shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -176,7 +176,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Mật khẩu
+                  Password
                 </label>
               </div>
               <div className="relative rounded-2xl shadow-sm">
@@ -212,7 +212,7 @@ export default function LoginPage() {
                   className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/30 accent-emerald-500 cursor-pointer"
                 />
                 <span className="text-xs font-medium text-slate-300 select-none">
-                  Lưu phiên đăng nhập (30 ngày)
+                  Remember me (30 days)
                 </span>
               </label>
             </div>
@@ -226,11 +226,11 @@ export default function LoginPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Đang xác thực...</span>
+                  <span>Authenticating...</span>
                 </>
               ) : (
                 <>
-                  <span>Đăng Nhập</span>
+                  <span>Sign In</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -240,12 +240,12 @@ export default function LoginPage() {
           {/* Footer Navigation */}
           <div className="mt-8 pt-6 border-t border-slate-800/80 text-center">
             <p className="text-xs text-slate-400">
-              Chưa có tài khoản Budgetly?{" "}
+              Don't have a Budgetly account?{" "}
               <Link
                 href="/register"
                 className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors underline-offset-4 hover:underline"
               >
-                Đăng ký ngay miễn phí
+                Sign up for free
               </Link>
             </p>
           </div>
@@ -254,7 +254,7 @@ export default function LoginPage() {
         {/* Security Trust Badge */}
         <div className="mt-6 flex items-center justify-center gap-2 text-slate-500 text-[11px]">
           <ShieldCheck className="w-4 h-4 text-emerald-500/70" />
-          <span>Mã hóa bảo mật Bcrypt & Cơ sở dữ liệu PostgreSQL</span>
+          <span>Secured with Bcrypt encryption & PostgreSQL database</span>
         </div>
       </div>
     </div>

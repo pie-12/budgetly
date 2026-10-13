@@ -39,12 +39,12 @@ export default function RecentTransactions({
 
   const getCategoryIcon = (category: string) => {
     const c = category.toLowerCase();
-    if (c.includes("food") || c.includes("dining") || c.includes("ăn")) return "🍲";
-    if (c.includes("transport") || c.includes("gas") || c.includes("xe")) return "🚗";
-    if (c.includes("shop") || c.includes("mua")) return "🛍️";
-    if (c.includes("entertain") || c.includes("giải")) return "🎬";
-    if (c.includes("salary") || c.includes("income") || c.includes("lương")) return "💰";
-    if (c.includes("utilit") || c.includes("tiện")) return "⚡";
+    if (c.includes("food") || c.includes("dining")) return "🍲";
+    if (c.includes("transport") || c.includes("gas")) return "🚗";
+    if (c.includes("shop")) return "🛍️";
+    if (c.includes("entertain")) return "🎬";
+    if (c.includes("salary") || c.includes("income")) return "💰";
+    if (c.includes("utilit")) return "⚡";
     return "💸";
   };
 

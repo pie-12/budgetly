@@ -23,7 +23,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// URL của Core Server FastAPI. Chấp nhận NEXT_PUBLIC_API_URL có hoặc không có hậu tố /api/v1.
+// URL of the FastAPI Core Server. Accepts NEXT_PUBLIC_API_URL with or without the /api/v1 suffix.
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")
   .replace(/\/+$/, "")
   .replace(/\/api\/v1$/, "");
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
 
-  // Khôi phục phiên người dùng khi ứng dụng khởi chạy (F5, mở tab mới)
+  // Restore the user session when the app starts (F5, opening a new tab)
   const initializeAuth = useCallback(async () => {
     try {
       if (typeof window === "undefined") {
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Tạm thời load cached user để giao diện mượt mà không bị giật
+      // Temporarily load the cached user so the UI stays smooth and does not flicker
       if (storedUser) {
         try {
           setUser(JSON.parse(storedUser));
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setToken(storedToken);
 
-      // Gọi server xác thực tính hợp lệ của token
+      // Call the server to validate the token
       const res = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
         method: "GET",
         headers: {
@@ -79,14 +79,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(json.data));
         }
       } else if (res.status === 401) {
-        // Token đã hết hạn hoặc không hợp lệ -> xóa sạch phiên
+        // Token has expired or is invalid -> clear the session
         localStorage.removeItem(STORAGE_TOKEN_KEY);
         localStorage.removeItem(STORAGE_USER_KEY);
         setUser(null);
         setToken(null);
       }
     } catch (err) {
-      console.warn("Không thể xác thực phiên với server (chế độ offline):", err);
+      console.warn("Could not validate the session with the server (offline mode):", err);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
   }, [initializeAuth]);
 
-  // Đăng nhập
+  // Sign in
   const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     try {
       setIsLoading(true);
@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
 
       if (!res.ok) {
-        const errorMsg = data.detail || data.message || "Đăng nhập không thành công";
+        const errorMsg = data.detail || data.message || "Sign in failed";
         return { success: false, message: errorMsg };
       }
 
@@ -123,19 +123,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(accessToken);
         setUser(userData);
 
-        return { success: true, message: data.message || "Đăng nhập thành công" };
+        return { success: true, message: data.message || "Signed in successfully" };
       }
 
-      return { success: false, message: "Phản hồi từ máy chủ không hợp lệ" };
+      return { success: false, message: "Invalid response from the server" };
     } catch (err) {
-      console.error("Lỗi kết nối khi đăng nhập:", err);
-      return { success: false, message: "Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại kết nối mạng." };
+      console.error("Connection error while signing in:", err);
+      return { success: false, message: "Could not reach the server. Please check your connection." };
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Đăng ký
+  // Sign up
   const register = async (
     email: string,
     password: string,
@@ -156,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
 
       if (!res.ok) {
-        const errorMsg = data.detail || data.message || "Đăng ký không thành công";
+        const errorMsg = data.detail || data.message || "Sign up failed";
         return { success: false, message: errorMsg };
       }
 
@@ -170,19 +170,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(accessToken);
         setUser(userData);
 
-        return { success: true, message: data.message || "Đăng ký tài khoản thành công" };
+        return { success: true, message: data.message || "Account created successfully" };
       }
 
-      return { success: false, message: "Phản hồi từ máy chủ không hợp lệ" };
+      return { success: false, message: "Invalid response from the server" };
     } catch (err) {
-      console.error("Lỗi kết nối khi đăng ký:", err);
-      return { success: false, message: "Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại kết nối mạng." };
+      console.error("Connection error while signing up:", err);
+      return { success: false, message: "Could not reach the server. Please check your connection." };
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Đăng xuất
+  // Sign out
   const logout = () => {
     localStorage.removeItem(STORAGE_TOKEN_KEY);
     localStorage.removeItem(STORAGE_USER_KEY);
@@ -191,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login");
   };
 
-  // Làm mới thông tin user từ server
+  // Refresh user information from the server
   const refreshUser = async () => {
     const currentToken = token || localStorage.getItem(STORAGE_TOKEN_KEY);
     if (!currentToken) return;
@@ -211,7 +211,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch (err) {
-      console.error("Lỗi làm mới profile:", err);
+      console.error("Error refreshing profile:", err);
     }
   };
 
@@ -236,7 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth phải được sử dụng bên trong AuthProvider");
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

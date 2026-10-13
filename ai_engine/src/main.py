@@ -49,18 +49,18 @@ def parse_vietnamese_amount(text: str) -> float:
 def classify_vietnamese_intent(text: str):
     t = text.lower()
     if any(k in t for k in ["lương", "thưởng", "thu nhập", "chuyển khoản đến"]):
-        return "Thu nhập / Lương", "INCOME", 0.95
+        return "Salary & Income", "INCOME", 0.95
     if any(k in t for k in ["phở", "cơm", "ăn", "uống", "cà phê", "cafe", "trà sữa", "bánh"]):
-        return "Ăn uống", "EXPENSE", 0.93
+        return "Food & Dining", "EXPENSE", 0.93
     if any(k in t for k in ["xăng", "xe", "grab", "be", "taxi", "gửi xe"]):
-        return "Di chuyển", "EXPENSE", 0.94
+        return "Transportation", "EXPENSE", 0.94
     if any(k in t for k in ["mua", "shopee", "quần áo", "áo", "giày", "tiki"]):
-        return "Mua sắm", "EXPENSE", 0.91
+        return "Shopping", "EXPENSE", 0.91
     if any(k in t for k in ["phim", "cgv", "game", "du lịch"]):
-        return "Giải trí", "EXPENSE", 0.89
+        return "Entertainment", "EXPENSE", 0.89
     if any(k in t for k in ["điện", "nước", "wifi", "tiền nhà", "internet"]):
-        return "Tiện ích", "EXPENSE", 0.92
-    return "Khác", "EXPENSE", 0.75
+        return "Utilities", "EXPENSE", 0.92
+    return "Miscellaneous", "EXPENSE", 0.75
 
 @app.get("/api/v1/ai/health")
 def health_check():
@@ -97,11 +97,11 @@ async def ocr_receipt(file: UploadFile = File(None)):
     return {
         "success": True,
         "data": {
-            "merchant": "SIÊU THỊ WINMART+ ĐÀ NẴNG",
+            "merchant": "WINMART+ SUPERMARKET DA NANG",
             "date": datetime.utcnow().strftime("%Y-%m-%d"),
             "total_amount": 185000.0,
             "confidence": 0.94,
-            "category": "Ăn uống",
-            "items": ["Sữa tươi TH True Milk 1L", "Bánh mì sandwich", "Xúc xích Đức"]
+            "category": "Food & Dining",
+            "items": ["TH True Milk 1L", "Sandwich bread", "German sausage"]
         }
     }

@@ -34,7 +34,7 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Nếu đã đăng nhập trước đó thì tự động chuyển về trang chủ
+  // If already logged in, automatically redirect to the home page
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
       router.push("/");
@@ -48,27 +48,27 @@ export default function RegisterPage() {
 
     // Validation
     if (!fullName.trim()) {
-      setErrorMessage("Vui lòng nhập họ và tên của bạn");
+      setErrorMessage("Please enter your full name");
       return;
     }
     if (!email.trim()) {
-      setErrorMessage("Vui lòng nhập địa chỉ email");
+      setErrorMessage("Please enter your email address");
       return;
     }
     if (!password) {
-      setErrorMessage("Vui lòng nhập mật khẩu");
+      setErrorMessage("Please enter your password");
       return;
     }
     if (password.length < 6) {
-      setErrorMessage("Mật khẩu phải có tối thiểu 6 ký tự");
+      setErrorMessage("Password must be at least 6 characters");
       return;
     }
     if (password !== confirmPassword) {
-      setErrorMessage("Mật khẩu xác nhận không khớp với mật khẩu đã nhập");
+      setErrorMessage("Confirmation password does not match the password entered");
       return;
     }
     if (!agreeTerms) {
-      setErrorMessage("Vui lòng đồng ý với Điều khoản sử dụng & Chính sách bảo mật");
+      setErrorMessage("Please agree to the Terms of Service & Privacy Policy");
       return;
     }
 
@@ -77,12 +77,12 @@ export default function RegisterPage() {
     setIsSubmitting(false);
 
     if (result.success) {
-      setSuccessMessage("Đăng ký tài khoản thành công! Đang chuyển hướng...");
+      setSuccessMessage("Account created successfully! Redirecting...");
       setTimeout(() => {
         router.push("/");
       }, 700);
     } else {
-      setErrorMessage(result.message || "Đăng ký không thành công");
+      setErrorMessage(result.message || "Registration failed");
     }
   };
 
@@ -99,7 +99,7 @@ export default function RegisterPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md transition-all hover:border-slate-700"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Về Trang Chủ</span>
+          <span>Back to Home</span>
         </Link>
       </div>
 
@@ -110,10 +110,10 @@ export default function RegisterPage() {
             B
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            Tạo tài khoản mới
+            Create a New Account
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-400">
-            Bắt đầu quản lý tài chính thông minh cùng <span className="text-emerald-400 font-semibold">Budgetly AI</span>
+            Start managing your finances smartly with <span className="text-emerald-400 font-semibold">Budgetly AI</span>
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export default function RegisterPage() {
             {/* Full Name */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Họ và Tên
+                Full Name
               </label>
               <div className="relative rounded-2xl shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -149,7 +149,7 @@ export default function RegisterPage() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Nguyễn Văn A"
+                  placeholder="John Doe"
                   className="block w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-2xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all"
                 />
               </div>
@@ -158,7 +158,7 @@ export default function RegisterPage() {
             {/* Email Field */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Địa chỉ Email
+                Email Address
               </label>
               <div className="relative rounded-2xl shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -179,7 +179,7 @@ export default function RegisterPage() {
             {/* Password Field */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Mật khẩu (Tối thiểu 6 ký tự)
+                Password (Minimum 6 characters)
               </label>
               <div className="relative rounded-2xl shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -207,7 +207,7 @@ export default function RegisterPage() {
             {/* Confirm Password Field */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Xác nhận Mật khẩu
+                Confirm Password
               </label>
               <div className="relative rounded-2xl shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -235,11 +235,11 @@ export default function RegisterPage() {
                   className="w-4 h-4 mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/30 accent-emerald-500 cursor-pointer shrink-0"
                 />
                 <span className="text-xs text-slate-400 select-none leading-relaxed">
-                  Tôi đồng ý với{" "}
-                  <span className="text-emerald-400 font-semibold hover:underline">Điều khoản dịch vụ</span>{" "}
-                  và{" "}
-                  <span className="text-emerald-400 font-semibold hover:underline">Chính sách bảo mật</span>{" "}
-                  của Budgetly
+                  I agree to the{" "}
+                  <span className="text-emerald-400 font-semibold hover:underline">Terms of Service</span>{" "}
+                  and{" "}
+                  <span className="text-emerald-400 font-semibold hover:underline">Privacy Policy</span>{" "}
+                  of Budgetly
                 </span>
               </label>
             </div>
@@ -253,11 +253,11 @@ export default function RegisterPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Đang đăng ký tài khoản...</span>
+                  <span>Creating account...</span>
                 </>
               ) : (
                 <>
-                  <span>Tạo Tài Khoản Mới</span>
+                  <span>Create New Account</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -267,12 +267,12 @@ export default function RegisterPage() {
           {/* Footer Navigation */}
           <div className="mt-6 pt-5 border-t border-slate-800/80 text-center">
             <p className="text-xs text-slate-400">
-              Đã có tài khoản Budgetly?{" "}
+              Already have a Budgetly account?{" "}
               <Link
                 href="/login"
                 className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors underline-offset-4 hover:underline"
               >
-                Đăng nhập ngay
+                Sign in now
               </Link>
             </p>
           </div>
@@ -281,7 +281,7 @@ export default function RegisterPage() {
         {/* Security Trust Badge */}
         <div className="mt-6 flex items-center justify-center gap-2 text-slate-500 text-[11px]">
           <ShieldCheck className="w-4 h-4 text-emerald-500/70" />
-          <span>Tự động tạo Ví & Bộ danh mục thu chi mặc định</span>
+          <span>Automatically creates a default Wallet & income/expense category set</span>
         </div>
       </div>
     </div>
