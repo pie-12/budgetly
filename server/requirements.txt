@@ -7,3 +7,5 @@ pydantic
 pydantic-settings
 python-dotenv
 python-multipart
+bcrypt
+pyjwt
