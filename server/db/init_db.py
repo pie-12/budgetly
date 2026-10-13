@@ -13,6 +13,7 @@ from server.models.budget import Budget
 def init_db():
     Base.metadata.create_all(bind=engine)
 
+    from server.core.security import hash_password
     db: Session = SessionLocal()
     try:
         demo_user = db.query(User).filter(User.email == "demo@budgetly.app").first()
@@ -20,12 +21,15 @@ def init_db():
             demo_user = User(
                 id=uuid.uuid4(),
                 email="demo@budgetly.app",
-                password_hash="mock_bcrypt_hash_for_demo",
+                password_hash=hash_password("123456"),
                 full_name="Nguyen Tung Lam & Le Huu Anh Tu"
             )
             db.add(demo_user)
             db.commit()
             db.refresh(demo_user)
+        elif demo_user.password_hash == "mock_bcrypt_hash_for_demo":
+            demo_user.password_hash = hash_password("123456")
+            db.commit()
 
             default_categories = [
                 {"name": "Food & Dining", "type": "EXPENSE", "icon": "🍲", "color": "bg-amber-500"},
