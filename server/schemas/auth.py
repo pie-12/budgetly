@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field, field_validator
 EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
 class RegisterRequest(BaseModel):
-    email: str = Field(..., description="Địa chỉ email hợp lệ")
-    password: str = Field(..., min_length=6, description="Mật khẩu tối thiểu 6 ký tự")
+    email: str = Field(..., description="A valid email address")
+    password: str = Field(..., min_length=6, description="Password, at least 6 characters")
     full_name: Optional[str] = Field(None, max_length=100)
 
     @field_validator("email")
@@ -15,19 +15,19 @@ class RegisterRequest(BaseModel):
     def validate_email_format(cls, v: str) -> str:
         clean = v.strip().lower()
         if not re.match(EMAIL_REGEX, clean):
-            raise ValueError("Định dạng email không hợp lệ")
+            raise ValueError("Invalid email address format")
         return clean
 
 class LoginRequest(BaseModel):
-    email: str = Field(..., description="Địa chỉ email")
-    password: str = Field(..., description="Mật khẩu")
+    email: str = Field(..., description="Email address")
+    password: str = Field(..., description="Password")
 
     @field_validator("email")
     @classmethod
     def validate_email_format(cls, v: str) -> str:
         clean = v.strip().lower()
         if not re.match(EMAIL_REGEX, clean):
-            raise ValueError("Định dạng email không hợp lệ")
+            raise ValueError("Invalid email address format")
         return clean
 
 class UserResponse(BaseModel):
