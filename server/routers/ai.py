@@ -1,7 +1,15 @@
 import re
 from decimal import Decimal
 from datetime import datetime
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+from server.db.session import get_db
+from server.models.user import User
+from server.models.wallet import Wallet
+from server.models.transaction import Transaction
+from server.models.budget import Budget
+from server.core.deps import get_current_user
 from server.schemas.ai import SmartInputRequest, SmartInputResponse, OCRScanResponse, AIForecastResponse
 from server.schemas.common import APIResponse
 
@@ -51,10 +59,17 @@ def classify_intent_english(text: str):
     return "Miscellaneous", "EXPENSE", 0.75
 
 @router.post("/smart-input", response_model=APIResponse[SmartInputResponse])
-def smart_input_nlp(payload: SmartInputRequest):
+def smart_input_nlp(
+    payload: SmartInputRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     raw = payload.raw_text.strip()
     amount = parse_currency_amount(raw)
     category, tx_type, confidence = classify_intent_english(raw)
+
+    # Suggest one of the user's own wallets instead of a hardcoded name.
+    wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
 
     return APIResponse(
         data=SmartInputResponse(
@@ -62,14 +77,17 @@ def smart_input_nlp(payload: SmartInputRequest):
             amount=amount,
             category=category,
             type=tx_type,
-            suggested_wallet="Cash Wallet",
+            suggested_wallet=wallet.name if wallet else None,
             confidence_score=confidence
         ),
         message="Transaction NLP extraction successful"
     )
 
 @router.post("/scan-receipt", response_model=APIResponse[OCRScanResponse])
-async def scan_receipt_ocr(file: UploadFile = File(None)):
+async def scan_receipt_ocr(
+    file: UploadFile = File(None),
+    current_user: User = Depends(get_current_user)
+):
     return APIResponse(
         data=OCRScanResponse(
             merchant="WINMART GROCERY & FRESH",
@@ -83,21 +101,57 @@ async def scan_receipt_ocr(file: UploadFile = File(None)):
     )
 
 @router.get("/forecast", response_model=APIResponse[AIForecastResponse])
-def get_ai_forecast():
-    today = datetime.utcnow().day
+def get_ai_forecast(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    now = datetime.utcnow()
+    today = max(now.day, 1)
     days_in_month = 30
-    spent_so_far = Decimal("8500000")
-    projected = (spent_so_far / Decimal(str(max(today, 1)))) * Decimal(str(days_in_month))
-    budget_limit = Decimal("15000000")
+    current_month = now.strftime("%Y-%m")
+    month_start = datetime(now.year, now.month, 1)
+
+    # Real spend for the current month across the user's wallets.
+    spent_so_far = db.query(func.coalesce(func.sum(Transaction.amount), 0)).join(
+        Wallet, Transaction.wallet_id == Wallet.id
+    ).filter(
+        Wallet.user_id == current_user.id,
+        Transaction.transaction_type == "EXPENSE",
+        Transaction.transaction_date >= month_start
+    ).scalar()
+    spent_so_far = Decimal(str(spent_so_far))
+
+    budget_limit = db.query(func.coalesce(func.sum(Budget.amount_limit), Decimal("0"))).filter(
+        Budget.user_id == current_user.id,
+        Budget.month_year == current_month
+    ).scalar()
+    budget_limit = Decimal(str(budget_limit))
+
+    projected = (spent_so_far / Decimal(str(today))) * Decimal(str(days_in_month))
+
+    if budget_limit <= 0:
+        return APIResponse(
+            data=AIForecastResponse(
+                forecast_total=projected,
+                budget_limit=Decimal("0"),
+                is_at_risk=False,
+                risk_percentage=0.0,
+                message=(
+                    f"Month-end Projection: estimated spend is {int(projected):,} VND. "
+                    "Set a budget to unlock spending-risk alerts."
+                )
+            ),
+            message="AI spending forecast generated successfully"
+        )
 
     is_at_risk = projected > (budget_limit * Decimal("0.9"))
     risk_pct = float(round((projected / budget_limit) * 100, 1))
 
     msg = (
-        f"Month-end Projection: Estimated spend is ${int(projected):,} ({risk_pct}% of budget). "
+        f"Month-end Projection: estimated spend is {int(projected):,} VND ({risk_pct}% of budget). "
         "Your spending pace is currently on track."
         if not is_at_risk else
-        f"Warning: Projected month-end spend exceeds budget by ${int(projected - budget_limit):,} ({risk_pct}% of budget). Consider cutting discretionary shopping."
+        f"Warning: projected month-end spend exceeds budget by {int(projected - budget_limit):,} VND ({risk_pct}% of budget). Consider cutting discretionary spending."
     )
 
     return APIResponse(

@@ -1,5 +1,4 @@
 import uuid
-from decimal import Decimal
 from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -7,7 +6,8 @@ from sqlalchemy.orm import Session, joinedload
 from server.db.session import get_db
 from server.models.transaction import Transaction
 from server.models.wallet import Wallet
-from server.models.category import Category
+from server.models.user import User
+from server.core.deps import get_current_user
 from server.schemas.transaction import TransactionCreate, TransactionResponse
 from server.schemas.common import APIResponse
 
@@ -37,12 +37,13 @@ def get_transactions(
     category_id: Optional[uuid.UUID] = Query(None),
     type: Optional[str] = Query(None),
     limit: int = Query(50, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    query = db.query(Transaction).options(
+    query = db.query(Transaction).join(Wallet, Transaction.wallet_id == Wallet.id).options(
         joinedload(Transaction.wallet),
         joinedload(Transaction.category)
-    )
+    ).filter(Wallet.user_id == current_user.id)
 
     if wallet_id:
         query = query.filter(Transaction.wallet_id == wallet_id)
@@ -60,8 +61,15 @@ def get_transactions(
     )
 
 @router.post("", response_model=APIResponse[TransactionResponse], status_code=status.HTTP_201_CREATED)
-def create_transaction(payload: TransactionCreate, db: Session = Depends(get_db)):
-    wallet = db.query(Wallet).filter(Wallet.id == payload.wallet_id).first()
+def create_transaction(
+    payload: TransactionCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    wallet = db.query(Wallet).filter(
+        Wallet.id == payload.wallet_id,
+        Wallet.user_id == current_user.id
+    ).first()
     if not wallet:
         raise HTTPException(status_code=404, detail="Selected wallet not found")
 
@@ -92,8 +100,15 @@ def create_transaction(payload: TransactionCreate, db: Session = Depends(get_db)
     )
 
 @router.delete("/{tx_id}", response_model=APIResponse[dict])
-def delete_transaction(tx_id: uuid.UUID, db: Session = Depends(get_db)):
-    tx = db.query(Transaction).filter(Transaction.id == tx_id).first()
+def delete_transaction(
+    tx_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    tx = db.query(Transaction).join(Wallet, Transaction.wallet_id == Wallet.id).filter(
+        Transaction.id == tx_id,
+        Wallet.user_id == current_user.id
+    ).first()
     if not tx:
         raise HTTPException(status_code=404, detail="Transaction not found")
 

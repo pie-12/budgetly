@@ -2,7 +2,7 @@ import uuid
 from decimal import Decimal
 from typing import List
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from server.db.session import get_db
@@ -10,17 +10,25 @@ from server.models.budget import Budget
 from server.models.transaction import Transaction
 from server.models.category import Category
 from server.models.user import User
+from server.core.deps import get_current_user
 from server.schemas.budget import BudgetCreate, BudgetResponse
 from server.schemas.common import APIResponse
 
 router = APIRouter(prefix="/budgets", tags=["Budgets"])
 
 @router.get("", response_model=APIResponse[List[BudgetResponse]])
-def get_budgets(month: str = Query(None), db: Session = Depends(get_db)):
+def get_budgets(
+    month: str = Query(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     if not month:
         month = datetime.utcnow().strftime("%Y-%m")
 
-    budgets = db.query(Budget).options(joinedload(Budget.category)).filter(Budget.month_year == month).all()
+    budgets = db.query(Budget).options(joinedload(Budget.category)).filter(
+        Budget.user_id == current_user.id,
+        Budget.month_year == month
+    ).all()
 
     result = []
     for b in budgets:
@@ -50,12 +58,13 @@ def get_budgets(month: str = Query(None), db: Session = Depends(get_db)):
     )
 
 @router.post("", response_model=APIResponse[BudgetResponse], status_code=status.HTTP_201_CREATED)
-def create_or_update_budget(payload: BudgetCreate, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == "demo@budgetly.app").first()
-    if not user:
-        raise HTTPException(status_code=400, detail="Demo user does not exist")
-
+def create_or_update_budget(
+    payload: BudgetCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     existing = db.query(Budget).filter(
+        Budget.user_id == current_user.id,
         Budget.category_id == payload.category_id,
         Budget.month_year == payload.month_year
     ).first()
@@ -68,7 +77,7 @@ def create_or_update_budget(payload: BudgetCreate, db: Session = Depends(get_db)
     else:
         new_b = Budget(
             id=uuid.uuid4(),
-            user_id=user.id,
+            user_id=current_user.id,
             category_id=payload.category_id,
             amount_limit=payload.amount_limit,
             month_year=payload.month_year
