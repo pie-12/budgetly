@@ -1,6 +1,6 @@
 import os
 import logging
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 
@@ -16,6 +16,8 @@ connect_args = {}
 if DATABASE_URL.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 
+DATABASE_FALLBACK = False
+
 try:
     engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args=connect_args)
     # Test connection
@@ -26,8 +28,22 @@ except Exception as e:
     DATABASE_URL = "sqlite:///./budgetly.db"
     connect_args = {"check_same_thread": False}
     engine = create_engine(DATABASE_URL, connect_args=connect_args)
+    DATABASE_FALLBACK = True
+
+# Dialect actually serving the API right now ("postgresql" or "sqlite").
+DB_DIALECT = engine.dialect.name
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def check_database() -> bool:
+    """Ping the active database so health checks report the real connection state."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return True
+    except Exception:
+        logger.exception("Database health probe failed")
+        return False
 
 def get_db():
     db = SessionLocal()

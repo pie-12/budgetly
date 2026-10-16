@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from server.db.init_db import init_db
+from server.db.session import DB_DIALECT, DATABASE_FALLBACK, check_database
 from server.routers import (
     auth,
     wallets,
@@ -54,9 +55,22 @@ def read_root():
     }
 
 @app.get("/api/v1/health")
-def health_check():
+def health_check(response: Response):
+    """Liveness/readiness probe.
+
+    Pings the database on every call and returns HTTP 503 when it is unreachable,
+    so orchestrators (Docker Compose healthcheck, load balancers) can react.
+    """
+    database_reachable = check_database()
+    if not database_reachable:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return {
-        "status": "ok",
+        "status": "ok" if database_reachable else "degraded",
         "service": "budgetly-core",
-        "database": "connected"
+        "version": app.version,
+        "database": {
+            "status": "connected" if database_reachable else "unreachable",
+            "dialect": DB_DIALECT,
+            "fallback": DATABASE_FALLBACK,
+        }
     }

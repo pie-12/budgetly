@@ -34,16 +34,23 @@ POSTGRES_PORT=5432
 CLIENT_PORT=3000
 SERVER_PORT=8000
 AI_ENGINE_PORT=8001
+
+# Core Backend JWT signing key (override with a long random value in production)
+SECRET_KEY=super_secret_jwt_key_budgetly_2026_change_in_prod
 ```
 
 ### 2.2. `.env` file in the Core Backend (`/server/.env`):
 ```env
-DATABASE_URL=postgresql://budgetly_user:budgetly_secure_password_2026@localhost:5432/budgetly_db
+DATABASE_URL=postgresql+psycopg2://budgetly_user:budgetly_secure_password_2026@localhost:5432/budgetly_db
 SECRET_KEY=super_secret_jwt_key_budgetly_2026_change_in_prod
 ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=1440
+ACCESS_TOKEN_EXPIRE_DAYS=30
 AI_ENGINE_URL=http://localhost:8001
 ```
+
+> **Note:** `ACCESS_TOKEN_EXPIRE_DAYS` (default `30`) controls how long a login session lasts.
+> The legacy `ACCESS_TOKEN_EXPIRE_MINUTES` variable is still read for older `.env` files, but
+> `ACCESS_TOKEN_EXPIRE_DAYS` takes precedence when both are present.
 
 ### 2.3. `.env` file in the AI Engine (`/ai_engine/.env`):
 ```env
@@ -78,6 +85,28 @@ docker compose ps
 - **Frontend Web Application:** [http://localhost:3000](http://localhost:3000)
 - **Core Backend API Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 - **AI Engine Swagger Docs:** [http://localhost:8001/docs](http://localhost:8001/docs)
+
+### 3.3. Health Check:
+The Core Backend exposes `/api/v1/health`, which pings the database on every call and reports
+which database is actually serving the API (PostgreSQL, or the SQLite fallback used for local development).
+It answers `503 Service Unavailable` whenever the database cannot be reached, so Docker Compose,
+load balancers and uptime monitors can react automatically.
+
+```bash
+curl http://localhost:8000/api/v1/health
+```
+```json
+{
+  "status": "ok",
+  "service": "budgetly-core",
+  "version": "1.0.0",
+  "database": {
+    "status": "connected",
+    "dialect": "postgresql",
+    "fallback": false
+  }
+}
+```
 
 ---
 

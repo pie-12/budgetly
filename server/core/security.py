@@ -5,9 +5,23 @@ import bcrypt
 import jwt
 
 SECRET_KEY = os.getenv("SECRET_KEY", "super_secret_jwt_key_budgetly_2026_change_in_prod")
-ALGORITHM = "HS256"
-# Login session defaults to 30 days so users don't have to log in again every time they visit
-ACCESS_TOKEN_EXPIRE_DAYS = int(os.getenv("ACCESS_TOKEN_EXPIRE_DAYS", "30"))
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+
+def _resolve_expire_days() -> int:
+    """Login sessions default to 30 days so users don't re-authenticate on every visit.
+
+    `ACCESS_TOKEN_EXPIRE_MINUTES` is still honoured for older `.env` files, but
+    `ACCESS_TOKEN_EXPIRE_DAYS` is the documented variable and wins when both are set.
+    """
+    days = os.getenv("ACCESS_TOKEN_EXPIRE_DAYS")
+    if days:
+        return max(1, int(days))
+    minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+    if minutes:
+        return max(1, round(int(minutes) / (60 * 24)))
+    return 30
+
+ACCESS_TOKEN_EXPIRE_DAYS = _resolve_expire_days()
 
 def hash_password(password: str) -> str:
     """Securely hash a password using bcrypt."""

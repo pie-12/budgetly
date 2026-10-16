@@ -26,3 +26,14 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Verified end-to-end API service connector layer.
 - Finalized system integration and release readiness checklist.
+
+## [0.6.0] - 2026-10-17
+### Added
+- JWT authentication across the API with per-user scoping for wallets, transactions, budgets and analytics.
+- Database-aware `/api/v1/health` probe: reports the dialect actually serving the API (PostgreSQL or the local SQLite fallback) and answers `503` when the database is unreachable.
+- Docker Compose healthcheck for the Core Backend service.
+
+### Changed
+- English localization completed for the remaining UI, authentication and NLP output strings.
+- `SECRET_KEY` can now be overridden from the root `.env` file consumed by Docker Compose.
+- The security layer honours `ALGORITHM` and `ACCESS_TOKEN_EXPIRE_DAYS`; `ACCESS_TOKEN_EXPIRE_MINUTES` is still accepted as a legacy alias.
