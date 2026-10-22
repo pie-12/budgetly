@@ -2,7 +2,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export const metadata = {
   title: "Admin Dashboard | Budgetly Management",
-  description: "Administration and monitoring system for the Budgetly finance management app",
+  description: "Hệ thống quản trị và giám sát ứng dụng quản lý tài chính Budgetly",
 };
 
 export default function AdminLayout({
@@ -11,7 +11,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-slate-950 font-sans text-slate-100">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* Admin Navigation Sidebar */}
       <AdminSidebar />
 

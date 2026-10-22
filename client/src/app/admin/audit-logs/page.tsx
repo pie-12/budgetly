@@ -3,15 +3,9 @@
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 import {
-  ScrollText,
   Search,
-  Filter,
-  Shield,
-  AlertTriangle,
-  Info,
   CheckCircle2,
   FileSpreadsheet,
-  Terminal,
 } from "lucide-react";
 
 interface AuditLog {
@@ -102,83 +96,83 @@ export default function AdminAuditLogsPage() {
   });
 
   return (
-    <div className="flex-1 pb-12">
+    <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="📝 Activity & Security Audit Logs"
-        subtitle="Track all admin actions, configuration changes, and system security alerts"
+        title="Nhật Ký Hoạt Động & Kiểm Toán Bảo Mật"
+        subtitle="Theo dõi toàn bộ thao tác của quản trị viên, thay đổi cấu hình và cảnh báo an toàn hệ thống"
       />
 
-      <div className="p-8 space-y-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
         {/* Toast */}
         {toastMessage && (
-          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-950 border border-emerald-500/40 text-emerald-300 rounded-xl shadow-2xl text-xs font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 rounded-xl shadow-lg text-xs font-medium">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>{toastMessage}</span>
           </div>
         )}
 
         {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900 p-4 border border-slate-800 rounded-2xl">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xs">
           <div className="flex flex-wrap items-center gap-3 flex-1">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search actor, action, audit details..."
+                placeholder="Tìm người thao tác, hành động, chi tiết..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
               />
             </div>
 
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500 transition-colors"
             >
-              <option value="All">All severity levels</option>
-              <option value="Info">Info (Normal)</option>
-              <option value="Warning">Warning</option>
-              <option value="Danger">Danger</option>
-              <option value="Critical">Critical</option>
+              <option value="All">Tất cả mức độ</option>
+              <option value="Info">Info (Bình thường)</option>
+              <option value="Warning">Warning (Cảnh báo)</option>
+              <option value="Danger">Danger (Nguy hiểm)</option>
+              <option value="Critical">Critical (Nghiêm trọng)</option>
             </select>
           </div>
 
           <button
-            onClick={() => showNotification("Exported Audit Log archive (.log/.csv)")}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition-all shrink-0"
+            onClick={() => showNotification("Đã trích xuất tệp nhật ký (.csv)")}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all shrink-0 cursor-pointer active:scale-95"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-            <span>Download Log CSV</span>
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span>Xuất Nhật Ký CSV</span>
           </button>
         </div>
 
         {/* Audit Logs Table */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/70 border-b border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-400">
+            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Log ID & Time</th>
-                  <th className="px-6 py-4">Actor Account</th>
-                  <th className="px-6 py-4">Action</th>
-                  <th className="px-6 py-4">Severity</th>
-                  <th className="px-6 py-4">IP Address</th>
-                  <th className="px-6 py-4">Action Details</th>
+                  <th className="px-6 py-4">Mã & Thời Gian</th>
+                  <th className="px-6 py-4">Tài Khoản Thao Tác</th>
+                  <th className="px-6 py-4">Hành Động</th>
+                  <th className="px-6 py-4">Mức Độ</th>
+                  <th className="px-6 py-4">Địa Chỉ IP</th>
+                  <th className="px-6 py-4">Chi Tiết Thao Tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-mono text-[11px]">
                 {filteredLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-slate-850/60 transition-colors">
+                  <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition-colors">
                     <td className="px-6 py-4">
-                      <span className="text-indigo-400 font-bold">{log.id}</span>
-                      <p className="text-slate-400 text-[10px] mt-0.5">{log.timestamp}</p>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">{log.id}</span>
+                      <p className="text-slate-400 dark:text-slate-500 text-[10px] mt-0.5">{log.timestamp}</p>
                     </td>
 
-                    <td className="px-6 py-4 font-semibold text-slate-200">{log.actor}</td>
+                    <td className="px-6 py-4 font-semibold text-slate-900 dark:text-slate-200">{log.actor}</td>
 
                     <td className="px-6 py-4">
-                      <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 text-[10px]">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px]">
                         {log.action}
                       </span>
                     </td>
@@ -187,21 +181,21 @@ export default function AdminAuditLogsPage() {
                       <span
                         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                           log.severity === "Critical"
-                            ? "bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse"
+                            ? "bg-rose-50 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 border-rose-200 dark:border-rose-500/40 animate-pulse"
                             : log.severity === "Danger"
-                            ? "bg-pink-500/20 text-pink-300 border-pink-500/40"
+                            ? "bg-pink-50 dark:bg-pink-500/20 text-pink-600 dark:text-pink-300 border-pink-200 dark:border-pink-500/40"
                             : log.severity === "Warning"
-                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                            : "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                            ? "bg-amber-50 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-200 dark:border-amber-500/40"
+                            : "bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-200 dark:border-blue-500/40"
                         }`}
                       >
                         {log.severity}
                       </span>
                     </td>
 
-                    <td className="px-6 py-4 text-slate-400">{log.ipAddress}</td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{log.ipAddress}</td>
 
-                    <td className="px-6 py-4 text-slate-300 font-sans">{log.details}</td>
+                    <td className="px-6 py-4 text-slate-800 dark:text-slate-300 font-sans">{log.details}</td>
                   </tr>
                 ))}
               </tbody>
