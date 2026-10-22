@@ -3,17 +3,12 @@
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 import {
-  Receipt,
   Search,
   AlertTriangle,
-  Download,
-  Filter,
   CheckCircle2,
   X,
   Eye,
   ShieldAlert,
-  ArrowUpRight,
-  ArrowDownRight,
   FileSpreadsheet,
 } from "lucide-react";
 
@@ -36,24 +31,24 @@ const initialTransactions: AdminTransaction[] = [
     id: "TX-9901",
     userName: "Nguyen Tung Lam",
     userEmail: "lam23it138@budgetly.io",
-    description: "Unusually large ATM withdrawal",
+    description: "Rút tiền mặt ATM số lượng bất thường",
     amount: 50000000,
     type: "expense",
-    category: "Cash Withdrawal",
+    category: "Rút tiền mặt",
     wallet: "ATM Vietcombank",
     date: "2026-10-06 14:20",
     isFlagged: true,
-    flagReason: "Amount > 30M VND in a single transaction",
+    flagReason: "Số tiền > 30 triệu ₫ trong 1 giao dịch đơn lẻ",
   },
   {
     id: "TX-9902",
     userName: "Tran Minh Hoa",
     userEmail: "hoa.tran@gmail.com",
-    description: "Received October salary bank transfer",
+    description: "Nhận tiền chuyển khoản lương tháng 10",
     amount: 25000000,
     type: "income",
-    category: "Income / Salary",
-    wallet: "Techcombank Wallet",
+    category: "Lương & Thu nhập",
+    wallet: "Ví Techcombank",
     date: "2026-10-06 09:15",
     isFlagged: false,
   },
@@ -61,24 +56,24 @@ const initialTransactions: AdminTransaction[] = [
     id: "TX-9903",
     userName: "Vu Quoc Anh",
     userEmail: "spammer_spam99@temp-mail.com",
-    description: "Rapidly paid 15 small Shopee invoices",
+    description: "Thanh toán liên tiếp 15 hóa đơn Shopee nhỏ",
     amount: 150000,
     type: "expense",
-    category: "Shopping",
-    wallet: "MoMo Wallet",
+    category: "Mua sắm",
+    wallet: "Ví MoMo",
     date: "2026-10-05 23:40",
     isFlagged: true,
-    flagReason: "Suspected consecutive transaction spam bot",
+    flagReason: "Nghi vấn bot spam giao dịch liên tục",
   },
   {
     id: "TX-9904",
     userName: "Pham Khanh Linh",
     userEmail: "linh.pham@outlook.com",
-    description: "September apartment electricity & water bill payment",
+    description: "Thanh toán hóa đơn điện nước căn hộ",
     amount: 1850000,
     type: "expense",
-    category: "Bills & Utilities",
-    wallet: "MB Bank Wallet",
+    category: "Hóa đơn & Tiện ích",
+    wallet: "Ví MB Bank",
     date: "2026-10-05 11:30",
     isFlagged: false,
   },
@@ -86,11 +81,11 @@ const initialTransactions: AdminTransaction[] = [
     id: "TX-9905",
     userName: "Le Hoang Nam",
     userEmail: "nam.le99@yahoo.com",
-    description: "Car refueling",
+    description: "Đổ xăng xe ô tô",
     amount: 850000,
     type: "expense",
-    category: "Transport",
-    wallet: "Cash Wallet",
+    category: "Di chuyển",
+    wallet: "Ví Tiền mặt",
     date: "2026-10-04 16:05",
     isFlagged: false,
   },
@@ -115,12 +110,12 @@ export default function AdminTransactionsPage() {
         if (tx.id === id) {
           const nextFlag = !tx.isFlagged;
           showNotification(
-            `Transaction ${id} has been ${nextFlag ? "marked as suspicious" : "unflagged"}`
+            `Giao dịch ${id} đã được ${nextFlag ? "đánh dấu nghi vấn rủi ro" : "gỡ cờ cảnh báo"}`
           );
           return {
             ...tx,
             isFlagged: nextFlag,
-            flagReason: nextFlag ? "Manually flagged by Admin" : undefined,
+            flagReason: nextFlag ? "Được gắn cờ thủ công bởi Quản trị viên" : undefined,
           };
         }
         return tx;
@@ -129,7 +124,7 @@ export default function AdminTransactionsPage() {
   };
 
   const handleExportCSV = () => {
-    showNotification("Transaction report (CSV) exported successfully!");
+    showNotification("Đã trích xuất danh sách giao dịch (CSV) thành công!");
   };
 
   const filteredTransactions = transactions.filter((tx) => {
@@ -149,140 +144,140 @@ export default function AdminTransactionsPage() {
   });
 
   return (
-    <div className="flex-1 pb-12">
+    <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="💸 System-wide Transaction Management & Monitoring"
-        subtitle="Track money flow, detect suspected fraud, and review transactions"
+        title="Giám Sát & Quản Lý Giao Dịch Toàn Hệ Thống"
+        subtitle="Theo dõi luân chuyển tiền tệ, phát hiện dấu hiệu gian lận và kiểm duyệt giao dịch"
       />
 
-      <div className="p-8 space-y-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
         {/* Toast */}
         {toastMessage && (
-          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-950 border border-emerald-500/40 text-emerald-300 rounded-xl shadow-2xl text-xs font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 rounded-xl shadow-lg text-xs font-medium">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>{toastMessage}</span>
           </div>
         )}
 
         {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900 p-4 border border-slate-800 rounded-2xl">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xs">
           <div className="flex flex-wrap items-center gap-3 flex-1">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search TX ID, user, description..."
+                placeholder="Tìm mã TX, người dùng, mô tả giao dịch..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
               />
             </div>
 
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500 transition-colors"
             >
-              <option value="All">All (Income & Expense)</option>
-              <option value="expense">Expense</option>
-              <option value="income">Income</option>
+              <option value="All">Tất cả loại (Thu & Chi)</option>
+              <option value="expense">Khoản chi (Expense)</option>
+              <option value="income">Khoản thu (Income)</option>
             </select>
 
             <select
               value={flagFilter}
               onChange={(e) => setFlagFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500 transition-colors"
             >
-              <option value="All">All risk levels</option>
-              <option value="Flagged">Suspected Fraud</option>
-              <option value="Normal">Normal</option>
+              <option value="All">Tất cả mức độ rủi ro</option>
+              <option value="Flagged">Nghi vấn rủi ro / Gian lận</option>
+              <option value="Normal">Giao dịch bình thường</option>
             </select>
           </div>
 
           <button
             onClick={handleExportCSV}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition-all shrink-0"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all shrink-0 cursor-pointer active:scale-95"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-            <span>Export CSV Report</span>
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span>Xuất Báo Cáo CSV</span>
           </button>
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/70 border-b border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-400">
+            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">TX ID & User</th>
-                  <th className="px-6 py-4">Transaction Description</th>
-                  <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4">Wallet / Method</th>
-                  <th className="px-6 py-4">Risk Status</th>
-                  <th className="px-6 py-4">Time</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-6 py-4">Mã TX & Người Dùng</th>
+                  <th className="px-6 py-4">Mô Tả & Danh Mục</th>
+                  <th className="px-6 py-4">Số Tiền</th>
+                  <th className="px-6 py-4">Ví Nguồn</th>
+                  <th className="px-6 py-4">Trạng Thái Rủi Ro</th>
+                  <th className="px-6 py-4">Thời Gian</th>
+                  <th className="px-6 py-4 text-right">Thao Tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {filteredTransactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-slate-850/60 transition-colors">
+                  <tr key={tx.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <span className="font-mono font-bold text-indigo-400">{tx.id}</span>
-                        <p className="font-semibold text-slate-200 mt-0.5">{tx.userName}</p>
-                        <p className="text-[11px] text-slate-400">{tx.userEmail}</p>
+                        <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{tx.id}</span>
+                        <p className="font-semibold text-slate-900 dark:text-slate-200 mt-0.5">{tx.userName}</p>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500">{tx.userEmail}</p>
                       </div>
                     </td>
 
                     <td className="px-6 py-4">
-                      <p className="font-medium text-slate-200">{tx.description}</p>
-                      <span className="inline-block mt-1 text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">
+                      <p className="font-medium text-slate-900 dark:text-slate-200">{tx.description}</p>
+                      <span className="inline-block mt-1 text-[10px] font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                         {tx.category}
                       </span>
                     </td>
 
                     <td className="px-6 py-4 font-mono font-bold text-sm">
                       <span
-                        className={tx.type === "income" ? "text-emerald-400" : "text-slate-100"}
+                        className={tx.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-900 dark:text-slate-100"}
                       >
-                        {tx.type === "income" ? "+" : "-"}
+                        {tx.type === "income" ? "+" : "−"}
                         {tx.amount.toLocaleString("vi-VN")} ₫
                       </span>
                     </td>
 
-                    <td className="px-6 py-4 text-slate-300 font-medium">{tx.wallet}</td>
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300 font-medium">{tx.wallet}</td>
 
                     <td className="px-6 py-4">
                       {tx.isFlagged ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 animate-pulse">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 animate-pulse">
                           <AlertTriangle className="w-3.5 h-3.5" />
-                          Suspected Fraud
+                          Nghi vấn rủi ro
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                          Normal
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
+                          Bình thường
                         </span>
                       )}
                     </td>
 
-                    <td className="px-6 py-4 text-slate-400 font-mono text-[11px]">{tx.date}</td>
+                    <td className="px-6 py-4 text-slate-400 dark:text-slate-500 font-mono text-[11px]">{tx.date}</td>
 
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => setSelectedTx(tx)}
-                          className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-indigo-400 rounded-lg transition-colors"
-                          title="View details"
+                          className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg transition-colors cursor-pointer"
+                          title="Xem chi tiết"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
 
                         <button
                           onClick={() => handleToggleFlag(tx.id)}
-                          className={`p-1.5 hover:bg-slate-800 rounded-lg transition-colors ${
-                            tx.isFlagged ? "text-rose-400 hover:text-emerald-400" : "text-slate-400 hover:text-rose-400"
+                          className={`p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer ${
+                            tx.isFlagged ? "text-rose-600 hover:text-emerald-600" : "text-slate-400 hover:text-rose-600"
                           }`}
-                          title={tx.isFlagged ? "Remove fraud flag" : "Flag as fraud risk"}
+                          title={tx.isFlagged ? "Gỡ cờ cảnh báo" : "Gắn cờ cảnh báo nghi vấn"}
                         >
                           <ShieldAlert className="w-4 h-4" />
                         </button>
@@ -298,54 +293,54 @@ export default function AdminTransactionsPage() {
 
       {/* Detail Modal */}
       {selectedTx && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-xl relative animate-in fade-in zoom-in-95 duration-150">
             <button
               onClick={() => setSelectedTx(null)}
-              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-white"
+              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <span>Transaction Details</span>
-              <span className="font-mono text-xs text-indigo-400">{selectedTx.id}</span>
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+              <span>Chi Tiết Giao Dịch</span>
+              <span className="font-mono text-xs text-emerald-600 dark:text-emerald-400">{selectedTx.id}</span>
             </h3>
 
-            <div className="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs">
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Performed By</span>
-                <span className="font-semibold text-slate-200">{selectedTx.userName}</span>
+            <div className="space-y-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+              <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-slate-500 dark:text-slate-400">Người thực hiện</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-200">{selectedTx.userName}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Email</span>
-                <span className="text-slate-300 font-mono">{selectedTx.userEmail}</span>
+              <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-slate-500 dark:text-slate-400">Email</span>
+                <span className="text-slate-700 dark:text-slate-300 font-mono">{selectedTx.userEmail}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Amount</span>
-                <span className="font-mono font-bold text-emerald-400 text-sm">
+              <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-slate-500 dark:text-slate-400">Số tiền</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
                   {selectedTx.amount.toLocaleString("vi-VN")} ₫
                 </span>
               </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Payment Wallet</span>
-                <span className="text-slate-200">{selectedTx.wallet}</span>
+              <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-slate-500 dark:text-slate-400">Ví thanh toán</span>
+                <span className="text-slate-800 dark:text-slate-200">{selectedTx.wallet}</span>
               </div>
               {selectedTx.isFlagged && (
-                <div className="p-3 bg-rose-950/60 border border-rose-500/30 rounded-xl text-rose-300">
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-300">
                   <p className="font-bold flex items-center gap-1.5 mb-1">
-                    <AlertTriangle className="w-4 h-4 text-rose-400" /> AI Alert Reason:
+                    <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" /> Lý Do AI Cảnh Báo:
                   </p>
-                  <p className="text-[11px] text-rose-200">{selectedTx.flagReason}</p>
+                  <p className="text-[11px] text-rose-800 dark:text-rose-200">{selectedTx.flagReason}</p>
                 </div>
               )}
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-5 flex justify-end">
               <button
                 onClick={() => setSelectedTx(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
               >
-                Close
+                Đóng
               </button>
             </div>
           </div>

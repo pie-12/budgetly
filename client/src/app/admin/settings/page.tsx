@@ -3,16 +3,13 @@
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 import {
-  Settings as SettingsIcon,
   Cpu,
   Mail,
   ShieldAlert,
   CheckCircle2,
   Save,
   Globe,
-  Sliders,
   Lock,
-  Key,
 } from "lucide-react";
 
 export default function AdminSettingsPage() {
@@ -43,64 +40,64 @@ export default function AdminSettingsPage() {
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    showNotification("System settings saved successfully!");
+    showNotification("Đã lưu toàn bộ cấu hình hệ thống thành công!");
   };
 
   return (
-    <div className="flex-1 pb-12">
+    <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="⚙️ System Settings & Admin Configuration"
-        subtitle="Configure the overall app, AI Engine, SMTP email, and security parameters"
+        title="Cấu Hình Hệ Thống & Quản Trị Trung Tâm"
+        subtitle="Thiết lập tham số ứng dụng tổng thể, mô hình AI Engine, email SMTP và an toàn bảo mật"
       />
 
-      <div className="p-8 space-y-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
         {/* Toast */}
         {toastMessage && (
-          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-950 border border-emerald-500/40 text-emerald-300 rounded-xl shadow-2xl text-xs font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 rounded-xl shadow-lg text-xs font-medium">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>{toastMessage}</span>
           </div>
         )}
 
         {/* Maintenance Banner Warning */}
         {maintenanceMode && (
-          <div className="p-4 bg-rose-950/80 border border-rose-500/40 rounded-2xl flex items-center justify-between text-rose-200 text-xs">
+          <div className="p-4 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-500/40 rounded-2xl flex items-center justify-between text-rose-800 dark:text-rose-200 text-xs shadow-xs">
             <div className="flex items-center gap-2 font-semibold">
-              <ShieldAlert className="w-5 h-5 text-rose-400" />
-              <span>WARNING: Maintenance Mode is ON! Regular users will not be able to access the app.</span>
+              <ShieldAlert className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+              <span>CẢNH BÁO: Chế độ bảo trì đang BẬT! Người dùng thông thường sẽ không thể truy cập ứng dụng.</span>
             </div>
             <button
               onClick={() => {
                 setMaintenanceMode(false);
-                showNotification("System maintenance mode turned off");
+                showNotification("Đã tắt chế độ bảo trì hệ thống");
               }}
-              className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold"
+              className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold cursor-pointer"
             >
-              Turn Off Maintenance
+              Tắt Chế Độ Bảo Trì
             </button>
           </div>
         )}
 
         {/* Tab Selection Navigation */}
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
           <button
             onClick={() => setActiveTab("general")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "general"
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
             <Globe className="w-4 h-4" />
-            <span>General</span>
+            <span>Chung (General)</span>
           </button>
 
           <button
             onClick={() => setActiveTab("ai")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "ai"
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
             <Cpu className="w-4 h-4" />
@@ -109,53 +106,53 @@ export default function AdminSettingsPage() {
 
           <button
             onClick={() => setActiveTab("email")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "email"
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
             <Mail className="w-4 h-4" />
-            <span>Email SMTP</span>
+            <span>Máy Chủ Email SMTP</span>
           </button>
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "security"
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
             <Lock className="w-4 h-4" />
-            <span>Security & Session</span>
+            <span>Bảo Mật & Phiên Đăng Nhập</span>
           </button>
         </div>
 
         {/* Form container */}
-        <form onSubmit={handleSaveSettings} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <form onSubmit={handleSaveSettings} className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
           {/* TAB 1: General */}
           {activeTab === "general" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">General System Configuration</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Cấu Hình Chung Hệ Thống</h3>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">App Name</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tên Ứng Dụng</label>
                 <input
                   type="text"
                   value={appName}
                   onChange={(e) => setAppName(e.target.value)}
-                  className="w-full max-w-md px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full max-w-md px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Customer Support Email</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Hỗ Trợ Khách Hàng</label>
                 <input
                   type="email"
                   value={supportEmail}
                   onChange={(e) => setSupportEmail(e.target.value)}
-                  className="w-full max-w-md px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full max-w-md px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -165,10 +162,10 @@ export default function AdminSettingsPage() {
                     type="checkbox"
                     checked={maintenanceMode}
                     onChange={(e) => setMaintenanceMode(e.target.checked)}
-                    className="w-4 h-4 accent-indigo-600 rounded"
+                    className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
                   />
-                  <span className="text-xs font-semibold text-slate-200">
-                    Enable system maintenance mode
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    Bật chế độ bảo trì hệ thống (Maintenance Mode)
                   </span>
                 </label>
               </div>
@@ -178,23 +175,23 @@ export default function AdminSettingsPage() {
           {/* TAB 2: AI */}
           {activeTab === "ai" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">AI Engine & OCR Assistant Configuration</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Cấu Hình AI Engine & Nhận Diện OCR</h3>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Default AI Model</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mô Hình AI Mặc Định</label>
                 <select
                   value={aiModel}
                   onChange={(e) => setAiModel(e.target.value)}
-                  className="w-full max-w-md px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full max-w-md px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 >
-                  <option value="gemini-3.6-flash">Google Gemini 3.6 Flash (Fast & optimized)</option>
-                  <option value="gemini-3.6-pro">Google Gemini 3.6 Pro (Advanced analytics)</option>
+                  <option value="gemini-3.6-flash">Google Gemini 3.6 Flash (Nhanh & Tối ưu)</option>
+                  <option value="gemini-3.6-pro">Google Gemini 3.6 Pro (Phân tích chuyên sâu)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Minimum OCR Scan Confidence Threshold ({aiConfidence}%)
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Ngưỡng Tin Cậy Nhận Diện Hóa Đơn Tối Thiểu ({aiConfidence}%)
                 </label>
                 <input
                   type="range"
@@ -202,7 +199,7 @@ export default function AdminSettingsPage() {
                   max="99"
                   value={aiConfidence}
                   onChange={(e) => setAiConfidence(Number(e.target.value))}
-                  className="w-full max-w-md accent-indigo-600"
+                  className="w-full max-w-md accent-emerald-600 cursor-pointer"
                 />
               </div>
             </div>
@@ -211,25 +208,25 @@ export default function AdminSettingsPage() {
           {/* TAB 3: Email */}
           {activeTab === "email" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">SMTP Email Server Configuration</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Cấu Hình Máy Chủ Email SMTP</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">SMTP Host</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">SMTP Host</label>
                   <input
                     type="text"
                     value={smtpHost}
                     onChange={(e) => setSmtpHost(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">SMTP Port</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">SMTP Port</label>
                   <input
                     type="number"
                     value={smtpPort}
                     onChange={(e) => setSmtpPort(Number(e.target.value))}
-                    className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -239,17 +236,17 @@ export default function AdminSettingsPage() {
           {/* TAB 4: Security */}
           {activeTab === "security" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-100">Security & Login Session Management</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Bảo Mật & Quản Lý Phiên Làm Việc</h3>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Session Timeout (Minutes)
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Thời Gian Hết Hạn Phiên (Phút)
                 </label>
                 <input
                   type="number"
                   value={sessionTimeout}
                   onChange={(e) => setSessionTimeout(Number(e.target.value))}
-                  className="w-full max-w-md px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full max-w-md px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -259,23 +256,23 @@ export default function AdminSettingsPage() {
                     type="checkbox"
                     checked={require2FA}
                     onChange={(e) => setRequire2FA(e.target.checked)}
-                    className="w-4 h-4 accent-indigo-600 rounded"
+                    className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
                   />
-                  <span className="text-xs font-semibold text-slate-200">
-                    Require two-factor authentication (2FA) for Admin accounts
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    Bắt buộc xác thực hai yếu tố (2FA) cho tất cả tài khoản Quản trị viên
                   </span>
                 </label>
               </div>
             </div>
           )}
 
-          <div className="pt-4 border-t border-slate-800 flex justify-end">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
             <button
               type="submit"
-              className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-95"
             >
               <Save className="w-4 h-4" />
-              <span>Save All Settings</span>
+              <span>Lưu Cấu Hình</span>
             </button>
           </div>
         </form>
