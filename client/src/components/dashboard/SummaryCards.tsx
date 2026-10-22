@@ -1,5 +1,7 @@
 "use client";
 
+import { Wallet, ArrowDownLeft, ArrowUpRight, Target } from "lucide-react";
+
 interface SummaryCardsProps {
   totalBalance: number;
   monthlyIncome: number;
@@ -19,88 +21,75 @@ export default function SummaryCards({
 }: SummaryCardsProps) {
   const cards = [
     {
-      title: "Total Balance",
+      title: "Tổng Số Dư",
       amount: totalBalance,
       subtext:
         typeof walletCount === "number"
-          ? `Across ${walletCount} connected wallets`
-          : "Across connected wallets",
-      gradient: "from-emerald-500/10 to-teal-500/5",
-      borderColor: "border-emerald-500/30",
-      textColor: "text-emerald-400",
-      icon: (
-        <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+          ? `Từ ${walletCount} ví tài chính kết nối`
+          : "Từ các ví tài chính",
+      icon: Wallet,
+      iconColor: "text-indigo-600 dark:text-indigo-400",
+      iconBg: "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200/80 dark:border-indigo-500/20",
+      amountColor: "text-slate-900 dark:text-white",
     },
     {
-      title: "Monthly Income",
+      title: "Thu Nhập Tháng",
       amount: monthlyIncome,
-      subtext: "Total for the current month",
-      gradient: "from-blue-500/10 to-indigo-500/5",
-      borderColor: "border-blue-500/30",
-      textColor: "text-blue-400",
-      icon: (
-        <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-        </svg>
-      ),
+      subtext: "Tổng thu tháng này",
+      icon: ArrowDownLeft,
+      iconColor: "text-emerald-600 dark:text-emerald-400",
+      iconBg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200/80 dark:border-emerald-500/20",
+      amountColor: "text-emerald-600 dark:text-emerald-400",
     },
     {
-      title: "Monthly Expenses",
+      title: "Tổng Chi Tiêu",
       amount: monthlyExpense,
-      subtext: "Tracked this month",
-      gradient: "from-rose-500/10 to-pink-500/5",
-      borderColor: "border-rose-500/30",
-      textColor: "text-rose-400",
-      icon: (
-        <svg className="w-6 h-6 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-        </svg>
-      ),
+      subtext: "Chi tiêu đã ghi nhận",
+      icon: ArrowUpRight,
+      iconColor: "text-rose-600 dark:text-rose-400",
+      iconBg: "bg-rose-50 dark:bg-rose-500/10 border-rose-200/80 dark:border-rose-500/20",
+      amountColor: "text-rose-600 dark:text-rose-400",
     },
     {
-      title: "Remaining Budget",
+      title: "Ngân Sách Còn Lại",
       amount: remainingBudget,
       subtext:
-        typeof monthlyBudget === "number"
-          ? `Monthly limit: ${monthlyBudget.toLocaleString("en-US")} ₫`
-          : "Monthly limit",
-      gradient: "from-amber-500/10 to-orange-500/5",
-      borderColor: "border-amber-500/30",
-      textColor: "text-amber-400",
-      icon: (
-        <svg className="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+        typeof monthlyBudget === "number" && monthlyBudget > 0
+          ? `Hạn mức: ${monthlyBudget.toLocaleString("vi-VN")} ₫`
+          : "Chưa đặt hạn mức",
+      icon: Target,
+      iconColor: "text-amber-600 dark:text-amber-400",
+      iconBg: "bg-amber-50 dark:bg-amber-500/10 border-amber-200/80 dark:border-amber-500/20",
+      amountColor: "text-amber-600 dark:text-amber-400",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-      {cards.map((card, idx) => (
-        <div
-          key={idx}
-          className={`p-5 rounded-2xl bg-gradient-to-br ${card.gradient} bg-slate-900/60 border ${card.borderColor} backdrop-blur-sm transition-all hover:translate-y-[-2px] hover:shadow-lg`}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              {card.title}
-            </span>
-            <div className="p-2 rounded-xl bg-slate-800/80 border border-slate-700/60">
-              {card.icon}
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+      {cards.map((card, idx) => {
+        const Icon = card.icon;
+        return (
+          <div
+            key={idx}
+            className="p-5 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <div className="flex items-center justify-between mb-3.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                {card.title}
+              </span>
+              <div className={`p-2.5 rounded-xl border ${card.iconBg}`}>
+                <Icon className={`w-4 h-4 ${card.iconColor}`} strokeWidth={2} />
+              </div>
+            </div>
+            <div className={`text-2xl sm:text-[26px] font-extrabold tracking-tight ${card.amountColor} mb-1.5`}>
+              {card.amount.toLocaleString("vi-VN")} ₫
+            </div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              {card.subtext}
             </div>
           </div>
-          <div className={`text-2xl font-black tracking-tight ${card.textColor} mb-1`}>
-            {card.amount.toLocaleString("vi-VN")} ₫
-          </div>
-          <div className="text-xs text-slate-400 font-medium">
-            {card.subtext}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

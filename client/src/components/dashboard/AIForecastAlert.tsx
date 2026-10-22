@@ -1,5 +1,7 @@
 "use client";
 
+import { AlertTriangle, TrendingUp, CheckCircle2 } from "lucide-react";
+
 interface AIForecastAlertProps {
   monthlyExpense: number;
   monthlyBudget: number;
@@ -16,71 +18,82 @@ export default function AIForecastAlert({ monthlyExpense, monthlyBudget }: AIFor
 
   return (
     <div
-      className={`p-5 rounded-2xl border backdrop-blur-md transition-all ${
+      className={`p-5 rounded-2xl border backdrop-blur-md transition-all duration-200 ${
         isOverBudgetRisk
-          ? "bg-gradient-to-r from-rose-950/40 via-slate-900 to-slate-900 border-rose-500/40 shadow-rose-900/10 shadow-lg"
-          : "bg-slate-900/90 border-slate-800"
+          ? "bg-gradient-to-r from-rose-50/70 via-white to-white dark:from-rose-950/30 dark:via-slate-900 dark:to-slate-900 border-rose-200 dark:border-rose-500/30 shadow-xs"
+          : "bg-white dark:bg-slate-900/90 border-slate-200/90 dark:border-slate-800 shadow-xs"
       }`}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="flex items-start gap-3.5">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg border ${
+            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
               isOverBudgetRisk
-                ? "bg-rose-500/20 text-rose-400 border-rose-500/30 animate-pulse"
-                : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                ? "bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 border-rose-200 dark:border-rose-500/30"
+                : "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30"
             }`}
           >
-            {isOverBudgetRisk ? "⚠️" : "📊"}
+            {isOverBudgetRisk ? (
+              <AlertTriangle className="w-5 h-5 animate-pulse" strokeWidth={2} />
+            ) : (
+              <TrendingUp className="w-5 h-5" strokeWidth={2} />
+            )}
           </div>
 
           <div>
             <div className="flex items-center gap-2">
-              <h4 className="font-bold text-slate-100 text-sm">
-                AI Spending Forecast & Alerts
+              <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base">
+                Dự Báo & Cảnh Báo Ngân Sách AI
               </h4>
               <span
                 className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider ${
                   isOverBudgetRisk
-                    ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
-                    : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                    ? "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30"
+                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30"
                 }`}
               >
-                {isOverBudgetRisk ? "High Risk" : "On Track"}
+                {isOverBudgetRisk ? "Nguy Cơ Cao" : "Đúng Kế Hoạch"}
               </span>
             </div>
 
-            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed">
               {isOverBudgetRisk ? (
                 <>
-                  At your current spend rate (~
-                  <strong className="text-rose-400">{avgDailySpend.toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫/day</strong>
-                  ), AI projects end-of-month spend will reach{" "}
-                  <strong className="text-rose-400">{projectedTotal.toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫</strong> (Exceeding budget by{" "}
-                  {(projectedTotal - monthlyBudget).toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫). Consider curbing non-essential expenses!
+                  Tốc độ chi tiêu trung bình hiện tại (~
+                  <strong className="text-rose-600 dark:text-rose-400 font-semibold">
+                    {avgDailySpend.toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫/ngày
+                  </strong>
+                  ), AI ước tính cuối tháng chi tiêu sẽ đạt{" "}
+                  <strong className="text-rose-600 dark:text-rose-400 font-semibold">
+                    {projectedTotal.toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫
+                  </strong>{" "}
+                  (Vượt ngân sách {(projectedTotal - monthlyBudget).toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫). Hãy cân nhắc cắt giảm chi tiêu không thiết yếu!
                 </>
               ) : (
                 <>
-                  Your average daily spending is at{" "}
-                  <strong className="text-emerald-400">{avgDailySpend.toLocaleString("en-US", { maximumFractionDigits: 0 })} ₫/day</strong>. Month-end forecast remains safely within your limit ({monthlyBudget.toLocaleString("en-US")} ₫).
+                  Mức chi tiêu trung bình đang ở mức{" "}
+                  <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                    {avgDailySpend.toLocaleString("vi-VN", { maximumFractionDigits: 0 })} ₫/ngày
+                  </strong>
+                  . Dự báo cuối tháng nằm trong giới hạn an toàn của ngân sách ({monthlyBudget.toLocaleString("vi-VN")} ₫).
                 </>
               )}
             </p>
           </div>
         </div>
 
-        <div className="text-right shrink-0">
-          <span className="text-xs text-slate-400 block font-medium">Budget Pace</span>
-          <span className={`text-lg font-extrabold ${isOverBudgetRisk ? "text-rose-400" : "text-emerald-400"}`}>
+        <div className="text-left sm:text-right shrink-0 pl-13 sm:pl-0">
+          <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Tiến độ chi tiêu</span>
+          <span className={`text-xl font-black ${isOverBudgetRisk ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
             {percentUsed.toFixed(1)}%
           </span>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="mt-4 w-full h-2 rounded-full bg-slate-800 overflow-hidden relative">
+      <div className="mt-4 w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden relative">
         <div
-          className={`h-full transition-all duration-500 ${
+          className={`h-full transition-all duration-500 rounded-full ${
             isOverBudgetRisk
               ? "bg-gradient-to-r from-amber-500 to-rose-500"
               : "bg-gradient-to-r from-emerald-500 to-teal-400"
