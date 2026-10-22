@@ -37,3 +37,12 @@ All notable changes to this project will be documented in this file.
 - English localization completed for the remaining UI, authentication and NLP output strings.
 - `SECRET_KEY` can now be overridden from the root `.env` file consumed by Docker Compose.
 - The security layer honours `ALGORITHM` and `ACCESS_TOKEN_EXPIRE_DAYS`; `ACCESS_TOKEN_EXPIRE_MINUTES` is still accepted as a legacy alias.
+
+## [0.6.1] - 2026-10-22
+### Fixed
+- Smart Input amount parsing misread the most common VND formats: `50000` became `500`, `50.000` became `50` and `1.500.000` silently fell back to the `50000` default. Thousands groups, decimal amounts (`$5.50`) and both separator styles are now handled.
+- The `ăn` keyword no longer matches inside other words, so `đổ xăng` (gasoline) is classified as Transportation instead of Food & Dining.
+- Magnitude suffixes only match standalone units, so `15m2` is no longer read as 15 million VND.
+
+### Added
+- Backend unit tests for the Smart Input amount parser and intent classifier (`server/tests`), executed by `scripts/check.ps1`.

@@ -1,5 +1,5 @@
 import re
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from datetime import datetime
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
@@ -15,30 +15,66 @@ from server.schemas.common import APIResponse
 
 router = APIRouter(prefix="/ai", tags=["AI Services"])
 
+# A number written the way users actually type it: "50000", "50.000", "5.50".
+NUMBER_PATTERN = r'\d[\d.,]*\d|\d'
+
+
+def _parse_number_token(token: str) -> Decimal | None:
+    """Turn a raw numeric token into a Decimal, resolving VN/EN separator styles.
+
+    "50.000" and "1,500" are thousands groupings, while "5.50" and "12,5" are
+    decimals, so the separator is classified by the length of the digit groups.
+    """
+    cleaned = re.sub(r'[^\d.,]', '', token).strip('.,')
+    if not cleaned:
+        return None
+
+    has_dot, has_comma = '.' in cleaned, ',' in cleaned
+
+    if has_dot and has_comma:
+        # The last separator is the decimal marker: 1.234,56 or 1,234.56
+        decimal_sep = '.' if cleaned.rfind('.') > cleaned.rfind(',') else ','
+        cleaned = cleaned.replace(',' if decimal_sep == '.' else '.', '')
+        cleaned = cleaned.replace(decimal_sep, '.')
+    elif has_dot or has_comma:
+        sep = '.' if has_dot else ','
+        head, _, tail = cleaned.partition(sep)
+        if sep in tail or (head and len(tail) == 3):
+            # Repeated separators or a 3-digit group: thousands grouping.
+            cleaned = cleaned.replace(sep, '')
+        else:
+            cleaned = f'{head}.{tail}'
+
+    try:
+        return Decimal(cleaned)
+    except InvalidOperation:
+        return None
+
+
 def parse_currency_amount(text: str) -> Decimal:
     """Parses text amounts like '$45', '45k', '50.000', '15m' into Decimal."""
     text_clean = text.lower()
 
-    # Millions ($15m, 15tr, 15m)
-    m_match = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:m|tr|triệu|million)', text_clean)
+    # Millions ("15m", "15tr", "15 triệu", "15 million")
+    m_match = re.search(rf'({NUMBER_PATTERN})\s*(?:m|tr|triệu|trieu|million)\b', text_clean)
     if m_match:
-        num = float(m_match.group(1).replace(',', '.'))
-        return Decimal(str(int(num * 1_000_000)))
+        value = _parse_number_token(m_match.group(1))
+        if value is not None:
+            return (value * 1_000_000).to_integral_value()
 
-    # Thousands ($45k, 45k)
-    k_match = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:k|thousand|nghìn)', text_clean)
+    # Thousands ("45k", "45 thousand", "45 nghìn", "45 ngàn")
+    k_match = re.search(rf'({NUMBER_PATTERN})\s*(?:k|thousand|nghìn|nghin|ngàn|ngan)\b', text_clean)
     if k_match:
-        num = float(k_match.group(1).replace(',', '.'))
-        return Decimal(str(int(num * 1_000)))
+        value = _parse_number_token(k_match.group(1))
+        if value is not None:
+            return (value * 1_000).to_integral_value()
 
-    # Plain numbers or currency ($50.00, 50000)
-    num_match = re.search(r'\$?\s*(\d{1,3}(?:[.,]\d{3})*|\d+)(?:\.\d{1,2})?', text_clean)
+    # Plain numbers or currency ("$50.00", "50.000", "50000")
+    num_match = re.search(NUMBER_PATTERN, text_clean)
     if num_match:
-        clean_num = re.sub(r'[^\d.]', '', num_match.group(0))
-        try:
-            return Decimal(clean_num)
-        except Exception:
-            pass
+        value = _parse_number_token(num_match.group(0))
+        if value is not None:
+            return value
 
     return Decimal("50000")
 
@@ -46,7 +82,8 @@ def classify_intent_english(text: str):
     t = text.lower()
     if any(k in t for k in ["salary", "bonus", "income", "freelance", "paycheck", "lương"]):
         return "Salary & Income", "INCOME", 0.95
-    if any(k in t for k in ["food", "lunch", "dinner", "breakfast", "coffee", "cafe", "meal", "restaurant", "phở", "ăn", "uống"]):
+    # "ăn" needs word boundaries: as a plain substring it also matches "xăng" (gasoline).
+    if any(k in t for k in ["food", "lunch", "dinner", "breakfast", "coffee", "cafe", "meal", "restaurant", "phở", "uống"]) or re.search(r'\băn\b', t):
         return "Food & Dining", "EXPENSE", 0.93
     if any(k in t for k in ["gas", "fuel", "taxi", "uber", "grab", "subway", "train", "bus", "transport", "xe", "xăng"]):
         return "Transportation", "EXPENSE", 0.94
