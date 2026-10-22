@@ -173,8 +173,8 @@ export default function AdminUsersPage() {
   return (
     <div className="flex-1 pb-12">
       <AdminHeader
-        title="👤 System User Management"
-        subtitle="Account list, roles, lock status, and user balances"
+        title="Quản Lý Người Dùng Hệ Thống"
+        subtitle="Danh sách tài khoản, phân quyền vai trò, trạng thái khóa và số dư người dùng"
       />
 
       <div className="p-8 space-y-6 max-w-7xl mx-auto">

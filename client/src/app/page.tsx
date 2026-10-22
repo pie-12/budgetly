@@ -20,6 +20,7 @@ import {
   toNumber,
   UiTransaction,
 } from "@/services/api";
+import { AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 
 export default function Home() {
   const [summary, setSummary] = useState<ApiAnalyticsSummary | null>(null);
@@ -46,7 +47,7 @@ export default function Home() {
       setWallets(walletsRes.data);
       setCategories(categoriesRes.data);
     } catch (err) {
-      setError(getErrorMessage(err, "Failed to load the dashboard"));
+      setError(getErrorMessage(err, "Không thể tải dữ liệu bảng điều khiển"));
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +62,7 @@ export default function Home() {
       await api.deleteTransaction(String(id));
       loadData();
     } catch (err) {
-      setError(getErrorMessage(err, "Failed to delete the transaction"));
+      setError(getErrorMessage(err, "Không thể xóa giao dịch"));
     }
   };
 
@@ -79,7 +80,7 @@ export default function Home() {
   }));
 
   return (
-    <div className="flex min-h-screen bg-slate-950 font-sans text-slate-100">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* Navigation Sidebar */}
       <Sidebar />
 
@@ -90,22 +91,27 @@ export default function Home() {
           onOpenOCRModal={() => setIsOCRModalOpen(true)}
         />
 
-        <main className="p-8 space-y-8 flex-1 overflow-y-auto">
+        <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 flex-1 overflow-y-auto">
           {error && (
-            <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
-              <span>⚠ {error}</span>
+            <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-xs text-rose-700 dark:text-rose-300">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" strokeWidth={2} />
+                <span>{error}</span>
+              </div>
               <button
                 onClick={loadData}
-                className="px-3 py-1.5 rounded-lg bg-rose-500/20 border border-rose-500/40 font-semibold hover:bg-rose-500/30 transition-all"
+                className="px-3 py-1.5 rounded-xl bg-rose-100 dark:bg-rose-500/20 border border-rose-300 dark:border-rose-500/40 font-bold hover:bg-rose-200 dark:hover:bg-rose-500/30 transition-all flex items-center gap-1.5"
               >
-                Retry
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Thử lại</span>
               </button>
             </div>
           )}
 
           {isLoading ? (
-            <div className="h-64 flex items-center justify-center rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 text-sm animate-pulse">
-              Loading dashboard...
+            <div className="h-72 flex flex-col items-center justify-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-sm gap-3 shadow-xs">
+              <Loader2 className="w-6 h-6 animate-spin text-emerald-600 dark:text-emerald-400" />
+              <span>Đang tải bảng điều khiển tài chính...</span>
             </div>
           ) : (
             <>
@@ -129,7 +135,7 @@ export default function Home() {
               />
 
               {/* Dashboard Visuals Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
                 <div className="lg:col-span-2">
                   <RecentTransactions
                     transactions={transactions}
