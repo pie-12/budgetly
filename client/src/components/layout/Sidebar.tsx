@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   LayoutDashboard,
   Wallet,
@@ -17,47 +18,58 @@ import {
   UserPlus,
 } from "lucide-react";
 
-const navItems = [
-  {
-    name: "Bảng điều khiển",
-    href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Ví tài chính",
-    href: "/wallets",
-    icon: Wallet,
-  },
-  {
-    name: "Giao dịch",
-    href: "/transactions",
-    icon: ArrowLeftRight,
-  },
-  {
-    name: "Ngân sách",
-    href: "/budgets",
-    icon: Target,
-  },
-  {
-    name: "Báo cáo & Thống kê",
-    href: "/analytics",
-    icon: BarChart3,
-  },
-  {
-    name: "Cài đặt",
-    href: "/settings",
-    icon: Settings,
-  },
-  {
-    name: "Quản trị hệ thống",
-    href: "/admin",
-    icon: ShieldCheck,
-  },
-];
-
 export default function Sidebar() {
   const pathname = usePathname();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { t } = useLanguage();
+
+  const navItems = [
+    {
+      name: t("nav_dashboard"),
+      href: "/",
+      icon: LayoutDashboard,
+      adminOnly: false,
+    },
+    {
+      name: t("nav_wallets"),
+      href: "/wallets",
+      icon: Wallet,
+      adminOnly: false,
+    },
+    {
+      name: t("nav_transactions"),
+      href: "/transactions",
+      icon: ArrowLeftRight,
+      adminOnly: false,
+    },
+    {
+      name: t("nav_budgets"),
+      href: "/budgets",
+      icon: Target,
+      adminOnly: false,
+    },
+    {
+      name: t("nav_analytics"),
+      href: "/analytics",
+      icon: BarChart3,
+      adminOnly: false,
+    },
+    {
+      name: t("nav_settings"),
+      href: "/settings",
+      icon: Settings,
+      adminOnly: false,
+    },
+    {
+      name: t("nav_admin"),
+      href: "/admin",
+      icon: ShieldCheck,
+      adminOnly: true, // Only show for demo@budgetly.app and admin@budgetly.app
+    },
+  ];
+
+  // Filter items based on admin status
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || isAdmin);
 
   const userInitial = user?.full_name
     ? user.full_name.charAt(0).toUpperCase()
@@ -76,27 +88,27 @@ export default function Sidebar() {
           <div>
             <div className="flex items-center gap-1.5">
               <h1 className="font-bold text-base tracking-tight text-slate-900 dark:text-white leading-none">
-                Budgetly
+                {t("app_name")}
               </h1>
               <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
                 AI
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Quản Lý Tài Chính Thông Minh</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t("app_subtitle")}</p>
           </div>
         </div>
 
         {/* Navigation Items */}
         <nav className="p-4 space-y-1 overflow-y-auto flex-1">
           <div className="px-3 pb-2 text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-            Menu Chính
+            {t("main_menu")}
           </div>
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             return (
               <Link
-                key={item.name}
+                key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
                   isActive
@@ -111,6 +123,11 @@ export default function Sidebar() {
                   strokeWidth={isActive ? 2 : 1.75}
                 />
                 <span>{item.name}</span>
+                {item.adminOnly && (
+                  <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 uppercase">
+                    Admin
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -118,7 +135,7 @@ export default function Sidebar() {
       </div>
 
       {/* AI Assistant Banner */}
-      <div className="p-3.5 mx-3 mb-3 rounded-2xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200/80 dark:border-slate-800">
+      <div className="p-3.5 mx-3 mb-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
         <div className="flex items-center gap-2 mb-1.5">
           <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" strokeWidth={1.8} />
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Budgetly Copilot</span>
@@ -130,7 +147,7 @@ export default function Sidebar() {
           <span>AI Engine</span>
           <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Hoạt động
+            {t("active")}
           </span>
         </div>
       </div>
@@ -145,7 +162,7 @@ export default function Sidebar() {
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
-                  {user.full_name || "Người dùng"}
+                  {user.full_name || "User"}
                 </p>
                 <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
               </div>
@@ -153,8 +170,8 @@ export default function Sidebar() {
 
             <button
               onClick={logout}
-              title="Đăng xuất khỏi hệ thống"
-              className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
+              title={t("logout")}
+              className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors shrink-0 cursor-pointer"
             >
               <LogOut className="w-4 h-4" strokeWidth={1.8} />
             </button>
@@ -166,14 +183,14 @@ export default function Sidebar() {
               className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs transition-all"
             >
               <LogIn className="w-3.5 h-3.5" strokeWidth={1.8} />
-              <span>Đăng Nhập</span>
+              <span>{t("login")}</span>
             </Link>
             <Link
               href="/register"
               className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-slate-700/60 transition-all"
             >
               <UserPlus className="w-3.5 h-3.5" strokeWidth={1.8} />
-              <span>Đăng Ký Tài Khoản</span>
+              <span>{t("register")}</span>
             </Link>
           </div>
         )}

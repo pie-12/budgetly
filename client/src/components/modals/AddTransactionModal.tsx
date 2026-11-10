@@ -9,6 +9,7 @@ import {
   TransactionPayload,
 } from "@/services/api";
 import { X, Plus, AlertCircle, Loader2 } from "lucide-react";
+import { useLanguage, formatCategoryName } from "@/context/LanguageContext";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export default function AddTransactionModal({
   wallets,
   categories,
 }: AddTransactionModalProps) {
+  const { language } = useLanguage();
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<"expense" | "income">("expense");
@@ -93,7 +95,7 @@ export default function AddTransactionModal({
         <div className="flex items-center justify-between pb-4 border-b border-slate-200/80 dark:border-slate-800">
           <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <Plus className="w-5 h-5 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
-            <span>Thêm Giao Dịch Mới</span>
+            <span>Thêm giao dịch mới</span>
           </h3>
           <button
             onClick={onClose}
@@ -115,7 +117,7 @@ export default function AddTransactionModal({
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              Khoản Chi (Expense)
+              Khoản chi (Expense)
             </button>
             <button
               type="button"
@@ -126,14 +128,14 @@ export default function AddTransactionModal({
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              Khoản Thu (Income)
+              Khoản thu (Income)
             </button>
           </div>
 
           {/* Amount */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Số Tiền (VNĐ)
+              Số tiền (VNĐ)
             </label>
             <input
               type="number"
@@ -148,7 +150,7 @@ export default function AddTransactionModal({
           {/* Description */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Nội Dung Giao Dịch
+              Nội dung giao dịch
             </label>
             <input
               type="text"
@@ -164,7 +166,7 @@ export default function AddTransactionModal({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                Danh Mục
+                Danh mục
               </label>
               <select
                 value={categoryId}
@@ -176,7 +178,7 @@ export default function AddTransactionModal({
                 ) : (
                   categories.map((category) => (
                     <option key={category.id} value={category.id}>
-                      {category.name}
+                      {formatCategoryName(category.name, language)}
                     </option>
                   ))
                 )}
@@ -185,7 +187,7 @@ export default function AddTransactionModal({
 
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                Ví Thanh Toán
+                Ví thanh toán
               </label>
               <select
                 value={walletId}
@@ -208,7 +210,7 @@ export default function AddTransactionModal({
           {/* Date */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Ngày Giao Dịch
+              Ngày giao dịch
             </label>
             <input
               type="date"
@@ -245,7 +247,7 @@ export default function AddTransactionModal({
                   <span>Đang lưu...</span>
                 </>
               ) : (
-                "Lưu Giao Dịch"
+                "Lưu giao dịch"
               )}
             </button>
           </div>

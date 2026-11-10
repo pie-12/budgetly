@@ -139,6 +139,41 @@ export interface BudgetPayload {
   month_year: string;
 }
 
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+}
+
+export interface UpdateProfilePayload {
+  full_name: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: string;
+  status: string;
+  balance: number;
+  wallets_count: number;
+  transactions_count: number;
+  joined_date: string;
+  created_at: string;
+}
+
+export interface CreateAdminUserPayload {
+  email: string;
+  password: string;
+  full_name?: string;
+  role?: string;
+}
+
+export interface UpdateAdminUserPayload {
+  full_name?: string;
+  password?: string;
+  role?: string;
+}
+
 // --- Core fetch wrapper ---
 
 const TOKEN_KEY = "budgetly_auth_token";
@@ -227,6 +262,21 @@ export const api = {
     return request<ApiOcrResult>("/ai/scan-receipt", { method: "POST", body: form });
   },
   getForecast: () => request<ApiForecast>("/ai/forecast"),
+
+  // --- Auth & User Profile ---
+  changePassword: (payload: ChangePasswordPayload) =>
+    request<{ user_id: string }>("/auth/change-password", jsonInit("POST", payload)),
+  updateProfile: (payload: UpdateProfilePayload) =>
+    request<{ id: string; email: string; full_name: string; created_at: string }>("/auth/profile", jsonInit("PUT", payload)),
+
+  // --- Admin User Management ---
+  getAdminUsers: () => request<AdminUser[]>("/users"),
+  createAdminUser: (payload: CreateAdminUserPayload) =>
+    request<AdminUser>("/users", jsonInit("POST", payload)),
+  updateAdminUser: (id: string, payload: UpdateAdminUserPayload) =>
+    request<AdminUser>(`/users/${id}`, jsonInit("PUT", payload)),
+  deleteAdminUser: (id: string) =>
+    request<{ deleted_id: string }>(`/users/${id}`, { method: "DELETE" }),
 };
 
 // --- UI view models ---

@@ -1,6 +1,7 @@
 "use client";
 
 import { Wallet, ArrowDownLeft, ArrowUpRight, Target } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface SummaryCardsProps {
   totalBalance: number;
@@ -19,44 +20,46 @@ export default function SummaryCards({
   walletCount,
   monthlyBudget,
 }: SummaryCardsProps) {
+  const { t, language } = useLanguage();
+
   const cards = [
     {
-      title: "Tổng Số Dư",
+      title: t("total_balance"),
       amount: totalBalance,
       subtext:
         typeof walletCount === "number"
-          ? `Từ ${walletCount} ví tài chính kết nối`
-          : "Từ các ví tài chính",
+          ? (language === "vi" ? `Từ ${walletCount} ví tài chính kết nối` : `From ${walletCount} linked wallets`)
+          : (language === "vi" ? "Từ các ví tài chính" : "From financial wallets"),
       icon: Wallet,
       iconColor: "text-indigo-600 dark:text-indigo-400",
       iconBg: "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200/80 dark:border-indigo-500/20",
       amountColor: "text-slate-900 dark:text-white",
     },
     {
-      title: "Thu Nhập Tháng",
+      title: t("monthly_income"),
       amount: monthlyIncome,
-      subtext: "Tổng thu tháng này",
+      subtext: language === "vi" ? "Tổng thu tháng này" : "Recorded monthly income",
       icon: ArrowDownLeft,
       iconColor: "text-emerald-600 dark:text-emerald-400",
       iconBg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200/80 dark:border-emerald-500/20",
       amountColor: "text-emerald-600 dark:text-emerald-400",
     },
     {
-      title: "Tổng Chi Tiêu",
+      title: t("monthly_expense"),
       amount: monthlyExpense,
-      subtext: "Chi tiêu đã ghi nhận",
+      subtext: language === "vi" ? "Chi tiêu đã ghi nhận" : "Recorded expenses this month",
       icon: ArrowUpRight,
       iconColor: "text-rose-600 dark:text-rose-400",
       iconBg: "bg-rose-50 dark:bg-rose-500/10 border-rose-200/80 dark:border-rose-500/20",
       amountColor: "text-rose-600 dark:text-rose-400",
     },
     {
-      title: "Ngân Sách Còn Lại",
+      title: language === "vi" ? "Ngân sách còn lại" : "Remaining Budget",
       amount: remainingBudget,
       subtext:
         typeof monthlyBudget === "number" && monthlyBudget > 0
-          ? `Hạn mức: ${monthlyBudget.toLocaleString("vi-VN")} ₫`
-          : "Chưa đặt hạn mức",
+          ? `${language === "vi" ? "Hạn mức" : "Cap"}: ${monthlyBudget.toLocaleString("vi-VN")} ₫`
+          : (language === "vi" ? "Chưa đặt hạn mức" : "No budget cap set"),
       icon: Target,
       iconColor: "text-amber-600 dark:text-amber-400",
       iconBg: "bg-amber-50 dark:bg-amber-500/10 border-amber-200/80 dark:border-amber-500/20",
@@ -71,7 +74,7 @@ export default function SummaryCards({
         return (
           <div
             key={idx}
-            className="p-5 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+            className="p-5 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
           >
             <div className="flex items-center justify-between mb-3.5">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">

@@ -10,11 +10,19 @@ export interface User {
   created_at?: string;
 }
 
+export const ADMIN_EMAILS = ["demo@budgetly.app", "admin@budgetly.app"];
+
+export function isAdminUser(email?: string | null): boolean {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+}
+
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   register: (email: string, password: string, fullName?: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
@@ -215,6 +223,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const isAdmin = isAdminUser(user?.email);
+
   return (
     <AuthContext.Provider
       value={{
@@ -222,6 +232,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         token,
         isLoading,
         isAuthenticated: !!token && !!user,
+        isAdmin,
         login,
         register,
         logout,
