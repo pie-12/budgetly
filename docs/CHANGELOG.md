@@ -46,3 +46,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Backend unit tests for the Smart Input amount parser and intent classifier (`server/tests`), executed by `scripts/check.ps1`.
+
+## [0.7.0] - 2026-11-10
+### Added
+- The Core API now delegates the two AI flows to the AI Engine microservice through `AI_ENGINE_URL` (`server/services/ai_engine.py`): Smart Input calls `POST /api/v1/ai/categorize` and receipt scanning calls `POST /api/v1/ai/ocr-receipt`. The documented microservice boundary is no longer only on the diagram.
+- `source` field on `/ai/smart-input` and `/ai/scan-receipt` responses (`ai_engine` or `local`), so it is visible which implementation produced the data.
+- Unit tests for the AI engine client (fallback, untrusted payloads, multipart upload) and for the forecasting helpers.
+
+### Changed
+- Receipt uploads are validated before being forwarded: images only (`415` otherwise) and at most `5 MB` (`413`).
+- `/ai/forecast` measures the current month with `calendar.monthrange` instead of assuming 30 days.
+
+### Fixed
+- Month-end projection divided by a hardcoded 30 days, which under-projected February and over-projected 31-day months. It now projects over the real length of the current month and clamps the elapsed day to it.

@@ -120,6 +120,7 @@ sequenceDiagram
   - **NLP Categorization Service:** Reads and understands natural-language text; determines the intent, amount, date, category, and confidence score.
   - **OCR Receipt Parsing Service:** Preprocesses receipt images, extracts the text string via the OCR engine, and passes it through the language model to convert it into standard structured JSON.
   - **Analytics & Forecasting Service:** Runs statistical algorithms (Z-score anomaly detection) on the transaction data series of the last 3 months to forecast spending and issue early warnings.
+- **Invocation:** the Core API reaches the engine over HTTP through `AI_ENGINE_URL` (`server/services/ai_engine.py`). If the engine is not configured or does not answer within `AI_ENGINE_TIMEOUT_SECONDS`, the Core API serves the request with its local heuristics and marks the reply `source="local"`, so a container that is still warming up cannot break expense tracking.
 
 ### 4.4. Database Layer (`/server/models`)
 - **Technology:** PostgreSQL 15+.

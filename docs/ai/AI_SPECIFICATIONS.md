@@ -14,6 +14,20 @@ The AI subsystem is built as an independent microservice (`/ai_engine`) that com
 2. **OCR Receipt Scanner & Structurer:** Extracts text from receipt images and normalizes it into JSON objects.
 3. **Predictive Spending Analytics & Anomaly Detector:** Analyzes spending time series to forecast and detect anomalies.
 
+### 1.1. Integration Contract & Graceful Degradation
+
+The Core Backend is the only service the Client talks to; it fans out to the AI microservice:
+
+| Caller | Endpoint | Engine route |
+| :--- | :--- | :--- |
+| `POST /api/v1/ai/smart-input` | NLP parse | `POST /api/v1/ai/categorize` |
+| `POST /api/v1/ai/scan-receipt` | Receipt OCR | `POST /api/v1/ai/ocr-receipt` |
+
+- **Configuration:** `AI_ENGINE_URL` (for example `http://localhost:8001` or `http://ai_engine:8001` inside Compose) and `AI_ENGINE_TIMEOUT_SECONDS` (default `2.5`).
+- **Fallback:** when the variable is unset, the engine is unreachable, the request times out, or the payload fails validation, the Core API answers with its built-in deterministic heuristics instead of returning an error. The financial API must never depend on the AI process being alive.
+- **Transparency:** both responses carry a `source` field — `ai_engine` when the microservice answered, `local` for the fallback — so a demo or the report can state exactly which path produced the data.
+- **Upload validation:** receipt scanning accepts images only (`415` otherwise) and rejects files above `5 MB` (`413`), before anything is forwarded to the engine.
+
 ---
 
 ## 2. Feature 1: NLP Smart Transaction Categorization Engine
