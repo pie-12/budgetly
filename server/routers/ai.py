@@ -1,7 +1,7 @@
 import re
 from decimal import Decimal, InvalidOperation
 from datetime import datetime
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from server.db.session import get_db
@@ -10,6 +10,8 @@ from server.models.wallet import Wallet
 from server.models.transaction import Transaction
 from server.models.budget import Budget
 from server.core.deps import get_current_user
+from server.services import ai_engine
+from server.services.forecast import days_in_month, elapsed_days, project_month_end
 from server.schemas.ai import SmartInputRequest, SmartInputResponse, OCRScanResponse, AIForecastResponse
 from server.schemas.common import APIResponse
 
@@ -102,8 +104,20 @@ def smart_input_nlp(
     current_user: User = Depends(get_current_user)
 ):
     raw = payload.raw_text.strip()
-    amount = parse_currency_amount(raw)
-    category, tx_type, confidence = classify_intent_english(raw)
+
+    # Prefer the AI microservice; fall back to the built-in heuristics when it is
+    # not configured, unreachable, or answers with a payload we cannot trust.
+    engine_result = ai_engine.categorize(raw)
+    if engine_result:
+        amount = Decimal(str(engine_result["amount"]))
+        category = engine_result["category"]
+        tx_type = engine_result["type"]
+        confidence = engine_result["confidence"]
+        source = "ai_engine"
+    else:
+        amount = parse_currency_amount(raw)
+        category, tx_type, confidence = classify_intent_english(raw)
+        source = "local"
 
     # Suggest one of the user's own wallets instead of a hardcoded name.
     wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
@@ -115,7 +129,8 @@ def smart_input_nlp(
             category=category,
             type=tx_type,
             suggested_wallet=wallet.name if wallet else None,
-            confidence_score=confidence
+            confidence_score=confidence,
+            source=source
         ),
         message="Transaction NLP extraction successful"
     )
@@ -125,6 +140,42 @@ async def scan_receipt_ocr(
     file: UploadFile = File(None),
     current_user: User = Depends(get_current_user)
 ):
+    engine_result = None
+    if file is not None:
+        content_type = (file.content_type or "").lower()
+        if content_type and not content_type.startswith("image/"):
+            raise HTTPException(
+                status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                detail="Receipt scanning accepts image uploads only",
+            )
+
+        content = await file.read()
+        if len(content) > ai_engine.MAX_RECEIPT_BYTES:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Receipt image is larger than 5 MB",
+            )
+        engine_result = ai_engine.scan_receipt(
+            file.filename or "receipt.jpg",
+            content,
+            content_type or "image/jpeg",
+        )
+
+    if engine_result:
+        return APIResponse(
+            data=OCRScanResponse(
+                merchant=engine_result["merchant"],
+                date=engine_result["date"],
+                total_amount=Decimal(str(engine_result["total_amount"])),
+                confidence_score=engine_result["confidence"],
+                items=engine_result["items"],
+                suggested_category=engine_result["category"],
+                source="ai_engine"
+            ),
+            message="Receipt OCR scanned and parsed successfully"
+        )
+
+    # Demo payload kept for local development without the AI engine running.
     return APIResponse(
         data=OCRScanResponse(
             merchant="WINMART GROCERY & FRESH",
@@ -132,7 +183,8 @@ async def scan_receipt_ocr(
             total_amount=Decimal("185000"),
             confidence_score=0.94,
             items=["Fresh Milk 1L", "Whole Wheat Bread", "Organic Eggs (6-pack)"],
-            suggested_category="Food & Dining"
+            suggested_category="Food & Dining",
+            source="local"
         ),
         message="Receipt OCR scanned and parsed successfully"
     )
@@ -143,8 +195,8 @@ def get_ai_forecast(
     current_user: User = Depends(get_current_user)
 ):
     now = datetime.utcnow()
-    today = max(now.day, 1)
-    days_in_month = 30
+    total_days = days_in_month(now)
+    elapsed = elapsed_days(now)
     current_month = now.strftime("%Y-%m")
     month_start = datetime(now.year, now.month, 1)
 
@@ -164,7 +216,7 @@ def get_ai_forecast(
     ).scalar()
     budget_limit = Decimal(str(budget_limit))
 
-    projected = (spent_so_far / Decimal(str(today))) * Decimal(str(days_in_month))
+    projected = project_month_end(spent_so_far, elapsed, total_days)
 
     if budget_limit <= 0:
         return APIResponse(

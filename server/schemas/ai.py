@@ -12,6 +12,8 @@ class SmartInputResponse(BaseModel):
     type: str  # "INCOME" or "EXPENSE"
     suggested_wallet: Optional[str] = "Cash Wallet"
     confidence_score: float
+    # "ai_engine" when the AI microservice answered, "local" for the built-in fallback.
+    source: str = "local"
 
 class OCRScanResponse(BaseModel):
     merchant: Optional[str] = None
@@ -20,6 +22,8 @@ class OCRScanResponse(BaseModel):
     confidence_score: float
     items: Optional[List[str]] = []
     suggested_category: str = "Food & Dining"
+    # "ai_engine" when the AI microservice answered, "local" for the demo fallback.
+    source: str = "local"
 
 class AIForecastResponse(BaseModel):
     forecast_total: Decimal
