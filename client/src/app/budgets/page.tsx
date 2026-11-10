@@ -6,10 +6,12 @@ import Header from "@/components/layout/Header";
 import CategoryIcon from "@/components/common/CategoryIcon";
 import { api, ApiBudget, ApiCategory, getErrorMessage, toNumber } from "@/services/api";
 import { Target, Plus, AlertCircle, RefreshCw, X, Loader2, AlertTriangle } from "lucide-react";
+import { useLanguage, formatCategoryName } from "@/context/LanguageContext";
 
 const currentMonth = new Date().toISOString().slice(0, 7);
 
 export default function BudgetsPage() {
+  const { t, language } = useLanguage();
   const [budgets, setBudgets] = useState<ApiBudget[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -78,10 +80,10 @@ export default function BudgetsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-                Quản Lý Ngân Sách
+                {t("budgets_title")}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Thiết lập hạn mức chi tiêu cho từng danh mục trong tháng hiện tại
+                {t("budgets_subtitle")}
               </p>
             </div>
             <button
@@ -89,7 +91,7 @@ export default function BudgetsPage() {
               className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition-all active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Thiết Lập Ngân Sách</span>
+              <span>{t("set_budget")}</span>
             </button>
           </div>
 
@@ -134,7 +136,7 @@ export default function BudgetsPage() {
                           <CategoryIcon name={budget.category_name} icon={budget.category_icon} className="w-4 h-4" />
                         </div>
                         <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100">
-                          {budget.category_name}
+                          {formatCategoryName(budget.category_name, language)}
                         </h4>
                       </div>
                       <span
@@ -144,16 +146,16 @@ export default function BudgetsPage() {
                             : "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30"
                         }`}
                       >
-                        {percentage.toFixed(0)}% Đã dùng
+                        {percentage.toFixed(0)}% {language === "vi" ? "đã dùng" : "used"}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-baseline text-xs text-slate-500 dark:text-slate-400 font-mono">
                       <span>
-                        Đã chi: <b className="text-slate-900 dark:text-slate-100">{spent.toLocaleString("vi-VN")} ₫</b>
+                        {language === "vi" ? "Đã chi:" : "Spent:"} <b className="text-slate-900 dark:text-slate-100">{spent.toLocaleString("vi-VN")} ₫</b>
                       </span>
                       <span>
-                        Hạn mức: <b className="text-slate-700 dark:text-slate-300">{cap.toLocaleString("vi-VN")} ₫</b>
+                        {language === "vi" ? "Hạn mức:" : "Limit:"} <b className="text-slate-700 dark:text-slate-300">{cap.toLocaleString("vi-VN")} ₫</b>
                       </span>
                     </div>
 
@@ -166,10 +168,10 @@ export default function BudgetsPage() {
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1">
-                      <span>Còn lại: <strong className="text-slate-700 dark:text-slate-300 font-mono">{Math.max(cap - spent, 0).toLocaleString("vi-VN")} ₫</strong></span>
+                      <span>{language === "vi" ? "Còn lại:" : "Remaining:"} <strong className="text-slate-700 dark:text-slate-300 font-mono">{Math.max(cap - spent, 0).toLocaleString("vi-VN")} ₫</strong></span>
                       {isWarning && (
                         <span className="text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
-                          <AlertTriangle className="w-3.5 h-3.5" /> Sắp chạm hạn mức
+                          <AlertTriangle className="w-3.5 h-3.5" /> {language === "vi" ? "Sắp chạm hạn mức" : "Near limit"}
                         </span>
                       )}
                     </div>
@@ -186,7 +188,7 @@ export default function BudgetsPage() {
                 <div className="flex items-center justify-between pb-3.5 border-b border-slate-200/80 dark:border-slate-800 mb-4">
                   <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                     <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                    <span>Thiết Lập Hạn Mức Ngân Sách</span>
+                    <span>{language === "vi" ? "Thiết lập hạn mức ngân sách" : "Set Budget Limit"}</span>
                   </h3>
                   <button
                     onClick={() => setShowModal(false)}
@@ -198,7 +200,7 @@ export default function BudgetsPage() {
                 <form onSubmit={handleSetBudget} className="space-y-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                      Danh Mục Chi Tiêu
+                      {language === "vi" ? "Danh mục chi tiêu" : "Category"}
                     </label>
                     <select
                       value={categoryId}
@@ -206,11 +208,11 @@ export default function BudgetsPage() {
                       className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                     >
                       {categories.length === 0 ? (
-                        <option value="">Không có danh mục chi tiêu</option>
+                        <option value="">{language === "vi" ? "Không có danh mục chi tiêu" : "No categories"}</option>
                       ) : (
                         categories.map((category) => (
                           <option key={category.id} value={category.id}>
-                            {category.name}
+                            {formatCategoryName(category.name, language)}
                           </option>
                         ))
                       )}
@@ -218,14 +220,14 @@ export default function BudgetsPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                      Hạn Mức Hàng Tháng (VNĐ)
+                      {language === "vi" ? "Hạn mức hàng tháng (VNĐ)" : "Monthly Limit (VND)"}
                     </label>
                     <input
                       type="number"
                       required
                       value={limit}
                       onChange={(e) => setLimit(e.target.value)}
-                      placeholder="Ví dụ: 3000000"
+                      placeholder={language === "vi" ? "Ví dụ: 3000000" : "e.g. 3000000"}
                       className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-mono"
                     />
                   </div>
@@ -243,7 +245,7 @@ export default function BudgetsPage() {
                       onClick={() => setShowModal(false)}
                       className="w-1/2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
-                      Hủy
+                      {language === "vi" ? "Hủy" : "Cancel"}
                     </button>
                     <button
                       type="submit"
@@ -253,10 +255,10 @@ export default function BudgetsPage() {
                       {isSaving ? (
                         <>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>Đang lưu...</span>
+                          <span>{language === "vi" ? "Đang lưu..." : "Saving..."}</span>
                         </>
                       ) : (
-                        "Lưu Ngân Sách"
+                        language === "vi" ? "Lưu ngân sách" : "Save Budget"
                       )}
                     </button>
                   </div>

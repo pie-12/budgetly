@@ -99,14 +99,14 @@ export default function RegisterPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-3.5 py-2 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 backdrop-blur-md transition-all shadow-xs"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Về Trang Chủ</span>
+          <span>Về trang chủ</span>
         </Link>
       </div>
 
       <div className="absolute top-6 right-6 z-10">
         <button
           onClick={toggleTheme}
-          title={theme === "dark" ? "Chuyển sang giao diện Sáng" : "Chuyển sang giao diện Tối"}
+          title={theme === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối"}
           className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white backdrop-blur-md shadow-xs transition-all active:scale-95"
         >
           {theme === "dark" ? (
@@ -124,7 +124,7 @@ export default function RegisterPage() {
             B
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Tạo Tài Khoản Mới
+            Tạo tài khoản mới
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Khởi đầu quản lý tài chính thông minh cùng <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Budgetly AI</span>
@@ -271,7 +271,7 @@ export default function RegisterPage() {
                 </>
               ) : (
                 <>
-                  <span>Tạo Tài Khoản Mới</span>
+                  <span>Tạo tài khoản mới</span>
                   <ArrowRight className="w-4 h-4" strokeWidth={2} />
                 </>
               )}
@@ -295,7 +295,7 @@ export default function RegisterPage() {
         {/* Security Trust Badge */}
         <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500 text-[11px]">
           <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-500" strokeWidth={1.8} />
-          <span>Tự động tạo Ví & Bộ danh mục thu chi mặc định</span>
+          <span>Tự động tạo ví & danh mục thu chi mặc định</span>
         </div>
       </div>
     </div>

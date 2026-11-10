@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   Search,
   AlertTriangle,
@@ -92,6 +93,7 @@ const initialTransactions: AdminTransaction[] = [
 ];
 
 export default function AdminTransactionsPage() {
+  const { t, language } = useLanguage();
   const [transactions, setTransactions] = useState<AdminTransaction[]>(initialTransactions);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
@@ -110,12 +112,14 @@ export default function AdminTransactionsPage() {
         if (tx.id === id) {
           const nextFlag = !tx.isFlagged;
           showNotification(
-            `Giao dịch ${id} đã được ${nextFlag ? "đánh dấu nghi vấn rủi ro" : "gỡ cờ cảnh báo"}`
+            language === "vi"
+              ? `Giao dịch ${id} đã được ${nextFlag ? "đánh dấu nghi vấn rủi ro" : "gỡ cờ cảnh báo"}`
+              : `Transaction ${id} flag updated`
           );
           return {
             ...tx,
             isFlagged: nextFlag,
-            flagReason: nextFlag ? "Được gắn cờ thủ công bởi Quản trị viên" : undefined,
+            flagReason: nextFlag ? (language === "vi" ? "Được gắn cờ thủ công bởi quản trị viên" : "Manually flagged by administrator") : undefined,
           };
         }
         return tx;
@@ -124,7 +128,7 @@ export default function AdminTransactionsPage() {
   };
 
   const handleExportCSV = () => {
-    showNotification("Đã trích xuất danh sách giao dịch (CSV) thành công!");
+    showNotification(language === "vi" ? "Đã trích xuất danh sách giao dịch (CSV) thành công!" : "Exported transactions to CSV successfully!");
   };
 
   const filteredTransactions = transactions.filter((tx) => {
@@ -146,8 +150,12 @@ export default function AdminTransactionsPage() {
   return (
     <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="Giám Sát & Quản Lý Giao Dịch Toàn Hệ Thống"
-        subtitle="Theo dõi luân chuyển tiền tệ, phát hiện dấu hiệu gian lận và kiểm duyệt giao dịch"
+        title={language === "vi" ? "Giám sát & quản lý giao dịch toàn hệ thống" : "System Transactions Monitoring"}
+        subtitle={
+          language === "vi"
+            ? "Theo dõi luân chuyển tiền tệ, phát hiện dấu hiệu gian lận và kiểm duyệt giao dịch"
+            : "Monitor system money flows, fraud detection, and audit transactions"
+        }
       />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -199,7 +207,7 @@ export default function AdminTransactionsPage() {
             className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all shrink-0 cursor-pointer active:scale-95"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span>Xuất Báo Cáo CSV</span>
+            <span>{language === "vi" ? "Xuất báo cáo CSV" : "Export CSV"}</span>
           </button>
         </div>
 
@@ -209,18 +217,18 @@ export default function AdminTransactionsPage() {
             <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
               <thead className="bg-slate-50 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Mã TX & Người Dùng</th>
-                  <th className="px-6 py-4">Mô Tả & Danh Mục</th>
-                  <th className="px-6 py-4">Số Tiền</th>
-                  <th className="px-6 py-4">Ví Nguồn</th>
-                  <th className="px-6 py-4">Trạng Thái Rủi Ro</th>
-                  <th className="px-6 py-4">Thời Gian</th>
-                  <th className="px-6 py-4 text-right">Thao Tác</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Mã TX & người dùng" : "TX ID & User"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Mô tả & danh mục" : "Description & Category"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Số tiền" : "Amount"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Ví nguồn" : "Wallet"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Trạng thái rủi ro" : "Risk Status"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Thời gian" : "Time"}</th>
+                  <th className="px-6 py-4 text-right">{language === "vi" ? "Thao tác" : "Actions"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {filteredTransactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition-colors">
+                  <tr key={tx.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
                     <td className="px-6 py-4">
                       <div>
                         <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{tx.id}</span>
@@ -302,13 +310,13 @@ export default function AdminTransactionsPage() {
               <X className="w-5 h-5" />
             </button>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
-              <span>Chi Tiết Giao Dịch</span>
+              <span>{language === "vi" ? "Chi tiết giao dịch" : "Transaction Details"}</span>
               <span className="font-mono text-xs text-emerald-600 dark:text-emerald-400">{selectedTx.id}</span>
             </h3>
 
             <div className="space-y-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
               <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-                <span className="text-slate-500 dark:text-slate-400">Người thực hiện</span>
+                <span className="text-slate-500 dark:text-slate-400">{language === "vi" ? "Người thực hiện" : "User"}</span>
                 <span className="font-semibold text-slate-900 dark:text-slate-200">{selectedTx.userName}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
@@ -316,19 +324,19 @@ export default function AdminTransactionsPage() {
                 <span className="text-slate-700 dark:text-slate-300 font-mono">{selectedTx.userEmail}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-                <span className="text-slate-500 dark:text-slate-400">Số tiền</span>
+                <span className="text-slate-500 dark:text-slate-400">{language === "vi" ? "Số tiền" : "Amount"}</span>
                 <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
                   {selectedTx.amount.toLocaleString("vi-VN")} ₫
                 </span>
               </div>
               <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-                <span className="text-slate-500 dark:text-slate-400">Ví thanh toán</span>
+                <span className="text-slate-500 dark:text-slate-400">{language === "vi" ? "Ví thanh toán" : "Wallet"}</span>
                 <span className="text-slate-800 dark:text-slate-200">{selectedTx.wallet}</span>
               </div>
               {selectedTx.isFlagged && (
                 <div className="p-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-300">
                   <p className="font-bold flex items-center gap-1.5 mb-1">
-                    <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" /> Lý Do AI Cảnh Báo:
+                    <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" /> {language === "vi" ? "Lý do AI cảnh báo:" : "AI Flag Reason:"}
                   </p>
                   <p className="text-[11px] text-rose-800 dark:text-rose-200">{selectedTx.flagReason}</p>
                 </div>

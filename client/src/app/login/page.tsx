@@ -100,14 +100,14 @@ export default function LoginPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-3.5 py-2 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 backdrop-blur-md transition-all shadow-xs"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Về Trang Chủ</span>
+          <span>Về trang chủ</span>
         </Link>
       </div>
 
       <div className="absolute top-6 right-6 z-10">
         <button
           onClick={toggleTheme}
-          title={theme === "dark" ? "Chuyển sang giao diện Sáng" : "Chuyển sang giao diện Tối"}
+          title={theme === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối"}
           className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white backdrop-blur-md shadow-xs transition-all active:scale-95"
         >
           {theme === "dark" ? (
@@ -125,7 +125,7 @@ export default function LoginPage() {
             B
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Chào Mừng Trở Lại!
+            Chào mừng trở lại!
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Đăng nhập tài khoản <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Budgetly</span> để quản lý chi tiêu thông minh
@@ -139,7 +139,7 @@ export default function LoginPage() {
             <div className="flex items-center gap-2.5 min-w-0">
               <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" strokeWidth={2} />
               <div className="min-w-0">
-                <p className="text-xs font-bold text-emerald-900 dark:text-emerald-300 truncate">Dùng Thử Nhanh (Demo)</p>
+                <p className="text-xs font-bold text-emerald-900 dark:text-emerald-300 truncate">Dùng thử nhanh (demo)</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">demo@budgetly.app / 123456</p>
               </div>
             </div>
@@ -248,7 +248,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <span>Đăng Nhập</span>
+                  <span>Đăng nhập</span>
                   <ArrowRight className="w-4 h-4" strokeWidth={2} />
                 </>
               )}

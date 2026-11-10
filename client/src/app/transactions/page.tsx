@@ -15,8 +15,10 @@ import {
   UiTransaction,
 } from "@/services/api";
 import { RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function TransactionsPage() {
+  const { t, language } = useLanguage();
   const [transactions, setTransactions] = useState<UiTransaction[]>([]);
   const [wallets, setWallets] = useState<ApiWallet[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
@@ -69,10 +71,10 @@ export default function TransactionsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-                Sổ Giao Dịch & Lịch Sử Chi Tiêu
+                {language === "vi" ? "Sổ giao dịch & lịch sử chi tiêu" : "Transactions & Expense History"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Lịch sử toàn bộ các khoản thu chi kèm bộ lọc thông minh theo thời gian thực
+                {language === "vi" ? "Lịch sử toàn bộ các khoản thu chi kèm bộ lọc thông minh theo thời gian thực" : "Full transaction history with real-time smart filters"}
               </p>
             </div>
             <button

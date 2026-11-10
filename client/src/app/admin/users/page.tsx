@@ -1,119 +1,114 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useLanguage } from "@/context/LanguageContext";
+import { api, getErrorMessage, AdminUser } from "@/services/api";
 import {
   Users as UsersIcon,
   Search,
   UserCheck,
   UserX,
-  Shield,
   Plus,
   Lock,
   Unlock,
-  MoreVertical,
   CheckCircle2,
   Mail,
-  Calendar,
   X,
-  Edit,
   Trash2,
   Eye,
   Crown,
+  RefreshCw,
+  AlertCircle,
+  Loader2,
+  Wallet,
+  Receipt,
+  Calendar,
 } from "lucide-react";
 
-interface User {
+interface UserViewModel {
   id: string;
   name: string;
   email: string;
   role: "Super Admin" | "Admin" | "Premium User" | "Free User";
   status: "Active" | "Suspended" | "Pending";
   balance: number;
+  wallets_count: number;
+  transactions_count: number;
   joinedDate: string;
   avatarColor: string;
 }
 
-const initialUsers: User[] = [
-  {
-    id: "USR-1001",
-    name: "Nguyen Tung Lam",
-    email: "lam23it138@budgetly.io",
-    role: "Super Admin",
-    status: "Active",
-    balance: 45200000,
-    joinedDate: "2026-01-15",
-    avatarColor: "bg-indigo-600",
-  },
-  {
-    id: "USR-1002",
-    name: "Tran Minh Hoa",
-    email: "hoa.tran@gmail.com",
-    role: "Premium User",
-    status: "Active",
-    balance: 18500000,
-    joinedDate: "2026-02-10",
-    avatarColor: "bg-emerald-600",
-  },
-  {
-    id: "USR-1003",
-    name: "Le Hoang Nam",
-    email: "nam.le99@yahoo.com",
-    role: "Free User",
-    status: "Active",
-    balance: 3400000,
-    joinedDate: "2026-03-01",
-    avatarColor: "bg-purple-600",
-  },
-  {
-    id: "USR-1004",
-    name: "Pham Khanh Linh",
-    email: "linh.pham@outlook.com",
-    role: "Premium User",
-    status: "Active",
-    balance: 89000000,
-    joinedDate: "2026-03-22",
-    avatarColor: "bg-pink-600",
-  },
-  {
-    id: "USR-1005",
-    name: "Vu Quoc Anh",
-    email: "spammer_spam99@temp-mail.com",
-    role: "Free User",
-    status: "Suspended",
-    balance: 0,
-    joinedDate: "2026-08-14",
-    avatarColor: "bg-slate-600",
-  },
-  {
-    id: "USR-1006",
-    name: "Dang Thi Phuong",
-    email: "phuong.dt@techcorp.vn",
-    role: "Admin",
-    status: "Active",
-    balance: 27100000,
-    joinedDate: "2026-04-05",
-    avatarColor: "bg-amber-600",
-  },
+const AVATAR_COLORS = [
+  "bg-indigo-600",
+  "bg-emerald-600",
+  "bg-purple-600",
+  "bg-blue-600",
+  "bg-pink-600",
+  "bg-amber-600",
+  "bg-teal-600",
 ];
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const { t, language } = useLanguage();
+  const [users, setUsers] = useState<UserViewModel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserViewModel | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ text: string; isError?: boolean } | null>(null);
 
   // New user form state
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [newRole, setNewRole] = useState<User["role"]>("Free User");
+  const [newPassword, setNewPassword] = useState("123456");
+  const [newRole, setNewRole] = useState<UserViewModel["role"]>("Free User");
+  const [isCreating, setIsCreating] = useState(false);
 
-  const showNotification = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+  const showNotification = (msg: string, isError = false) => {
+    setToastMessage({ text: msg, isError });
+    setTimeout(() => setToastMessage(null), 3500);
   };
+
+  const loadUsersFromDatabase = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await api.getAdminUsers();
+      const mapped: UserViewModel[] = (res.data || []).map((u: AdminUser, idx: number) => ({
+        id: u.id,
+        name: u.full_name || u.email.split("@")[0],
+        email: u.email,
+        role: (u.role as UserViewModel["role"]) || "Free User",
+        status: (u.status as UserViewModel["status"]) || "Active",
+        balance: u.balance || 0,
+        wallets_count: u.wallets_count || 0,
+        transactions_count: u.transactions_count || 0,
+        joinedDate: u.joined_date || u.created_at?.slice(0, 10) || "2026-01-01",
+        avatarColor: AVATAR_COLORS[idx % AVATAR_COLORS.length],
+      }));
+      setUsers(mapped);
+    } catch (err) {
+      setError(
+        getErrorMessage(
+          err,
+          language === "vi"
+            ? "Không thể tải danh sách người dùng từ PostgreSQL. Vui lòng thử lại."
+            : "Could not load user accounts from PostgreSQL database."
+        )
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [language]);
+
+  useEffect(() => {
+    loadUsersFromDatabase();
+  }, [loadUsersFromDatabase]);
 
   const handleToggleLock = (userId: string) => {
     setUsers((prev) =>
@@ -121,7 +116,9 @@ export default function AdminUsersPage() {
         if (u.id === userId) {
           const newStatus = u.status === "Active" ? "Suspended" : "Active";
           showNotification(
-            `Account ${u.email} has been ${newStatus === "Active" ? "unlocked" : "suspended"}`
+            language === "vi"
+              ? `Tài khoản ${u.email} đã được ${newStatus === "Active" ? "mở khóa" : "tạm khóa"}`
+              : `Account ${u.email} has been ${newStatus === "Active" ? "unlocked" : "suspended"}`
           );
           return { ...u, status: newStatus };
         }
@@ -130,31 +127,80 @@ export default function AdminUsersPage() {
     );
   };
 
-  const handleDeleteUser = (userId: string) => {
-    setUsers((prev) => prev.filter((u) => u.id !== userId));
-    showNotification("Account deleted from the system");
+  const handleDeleteUser = async (userId: string, email: string) => {
+    const confirmText =
+      language === "vi"
+        ? `Bạn có chắc chắn muốn xóa tài khoản ${email} khỏi cơ sở dữ liệu PostgreSQL không?`
+        : `Are you sure you want to delete user ${email} from the PostgreSQL database?`;
+
+    if (!window.confirm(confirmText)) return;
+
+    try {
+      await api.deleteAdminUser(userId);
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      showNotification(
+        language === "vi"
+          ? `Đã xóa người dùng ${email} khỏi cơ sở dữ liệu PostgreSQL thành công.`
+          : `User ${email} deleted successfully from PostgreSQL.`
+      );
+    } catch (err) {
+      showNotification(
+        getErrorMessage(
+          err,
+          language === "vi" ? "Không thể xóa người dùng này." : "Failed to delete user."
+        ),
+        true
+      );
+    }
   };
 
-  const handleCreateUser = (e: React.FormEvent) => {
+  const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName || !newEmail) return;
+    if (!newEmail.trim()) return;
 
-    const newUser: User = {
-      id: `USR-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: newName,
-      email: newEmail,
-      role: newRole,
-      status: "Active",
-      balance: 0,
-      joinedDate: new Date().toISOString().split("T")[0],
-      avatarColor: "bg-indigo-600",
-    };
+    setIsCreating(true);
+    try {
+      const res = await api.createAdminUser({
+        email: newEmail.trim(),
+        full_name: newName.trim() || undefined,
+        password: newPassword || "123456",
+        role: newRole,
+      });
 
-    setUsers([newUser, ...users]);
-    setIsAddModalOpen(false);
-    setNewName("");
-    setNewEmail("");
-    showNotification(`Account ${newEmail} created successfully`);
+      const newUser: UserViewModel = {
+        id: res.data.id,
+        name: res.data.full_name || res.data.email.split("@")[0],
+        email: res.data.email,
+        role: (res.data.role as UserViewModel["role"]) || newRole,
+        status: (res.data.status as UserViewModel["status"]) || "Active",
+        balance: res.data.balance || 0,
+        wallets_count: res.data.wallets_count || 1,
+        transactions_count: 0,
+        joinedDate: res.data.joined_date || new Date().toISOString().slice(0, 10),
+        avatarColor: AVATAR_COLORS[users.length % AVATAR_COLORS.length],
+      };
+
+      setUsers([newUser, ...users]);
+      setIsAddModalOpen(false);
+      setNewName("");
+      setNewEmail("");
+      setNewPassword("123456");
+      showNotification(
+        language === "vi"
+          ? `Tài khoản ${res.data.email} đã được lưu vào cơ sở dữ liệu PostgreSQL.`
+          : `Account ${res.data.email} has been saved to PostgreSQL database.`
+      );
+    } catch (err) {
+      showNotification(
+        getErrorMessage(
+          err,
+          language === "vi" ? "Lỗi khi tạo người dùng mới." : "Error creating user."
+        ),
+        true
+      );
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   // Filtered users
@@ -171,163 +217,218 @@ export default function AdminUsersPage() {
   });
 
   return (
-    <div className="flex-1 pb-12">
+    <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="Quản Lý Người Dùng Hệ Thống"
-        subtitle="Danh sách tài khoản, phân quyền vai trò, trạng thái khóa và số dư người dùng"
+        title={language === "vi" ? "Quản lý người dùng hệ thống" : "System User Management"}
+        subtitle={
+          language === "vi"
+            ? "Đồng bộ trực tiếp với cơ sở dữ liệu PostgreSQL: tài khoản, số dư thực tế, phân quyền vai trò"
+            : "Directly synchronized with PostgreSQL database: accounts, live balances, role administration"
+        }
       />
 
-      <div className="p-8 space-y-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
         {/* Toast Notification */}
         {toastMessage && (
-          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-emerald-950 border border-emerald-500/40 text-emerald-300 rounded-xl shadow-2xl animate-fade-in text-xs font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>{toastMessage}</span>
+          <div
+            className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-xs font-medium border ${
+              toastMessage.isError
+                ? "bg-rose-50 dark:bg-rose-950 border-rose-300 dark:border-rose-500/40 text-rose-800 dark:text-rose-300"
+                : "bg-emerald-50 dark:bg-emerald-950 border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300"
+            }`}
+          >
+            {toastMessage.isError ? (
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            )}
+            <span>{toastMessage.text}</span>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <div className="p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl flex items-center justify-between text-xs text-rose-700 dark:text-rose-400">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+            <button
+              onClick={loadUsersFromDatabase}
+              className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-semibold shrink-0 cursor-pointer"
+            >
+              {language === "vi" ? "Thử lại" : "Retry"}
+            </button>
           </div>
         )}
 
         {/* Stats Summary Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-xl flex items-center justify-between shadow-xs">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Total Users</p>
-              <h3 className="text-2xl font-bold text-slate-100 mt-1">{users.length}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                {language === "vi" ? "Tổng người dùng (PostgreSQL)" : "Total Users (PostgreSQL)"}
+              </p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                {isLoading ? "..." : users.length}
+              </h3>
             </div>
-            <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+            <div className="p-3 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl border border-blue-200 dark:border-blue-500/20">
               <UsersIcon className="w-5 h-5" />
             </div>
           </div>
 
-          <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-xl flex items-center justify-between shadow-xs">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Active</p>
-              <h3 className="text-2xl font-bold text-emerald-400 mt-1">
-                {users.filter((u) => u.status === "Active").length}
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                {language === "vi" ? "Đang hoạt động" : "Active Users"}
+              </p>
+              <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                {isLoading ? "..." : users.filter((u) => u.status === "Active").length}
               </h3>
             </div>
-            <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl border border-emerald-200 dark:border-emerald-500/20">
               <UserCheck className="w-5 h-5" />
             </div>
           </div>
 
-          <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-xl flex items-center justify-between shadow-xs">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Premium Accounts</p>
-              <h3 className="text-2xl font-bold text-purple-400 mt-1">
-                {users.filter((u) => u.role === "Premium User").length}
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                {language === "vi" ? "Quản trị viên hệ thống" : "System Administrators"}
+              </p>
+              <h3 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                {isLoading ? "..." : users.filter((u) => u.role === "Super Admin" || u.role === "Admin").length}
               </h3>
             </div>
-            <div className="p-3 bg-purple-500/10 text-purple-400 rounded-xl border border-purple-500/20">
+            <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl border border-indigo-200 dark:border-indigo-500/20">
               <Crown className="w-5 h-5" />
             </div>
           </div>
 
-          <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-xl flex items-center justify-between shadow-xs">
             <div>
-              <p className="text-xs text-slate-400 font-medium">Suspended Accounts</p>
-              <h3 className="text-2xl font-bold text-rose-400 mt-1">
-                {users.filter((u) => u.status === "Suspended").length}
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                {language === "vi" ? "Tài khoản đang khóa" : "Suspended Accounts"}
+              </p>
+              <h3 className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">
+                {isLoading ? "..." : users.filter((u) => u.status === "Suspended").length}
               </h3>
             </div>
-            <div className="p-3 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
+            <div className="p-3 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-200 dark:border-rose-500/20">
               <UserX className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        {/* Filter and Action Toolbar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900 p-4 border border-slate-800 rounded-2xl">
+        {/* Search & Filter Toolbar */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xs">
           <div className="flex flex-wrap items-center gap-3 flex-1">
-            {/* Search */}
             <div className="relative flex-1 min-w-[220px]">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search name, email, user ID..."
+                placeholder={language === "vi" ? "Tìm theo tên, email, UUID..." : "Search name, email, UUID..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
               />
             </div>
 
-            {/* Role filter */}
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500 transition-colors"
             >
-              <option value="All">All roles</option>
+              <option value="All">{language === "vi" ? "Tất cả vai trò" : "All roles"}</option>
               <option value="Super Admin">Super Admin</option>
               <option value="Admin">Admin</option>
               <option value="Premium User">Premium User</option>
               <option value="Free User">Free User</option>
             </select>
 
-            {/* Status filter */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500 transition-colors"
             >
-              <option value="All">All statuses</option>
-              <option value="Active">Active</option>
-              <option value="Suspended">Suspended</option>
+              <option value="All">{language === "vi" ? "Tất cả trạng thái" : "All statuses"}</option>
+              <option value="Active">{language === "vi" ? "Hoạt động" : "Active"}</option>
+              <option value="Suspended">{language === "vi" ? "Bị khóa" : "Suspended"}</option>
             </select>
           </div>
 
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add New User</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadUsersFromDatabase}
+              disabled={isLoading}
+              className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs transition-colors cursor-pointer shrink-0"
+              title={t("refresh")}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+            </button>
+
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs transition-all shrink-0 cursor-pointer active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              <span>{language === "vi" ? "Thêm người dùng" : "Add New User"}</span>
+            </button>
+          </div>
         </div>
 
         {/* Users Table */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/70 border-b border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-400">
+            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">ID & User</th>
-                  <th className="px-6 py-4">Role</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Estimated Balance</th>
-                  <th className="px-6 py-4">Joined Date</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Người dùng & email" : "User & Email"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Vai trò" : "Role"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Trạng thái" : "Status"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Tổng số dư" : "Total Balance"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Số ví / giao dịch" : "Wallets / Txs"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Ngày đăng ký" : "Joined Date"}</th>
+                  <th className="px-6 py-4 text-right">{language === "vi" ? "Thao tác" : "Actions"}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {filteredUsers.length === 0 ? (
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-12 text-slate-500 text-sm">
-                      No users match the current filters.
+                    <td colSpan={7} className="text-center py-16 text-slate-400 dark:text-slate-500 text-xs">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
+                        <span>{language === "vi" ? "Đang tải dữ liệu từ PostgreSQL..." : "Loading accounts from PostgreSQL..."}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-12 text-slate-400 dark:text-slate-500 text-sm">
+                      {language === "vi" ? "Không tìm thấy người dùng phù hợp." : "No users match the current filters."}
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map((user) => (
+                  filteredUsers.map((u) => (
                     <tr
-                      key={user.id}
-                      className="hover:bg-slate-850/60 transition-colors group"
+                      key={u.id}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-9 h-9 rounded-full ${user.avatarColor} text-white flex items-center justify-center font-bold text-xs shadow-sm`}
+                            className={`w-9 h-9 rounded-full ${u.avatarColor} text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0`}
                           >
-                            {user.name.charAt(0)}
+                            {u.name.charAt(0).toUpperCase()}
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-slate-100">{user.name}</span>
-                              <span className="text-[10px] text-slate-400 font-mono">
-                                ({user.id})
-                              </span>
+                              <span className="font-bold text-slate-900 dark:text-slate-100 truncate">{u.name}</span>
                             </div>
-                            <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
-                              <Mail className="w-3 h-3 text-slate-500" />
-                              <span>{user.email}</span>
+                            <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                              <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+                              <span className="truncate">{u.email}</span>
                             </div>
                           </div>
                         </div>
@@ -336,64 +437,76 @@ export default function AdminUsersPage() {
                       <td className="px-6 py-4">
                         <span
                           className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${
-                            user.role === "Super Admin"
-                              ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/40"
-                              : user.role === "Admin"
-                              ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                              : user.role === "Premium User"
-                              ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
-                              : "bg-slate-800 text-slate-400 border-slate-700"
+                            u.role === "Super Admin"
+                              ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/40"
+                              : u.role === "Admin"
+                              ? "bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/40"
+                              : u.role === "Premium User"
+                              ? "bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-500/40"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
                           }`}
                         >
-                          {user.role}
+                          {u.role}
                         </span>
                       </td>
 
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border ${
-                            user.status === "Active"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                            u.status === "Active"
+                              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20"
+                              : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20"
                           }`}
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              user.status === "Active" ? "bg-emerald-400" : "bg-rose-400"
+                              u.status === "Active" ? "bg-emerald-500" : "bg-rose-500"
                             }`}
                           ></span>
-                          {user.status === "Active" ? "Active" : "Suspended"}
+                          {u.status === "Active"
+                            ? (language === "vi" ? "Hoạt động" : "Active")
+                            : (language === "vi" ? "Bị khóa" : "Suspended")}
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 font-mono font-semibold text-slate-200">
-                        {user.balance.toLocaleString("vi-VN")} ₫
+                      <td className="px-6 py-4 font-mono font-semibold text-slate-800 dark:text-slate-200">
+                        {u.balance.toLocaleString("vi-VN")} ₫
                       </td>
 
-                      <td className="px-6 py-4 text-slate-400 font-mono text-[11px]">
-                        {user.joinedDate}
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-mono text-[11px]">
+                        <span className="font-semibold text-slate-900 dark:text-slate-200">{u.wallets_count} ví</span>
+                        <span className="text-slate-400"> / </span>
+                        <span>{u.transactions_count} GD</span>
+                      </td>
+
+                      <td className="px-6 py-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                        {u.joinedDate}
                       </td>
 
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => setSelectedUser(user)}
-                            className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-indigo-400 rounded-lg transition-colors"
-                            title="View details"
+                            onClick={() => setSelectedUser(u)}
+                            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg transition-colors cursor-pointer"
+                            title={language === "vi" ? "Xem chi tiết" : "View details"}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
 
                           <button
-                            onClick={() => handleToggleLock(user.id)}
-                            className={`p-1.5 hover:bg-slate-800 rounded-lg transition-colors ${
-                              user.status === "Active"
-                                ? "text-slate-400 hover:text-rose-400"
-                                : "text-rose-400 hover:text-emerald-400"
+                            onClick={() => handleToggleLock(u.id)}
+                            className={`p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer ${
+                              u.status === "Active"
+                                ? "text-slate-400 hover:text-rose-600"
+                                : "text-rose-600 hover:text-emerald-600"
                             }`}
-                            title={user.status === "Active" ? "Lock account" : "Unlock account"}
+                            title={
+                              u.status === "Active"
+                                ? (language === "vi" ? "Khóa tài khoản" : "Lock account")
+                                : (language === "vi" ? "Mở khóa tài khoản" : "Unlock account")
+                            }
                           >
-                            {user.status === "Active" ? (
+                            {u.status === "Active" ? (
                               <Lock className="w-4 h-4" />
                             ) : (
                               <Unlock className="w-4 h-4" />
@@ -401,9 +514,9 @@ export default function AdminUsersPage() {
                           </button>
 
                           <button
-                            onClick={() => handleDeleteUser(user.id)}
-                            className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-rose-400 rounded-lg transition-colors"
-                            title="Delete user"
+                            onClick={() => handleDeleteUser(u.id, u.email)}
+                            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer"
+                            title={language === "vi" ? "Xóa khỏi PostgreSQL" : "Delete from PostgreSQL"}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -420,50 +533,74 @@ export default function AdminUsersPage() {
 
       {/* Add User Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative animate-scale-up">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-xl relative animate-in fade-in zoom-in-95">
             <button
               onClick={() => setIsAddModalOpen(false)}
-              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-white"
+              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-white mb-1">Add New User</h3>
-            <p className="text-xs text-slate-400 mb-5">
-              Create a user account or assign admin rights directly
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">
+              {language === "vi" ? "Thêm tài khoản vào PostgreSQL" : "Add New User to PostgreSQL"}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+              {language === "vi"
+                ? "Tài khoản sẽ được tạo trực tiếp vào DB kèm bộ danh mục và ví tiền mặt mặc định."
+                : "User record will be persisted directly to PostgreSQL with default wallet and categories."}
             </p>
 
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {t("full_name")}
+                </label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. Nguyen Van A"
+                  placeholder="Ví dụ: Nguyễn Văn A"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {t("email")} <span className="text-rose-500">*</span>
+                </label>
                 <input
                   type="email"
                   required
                   placeholder="user@example.com"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Role</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {t("password")} <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  placeholder="Mật khẩu khởi tạo (tối thiểu 6 ký tự)"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {language === "vi" ? "Vai trò" : "Role"}
+                </label>
                 <select
                   value={newRole}
-                  onChange={(e) => setNewRole(e.target.value as User["role"])}
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  onChange={(e) => setNewRole(e.target.value as UserViewModel["role"])}
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 >
                   <option value="Free User">Free User</option>
                   <option value="Premium User">Premium User</option>
@@ -472,19 +609,27 @@ export default function AdminUsersPage() {
                 </select>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3">
+              <div className="pt-3 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30"
+                  disabled={isCreating}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-xs font-semibold text-white shadow-xs cursor-pointer active:scale-95"
                 >
-                  Confirm Create Account
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>{language === "vi" ? "Đang lưu DB..." : "Saving..."}</span>
+                    </>
+                  ) : (
+                    <span>{language === "vi" ? "Lưu vào PostgreSQL" : "Save to Database"}</span>
+                  )}
                 </button>
               </div>
             </form>
@@ -494,61 +639,69 @@ export default function AdminUsersPage() {
 
       {/* User Detail Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-xl relative animate-in fade-in zoom-in-95">
             <button
               onClick={() => setSelectedUser(null)}
-              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-white"
+              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-4 mb-6">
               <div
-                className={`w-14 h-14 rounded-2xl ${selectedUser.avatarColor} text-white flex items-center justify-center font-bold text-xl shadow-lg`}
+                className={`w-14 h-14 rounded-2xl ${selectedUser.avatarColor} text-white flex items-center justify-center font-bold text-xl shadow-xs`}
               >
-                {selectedUser.name.charAt(0)}
+                {selectedUser.name.charAt(0).toUpperCase()}
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">{selectedUser.name}</h3>
-                <p className="text-xs text-slate-400 font-mono">{selectedUser.email}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 truncate">{selectedUser.name}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">{selectedUser.email}</p>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
                     {selectedUser.role}
                   </span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
                     {selectedUser.status}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs">
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">User ID</span>
-                <span className="font-mono text-slate-200">{selectedUser.id}</span>
+            <div className="space-y-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+              <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-slate-500 dark:text-slate-400">PostgreSQL UUID</span>
+                <span className="font-mono text-[11px] text-slate-900 dark:text-slate-200 select-all">{selectedUser.id}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Total Balance</span>
-                <span className="font-mono font-bold text-emerald-400">
+              <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-slate-500 dark:text-slate-400">
+                  {language === "vi" ? "Tổng số dư thực tế" : "Actual PostgreSQL Balance"}
+                </span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
                   {selectedUser.balance.toLocaleString("vi-VN")} ₫
                 </span>
               </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Signup Date</span>
-                <span className="font-mono text-slate-200">{selectedUser.joinedDate}</span>
+              <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-slate-500 dark:text-slate-400">
+                  {language === "vi" ? "Số lượng ví & giao dịch" : "Wallets & Transactions"}
+                </span>
+                <span className="font-mono text-slate-900 dark:text-slate-200">
+                  {selectedUser.wallets_count} ví · {selectedUser.transactions_count} giao dịch
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Last Login Device</span>
-                <span className="text-slate-300">Chrome / macOS Sonoma (IP: 14.226.12.8)</span>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 dark:text-slate-400">
+                  {language === "vi" ? "Ngày tạo tài khoản" : "Created At"}
+                </span>
+                <span className="font-mono text-slate-900 dark:text-slate-200">{selectedUser.joinedDate}</span>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-5 flex justify-end">
               <button
                 onClick={() => setSelectedUser(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
               >
-                Close Details
+                {t("close")}
               </button>
             </div>
           </div>

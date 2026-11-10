@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import CategoryIcon from "@/components/common/CategoryIcon";
-import { Search, Trash2, ArrowDownLeft, ArrowUpRight, Inbox } from "lucide-react";
+import { useLanguage, formatCategoryName } from "@/context/LanguageContext";
+import { Search, Trash2, Inbox } from "lucide-react";
 
 export interface Transaction {
   id: number | string;
@@ -23,6 +24,7 @@ export default function RecentTransactions({
   transactions,
   onDeleteTransaction,
 }: RecentTransactionsProps) {
+  const { t, language } = useLanguage();
   const [filter, setFilter] = useState<"all" | "expense" | "income">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -45,10 +47,10 @@ export default function RecentTransactions({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div>
           <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">
-            Giao Dịch Gần Đây
+            {t("recent_transactions")}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Danh sách tất cả các khoản thu chi mới nhất
+            {language === "vi" ? "Danh sách tất cả các khoản thu chi mới nhất" : "Realtime log of recorded expenditures"}
           </p>
         </div>
 
@@ -60,7 +62,7 @@ export default function RecentTransactions({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm kiếm giao dịch..."
+              placeholder={t("search")}
               className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-8 pr-3.5 py-1.5 text-xs text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 w-36 sm:w-52 transition-all"
             />
           </div>
@@ -71,13 +73,13 @@ export default function RecentTransactions({
               <button
                 key={mode}
                 onClick={() => setFilter(mode)}
-                className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   filter === mode
                     ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-xs"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
-                {mode === "all" ? "Tất cả" : mode === "expense" ? "Khoản Chi" : "Khoản Thu"}
+                {mode === "all" ? t("all") : mode === "expense" ? t("expense") : t("income")}
               </button>
             ))}
           </div>
@@ -89,13 +91,13 @@ export default function RecentTransactions({
         {filteredTransactions.length === 0 ? (
           <div className="h-44 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-xs gap-2">
             <Inbox className="w-8 h-8 text-slate-300 dark:text-slate-600" strokeWidth={1.5} />
-            <span>Không tìm thấy giao dịch nào phù hợp</span>
+            <span>{t("no_transactions_yet")}</span>
           </div>
         ) : (
           filteredTransactions.map((tx) => (
             <div
               key={tx.id}
-              className="p-3.5 rounded-xl bg-slate-50/70 hover:bg-slate-100/80 dark:bg-slate-950/60 dark:hover:bg-slate-800/50 border border-slate-200/70 hover:border-slate-300 dark:border-slate-800/70 dark:hover:border-slate-700/80 transition-all flex items-center justify-between group"
+              className="p-3.5 rounded-xl bg-slate-50/70 hover:bg-slate-100/80 dark:bg-slate-950/60 dark:hover:bg-slate-800/60 border border-slate-200/70 hover:border-slate-300 dark:border-slate-800/70 dark:hover:border-slate-700/80 transition-all flex items-center justify-between group"
             >
               <div className="flex items-center gap-3.5 min-w-0">
                 <div
@@ -117,7 +119,7 @@ export default function RecentTransactions({
                     <span className="text-slate-700 dark:text-slate-300 font-medium">{tx.wallet}</span>
                     <span>•</span>
                     <span className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[10px] text-slate-600 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700/50">
-                      {tx.category}
+                      {formatCategoryName(tx.category, language)}
                     </span>
                   </div>
                 </div>
@@ -132,19 +134,19 @@ export default function RecentTransactions({
                         : "text-slate-900 dark:text-slate-100"
                     }`}
                   >
-                    {tx.type === "income" ? "+" : "-"}
+                    {tx.type === "income" ? "+" : "−"}
                     {tx.amount.toLocaleString("vi-VN")} ₫
                   </span>
                   <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-medium">
-                    {tx.type === "income" ? "Khoản thu" : "Khoản chi"}
+                    {tx.type === "income" ? t("income") : t("expense")}
                   </span>
                 </div>
 
                 {onDeleteTransaction && (
                   <button
                     onClick={() => onDeleteTransaction(tx.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all"
-                    title="Xóa giao dịch này"
+                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all cursor-pointer"
+                    title={t("delete")}
                   >
                     <Trash2 className="w-3.5 h-3.5" strokeWidth={1.8} />
                   </button>
