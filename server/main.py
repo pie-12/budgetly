@@ -5,6 +5,7 @@ from server.db.init_db import init_db
 from server.db.session import DB_DIALECT, DATABASE_FALLBACK, check_database
 from server.routers import (
     auth,
+    users,
     wallets,
     categories,
     transactions,
@@ -38,6 +39,7 @@ app.add_middleware(
 # Register API v1 Routers
 API_V1_PREFIX = "/api/v1"
 app.include_router(auth.router, prefix=API_V1_PREFIX)
+app.include_router(users.router, prefix=API_V1_PREFIX)
 app.include_router(wallets.router, prefix=API_V1_PREFIX)
 app.include_router(categories.router, prefix=API_V1_PREFIX)
 app.include_router(transactions.router, prefix=API_V1_PREFIX)

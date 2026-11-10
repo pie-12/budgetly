@@ -13,6 +13,9 @@ from server.models.budget import Budget
 DEMO_EMAIL = "demo@budgetly.app"
 DEMO_PASSWORD = "123456"
 
+ADMIN_EMAIL = "admin@budgetly.app"
+ADMIN_PASSWORD = "123456"
+
 DEFAULT_CATEGORIES = [
     {"name": "Food & Dining", "type": "EXPENSE", "icon": "🍲", "color": "bg-amber-500"},
     {"name": "Transportation", "type": "EXPENSE", "icon": "🚗", "color": "bg-blue-500"},
@@ -45,6 +48,22 @@ def init_db():
         elif demo_user.password_hash in ("mock", "mock_bcrypt_hash_for_demo"):
             # Upgrade legacy placeholder hashes so the demo account can sign in.
             demo_user.password_hash = hash_password(DEMO_PASSWORD)
+            db.commit()
+
+        # Ensure admin account exists
+        admin_user = db.query(User).filter(User.email == ADMIN_EMAIL).first()
+        if not admin_user:
+            admin_user = User(
+                id=uuid.uuid4(),
+                email=ADMIN_EMAIL,
+                password_hash=hash_password(ADMIN_PASSWORD),
+                full_name="System Administrator",
+            )
+            db.add(admin_user)
+            db.commit()
+            db.refresh(admin_user)
+        elif admin_user.password_hash in ("mock", "mock_bcrypt_hash_for_demo"):
+            admin_user.password_hash = hash_password(ADMIN_PASSWORD)
             db.commit()
 
         # Seed the baseline dataset once. Skip if the demo user already has wallets

@@ -8,6 +8,8 @@ from server.db.session import get_db
 from server.models.user import User
 from server.core.security import decode_access_token
 
+ADMIN_EMAILS = ["demo@budgetly.app", "admin@budgetly.app"]
+
 # auto_error=False so we can raise a consistent JSON error ourselves
 security_bearer = HTTPBearer(auto_error=False)
 
@@ -55,3 +57,13 @@ def get_current_user(
         )
 
     return user
+
+
+def get_current_admin_user(current_user: User = Depends(get_current_user)) -> User:
+    """Ensure the user is authorized to perform system administration actions."""
+    if not current_user.email or current_user.email.lower().strip() not in ADMIN_EMAILS:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied. This action requires System Administrator privileges."
+        )
+    return current_user

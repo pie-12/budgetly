@@ -9,7 +9,14 @@ from server.models.wallet import Wallet
 from server.models.category import Category
 from server.core.security import hash_password, verify_password, create_access_token
 from server.core.deps import get_current_user
-from server.schemas.auth import RegisterRequest, LoginRequest, AuthTokenResponse, UserResponse
+from server.schemas.auth import (
+    RegisterRequest,
+    LoginRequest,
+    AuthTokenResponse,
+    UserResponse,
+    ChangePasswordRequest,
+    UpdateProfileRequest,
+)
 from server.schemas.common import APIResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -130,4 +137,64 @@ def get_me(current_user: User = Depends(get_current_user)):
             created_at=current_user.created_at
         ),
         message="Current user profile retrieved successfully"
+    )
+
+
+@router.put("/profile", response_model=APIResponse[UserResponse])
+def update_profile(
+    req: UpdateProfileRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Update profile details (such as full name) in PostgreSQL."""
+    clean_name = req.full_name.strip()
+    if not clean_name:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Họ và tên không được để trống / Full name cannot be empty"
+        )
+
+    current_user.full_name = clean_name
+    db.commit()
+    db.refresh(current_user)
+
+    return APIResponse(
+        data=UserResponse(
+            id=str(current_user.id),
+            email=current_user.email,
+            full_name=current_user.full_name,
+            created_at=current_user.created_at
+        ),
+        message="Hồ sơ người dùng đã được cập nhật thành công."
+    )
+
+
+@router.post("/change-password", response_model=APIResponse[dict])
+def change_password(
+    req: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Securely verify current password and update to new password in PostgreSQL."""
+    # 1. Verify current password
+    if not verify_password(req.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mật khẩu hiện tại không chính xác. Vui lòng kiểm tra lại."
+        )
+
+    # 2. Check that new password is not identical to current
+    if req.new_password == req.current_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mật khẩu mới không được trùng với mật khẩu hiện tại."
+        )
+
+    # 3. Hash and persist in PostgreSQL
+    current_user.password_hash = hash_password(req.new_password)
+    db.commit()
+
+    return APIResponse(
+        data={"user_id": str(current_user.id)},
+        message="Đổi mật khẩu thành công. Mật khẩu mới của bạn đã có hiệu lực."
     )
