@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   Cpu,
   Mail,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 
 export default function AdminSettingsPage() {
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<"general" | "ai" | "email" | "security">("general");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -40,14 +42,18 @@ export default function AdminSettingsPage() {
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    showNotification("Đã lưu toàn bộ cấu hình hệ thống thành công!");
+    showNotification(language === "vi" ? "Đã lưu toàn bộ cấu hình hệ thống thành công!" : "System settings saved successfully!");
   };
 
   return (
     <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="Cấu Hình Hệ Thống & Quản Trị Trung Tâm"
-        subtitle="Thiết lập tham số ứng dụng tổng thể, mô hình AI Engine, email SMTP và an toàn bảo mật"
+        title={language === "vi" ? "Cấu hình hệ thống & quản trị trung tâm" : "System Settings & Configuration"}
+        subtitle={
+          language === "vi"
+            ? "Thiết lập tham số ứng dụng tổng thể, mô hình AI Engine, email SMTP và an toàn bảo mật"
+            : "Configure global app parameters, AI Engine models, SMTP email, and security policies"
+        }
       />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -69,11 +75,11 @@ export default function AdminSettingsPage() {
             <button
               onClick={() => {
                 setMaintenanceMode(false);
-                showNotification("Đã tắt chế độ bảo trì hệ thống");
+                showNotification(language === "vi" ? "Đã tắt chế độ bảo trì hệ thống" : "Maintenance mode disabled");
               }}
               className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold cursor-pointer"
             >
-              Tắt Chế Độ Bảo Trì
+              {language === "vi" ? "Tắt chế độ bảo trì" : "Disable maintenance mode"}
             </button>
           </div>
         )}
@@ -89,7 +95,7 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Globe className="w-4 h-4" />
-            <span>Chung (General)</span>
+            <span>{language === "vi" ? "Cấu hình chung" : "General"}</span>
           </button>
 
           <button
@@ -113,7 +119,7 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Mail className="w-4 h-4" />
-            <span>Máy Chủ Email SMTP</span>
+            <span>{language === "vi" ? "Máy chủ email SMTP" : "SMTP Email Server"}</span>
           </button>
 
           <button
@@ -125,7 +131,7 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Lock className="w-4 h-4" />
-            <span>Bảo Mật & Phiên Đăng Nhập</span>
+            <span>{language === "vi" ? "Bảo mật & phiên đăng nhập" : "Security & Sessions"}</span>
           </button>
         </div>
 
@@ -134,10 +140,14 @@ export default function AdminSettingsPage() {
           {/* TAB 1: General */}
           {activeTab === "general" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Cấu Hình Chung Hệ Thống</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                {language === "vi" ? "Cấu hình chung hệ thống" : "General System Configuration"}
+              </h3>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tên Ứng Dụng</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {language === "vi" ? "Tên ứng dụng" : "Application Name"}
+                </label>
                 <input
                   type="text"
                   value={appName}
@@ -147,7 +157,9 @@ export default function AdminSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Hỗ Trợ Khách Hàng</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {language === "vi" ? "Email hỗ trợ khách hàng" : "Customer Support Email"}
+                </label>
                 <input
                   type="email"
                   value={supportEmail}
@@ -165,7 +177,7 @@ export default function AdminSettingsPage() {
                     className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
                   />
                   <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                    Bật chế độ bảo trì hệ thống (Maintenance Mode)
+                    {language === "vi" ? "Bật chế độ bảo trì hệ thống (Maintenance mode)" : "Enable system maintenance mode"}
                   </span>
                 </label>
               </div>
@@ -175,23 +187,29 @@ export default function AdminSettingsPage() {
           {/* TAB 2: AI */}
           {activeTab === "ai" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Cấu Hình AI Engine & Nhận Diện OCR</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                {language === "vi" ? "Cấu hình AI Engine & nhận diện OCR" : "AI Engine & OCR Configuration"}
+              </h3>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mô Hình AI Mặc Định</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {language === "vi" ? "Mô hình AI mặc định" : "Default AI Model"}
+                </label>
                 <select
                   value={aiModel}
                   onChange={(e) => setAiModel(e.target.value)}
                   className="w-full max-w-md px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-emerald-500"
                 >
-                  <option value="gemini-3.6-flash">Google Gemini 3.6 Flash (Nhanh & Tối ưu)</option>
-                  <option value="gemini-3.6-pro">Google Gemini 3.6 Pro (Phân tích chuyên sâu)</option>
+                  <option value="gemini-3.6-flash">Google Gemini 3.6 Flash ({language === "vi" ? "Nhanh & tối ưu" : "Fast & Optimized"})</option>
+                  <option value="gemini-3.6-pro">Google Gemini 3.6 Pro ({language === "vi" ? "Phân tích chuyên sâu" : "Deep Analysis"})</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Ngưỡng Tin Cậy Nhận Diện Hóa Đơn Tối Thiểu ({aiConfidence}%)
+                  {language === "vi"
+                    ? `Ngưỡng tin cậy nhận diện hóa đơn tối thiểu (${aiConfidence}%)`
+                    : `Minimum OCR Invoice Confidence Threshold (${aiConfidence}%)`}
                 </label>
                 <input
                   type="range"
@@ -208,7 +226,9 @@ export default function AdminSettingsPage() {
           {/* TAB 3: Email */}
           {activeTab === "email" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Cấu Hình Máy Chủ Email SMTP</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                {language === "vi" ? "Cấu hình máy chủ email SMTP" : "SMTP Email Server Configuration"}
+              </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
                 <div>
@@ -236,11 +256,13 @@ export default function AdminSettingsPage() {
           {/* TAB 4: Security */}
           {activeTab === "security" && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Bảo Mật & Quản Lý Phiên Làm Việc</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                {language === "vi" ? "Bảo mật & quản lý phiên làm việc" : "Security & Session Management"}
+              </h3>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Thời Gian Hết Hạn Phiên (Phút)
+                  {language === "vi" ? "Thời gian hết hạn phiên (phút)" : "Session Timeout (minutes)"}
                 </label>
                 <input
                   type="number"
@@ -259,7 +281,9 @@ export default function AdminSettingsPage() {
                     className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
                   />
                   <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                    Bắt buộc xác thực hai yếu tố (2FA) cho tất cả tài khoản Quản trị viên
+                    {language === "vi"
+                      ? "Bắt buộc xác thực hai yếu tố (2FA) cho tất cả tài khoản quản trị viên"
+                      : "Require Two-Factor Authentication (2FA) for all Administrator accounts"}
                   </span>
                 </label>
               </div>
@@ -272,7 +296,7 @@ export default function AdminSettingsPage() {
               className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-95"
             >
               <Save className="w-4 h-4" />
-              <span>Lưu Cấu Hình</span>
+              <span>{language === "vi" ? "Lưu cấu hình" : "Save configuration"}</span>
             </button>
           </div>
         </form>

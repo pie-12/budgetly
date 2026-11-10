@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   ShieldCheck,
   CheckCircle2,
@@ -95,6 +96,7 @@ const initialRoles: Role[] = [
 ];
 
 export default function AdminRolesPage() {
+  const { t, language } = useLanguage();
   const [roles, setRoles] = useState<Role[]>(initialRoles);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isAddRoleModalOpen, setIsAddRoleModalOpen] = useState(false);
@@ -113,7 +115,7 @@ export default function AdminRolesPage() {
       prev.map((r) => {
         if (r.id === roleId) {
           if (r.isSystem && r.name === "Super Admin") {
-            showNotification("Quyền hạn tối cao của Super Admin không thể thay đổi!");
+            showNotification(language === "vi" ? "Quyền hạn tối cao của Super Admin không thể thay đổi!" : "Super Admin permissions cannot be modified!");
             return r;
           }
           const updated = {
@@ -123,7 +125,7 @@ export default function AdminRolesPage() {
               [permKey]: !r.permissions[permKey],
             },
           };
-          showNotification(`Đã cập nhật ma trận quyền hạn cho vai trò "${r.name}"`);
+          showNotification(language === "vi" ? `Đã cập nhật ma trận quyền hạn cho vai trò "${r.name}"` : `Updated permissions for "${r.name}"`);
           return updated;
         }
         return r;
@@ -156,24 +158,28 @@ export default function AdminRolesPage() {
     setIsAddRoleModalOpen(false);
     setNewRoleName("");
     setNewRoleDesc("");
-    showNotification(`Đã tạo vai trò quản trị mới "${newRoleName}"`);
+    showNotification(language === "vi" ? `Đã tạo vai trò quản trị mới "${newRoleName}"` : `Created role "${newRoleName}"`);
   };
 
   const permissionLabels: { key: keyof Role["permissions"]; label: string }[] = [
-    { key: "manageUsers", label: "Quản lý Người Dùng (Khóa/Mở/Vai trò)" },
-    { key: "manageCategories", label: "Quản lý Danh Mục Thu & Chi" },
-    { key: "manageTransactions", label: "Giám sát & Đánh dấu Giao Dịch" },
-    { key: "exportReports", label: "Xuất Báo Cáo & Dữ Liệu Phân Tích" },
-    { key: "manageNotifications", label: "Phát Thông Báo Toàn Hệ Thống" },
-    { key: "viewAuditLogs", label: "Xem Nhật Ký Kiểm Toán & Bảo Mật" },
-    { key: "manageSettings", label: "Thay Đổi Cấu Hình Máy Chủ & AI" },
+    { key: "manageUsers", label: language === "vi" ? "Quản lý người dùng (khóa/mở/vai trò)" : "Manage users (lock/unlock/roles)" },
+    { key: "manageCategories", label: language === "vi" ? "Quản lý danh mục thu & chi" : "Manage categories (income & expense)" },
+    { key: "manageTransactions", label: language === "vi" ? "Giám sát & đánh dấu giao dịch" : "Monitor & flag transactions" },
+    { key: "exportReports", label: language === "vi" ? "Xuất báo cáo & dữ liệu phân tích" : "Export reports & analytics" },
+    { key: "manageNotifications", label: language === "vi" ? "Phát thông báo toàn hệ thống" : "Broadcast system announcements" },
+    { key: "viewAuditLogs", label: language === "vi" ? "Xem nhật ký kiểm toán & bảo mật" : "View audit & security logs" },
+    { key: "manageSettings", label: language === "vi" ? "Thay đổi cấu hình máy chủ & AI" : "Modify server & AI configurations" },
   ];
 
   return (
     <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="Quản Lý Vai Trò & Phân Quyền Quản Trị"
-        subtitle="Ma trận phân quyền chi tiết cho quản trị viên, kiểm toán viên và đội ngũ hỗ trợ"
+        title={language === "vi" ? "Quản lý vai trò & phân quyền quản trị" : "Roles & Permissions Management"}
+        subtitle={
+          language === "vi"
+            ? "Ma trận phân quyền chi tiết cho quản trị viên, kiểm toán viên và đội ngũ hỗ trợ"
+            : "Granular permission matrix for administrators, auditors, and support staff"
+        }
       />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
@@ -190,10 +196,10 @@ export default function AdminRolesPage() {
           <div>
             <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-              <span>Danh Sách Vai Trò Quản Trị</span>
+              <span>{language === "vi" ? "Danh sách vai trò quản trị" : "Admin Roles List"}</span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {roles.length} vai trò hiện đang hoạt động trên hệ thống
+              {language === "vi" ? `${roles.length} vai trò hiện đang hoạt động trên hệ thống` : `${roles.length} active roles in the system`}
             </p>
           </div>
 
@@ -202,16 +208,18 @@ export default function AdminRolesPage() {
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span>Thêm Vai Trò Mới</span>
+            <span>{language === "vi" ? "Thêm vai trò mới" : "Add New Role"}</span>
           </button>
         </div>
 
         {/* Permission Matrix Table */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
           <div className="p-6 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">Ma Trận Phân Quyền Chi Tiết</h3>
+            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">
+              {language === "vi" ? "Ma trận phân quyền chi tiết" : "Granular Permission Matrix"}
+            </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Nhấp vào biểu tượng kiểm tra để bật/tắt quyền hạn tương ứng cho từng vai trò
+              {language === "vi" ? "Nhấp vào biểu tượng kiểm tra để bật/tắt quyền hạn tương ứng cho từng vai trò" : "Click icons to toggle permissions for each role"}
             </p>
           </div>
 
@@ -219,12 +227,12 @@ export default function AdminRolesPage() {
             <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
               <thead className="bg-slate-50 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Tên Quyền Hạn</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Tên quyền hạn" : "Permission Name"}</th>
                   {roles.map((r) => (
                     <th key={r.id} className="px-6 py-4 text-center">
                       <div className="font-bold text-slate-900 dark:text-slate-200">{r.name}</div>
                       <span className="text-[10px] text-slate-400 font-normal">
-                        ({r.usersCount} tài khoản)
+                        ({r.usersCount} {language === "vi" ? "tài khoản" : "accounts"})
                       </span>
                     </th>
                   ))}
@@ -232,7 +240,7 @@ export default function AdminRolesPage() {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {permissionLabels.map((perm) => (
-                  <tr key={perm.key} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition-colors">
+                  <tr key={perm.key} className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
                     <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{perm.label}</td>
 
                     {roles.map((r) => {
@@ -273,22 +281,22 @@ export default function AdminRolesPage() {
             <div className="flex items-center gap-2 mb-1">
               <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                Tạo Vai Trò Quản Trị Mới
+                {language === "vi" ? "Tạo vai trò quản trị mới" : "Create New Admin Role"}
               </h3>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
-              Định nghĩa vai trò mới và phân quyền cho nhân viên vận hành
+              {language === "vi" ? "Định nghĩa vai trò mới và phân quyền cho nhân viên vận hành" : "Define new role and assign operational permissions"}
             </p>
 
             <form onSubmit={handleCreateRole} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Tên Vai Trò
+                  {language === "vi" ? "Tên vai trò" : "Role Name"}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ví dụ: Kiểm Toán Viên Độc Lập"
+                  placeholder={language === "vi" ? "Ví dụ: Kiểm toán viên độc lập" : "e.g. Independent Auditor"}
                   value={newRoleName}
                   onChange={(e) => setNewRoleName(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500"
@@ -297,11 +305,11 @@ export default function AdminRolesPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Mô Tả Nhiệm Vụ
+                  {language === "vi" ? "Mô tả nhiệm vụ" : "Role Description"}
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Mô tả phạm vi trách nhiệm của vai trò này..."
+                  placeholder={language === "vi" ? "Mô tả phạm vi trách nhiệm của vai trò này..." : "Describe role responsibilities..."}
                   value={newRoleDesc}
                   onChange={(e) => setNewRoleDesc(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500"
@@ -314,13 +322,13 @@ export default function AdminRolesPage() {
                   onClick={() => setIsAddRoleModalOpen(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
                 >
-                  Hủy
+                  {language === "vi" ? "Hủy" : "Cancel"}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-xs cursor-pointer active:scale-95"
                 >
-                  Tạo Vai Trò
+                  {language === "vi" ? "Tạo vai trò" : "Create Role"}
                 </button>
               </div>
             </form>

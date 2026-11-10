@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 import {
   Users,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
+  const { t, language } = useLanguage();
   const [backupStatus, setBackupStatus] = useState<string | null>(null);
 
   const handleTriggerBackup = () => {
@@ -44,41 +46,41 @@ export default function AdminDashboardPage() {
 
   const statCards = [
     {
-      title: "Tổng Người Dùng",
+      title: t("total_users_stat"),
       value: "1,248",
       change: "+14.2%",
       isPositive: true,
-      subtext: "128 người dùng mới trong tháng",
+      subtext: `128 ${t("new_users_month")}`,
       icon: Users,
       color: "from-blue-600 to-indigo-600",
       textColor: "text-blue-500",
     },
     {
-      title: "Giao Dịch Hệ Thống",
+      title: t("total_tx_stat"),
       value: "45,890",
       change: "+22.5%",
       isPositive: true,
-      subtext: "Tổng luân chuyển: 4.85 tỷ ₫",
+      subtext: `${t("total_flow")}: 4.85 tỷ ₫`,
       icon: Receipt,
       color: "from-emerald-600 to-teal-600",
       textColor: "text-emerald-500",
     },
     {
-      title: "Cảnh Báo Bất Thường",
+      title: t("fraud_alerts_stat"),
       value: "12",
       change: "-5%",
       isPositive: true,
-      subtext: "Yêu cầu kiểm duyệt viên rà soát",
+      subtext: t("requires_review"),
       icon: AlertTriangle,
       color: "from-rose-600 to-pink-600",
       textColor: "text-rose-500",
     },
     {
-      title: "Lượt Quét OCR Hóa Đơn",
+      title: t("ocr_scans_stat"),
       value: "8,940",
       change: "+38.4%",
       isPositive: true,
-      subtext: "Độ chính xác AI nhận diện 98.6%",
+      subtext: `${t("ai_accuracy")} 98.6%`,
       icon: Zap,
       color: "from-purple-600 to-amber-600",
       textColor: "text-purple-500",
@@ -86,29 +88,29 @@ export default function AdminDashboardPage() {
   ];
 
   const quickModules = [
-    { title: "Người Dùng", desc: "Quản lý 1,248 tài khoản", href: "/admin/users", count: "1.2k", icon: Users },
-    { title: "Danh Mục", desc: "24 danh mục thu chi mặc định", href: "/admin/categories", count: "24", icon: Tags },
-    { title: "Giao Dịch", desc: "Giám sát luồng tiền hệ thống", href: "/admin/transactions", count: "45k", icon: ArrowLeftRight },
-    { title: "Ngân Sách", desc: "Cảnh báo hạn mức & chỉ tiêu", href: "/admin/budgets", count: "850", icon: Target },
-    { title: "Báo Cáo", desc: "Tăng trưởng & doanh số dịch vụ", href: "/admin/reports", count: "Hàng tháng", icon: BarChart3 },
-    { title: "Thông Báo", desc: "Gửi thông báo & tin tức broadcast", href: "/admin/notifications", count: "3 Đang chạy", icon: Bell },
-    { title: "Nhật Ký Audit", desc: "Lịch sử bảo mật & thao tác", href: "/admin/audit-logs", count: "Trực tiếp", icon: FileText },
-    { title: "Phân Quyền", desc: "Vai trò & quyền hạn quản trị", href: "/admin/roles", count: "5 Vai trò", icon: ShieldCheck },
-    { title: "Cài Đặt", desc: "Cấu hình AI, Email & Bảo mật", href: "/admin/settings", count: "v2.4", icon: Settings },
+    { title: t("admin_nav_users"), desc: language === "vi" ? "Quản lý 1,248 tài khoản" : "Manage 1,248 accounts", href: "/admin/users", count: "1.2k", icon: Users },
+    { title: t("admin_nav_categories"), desc: language === "vi" ? "24 danh mục thu chi mặc định" : "24 default categories", href: "/admin/categories", count: "24", icon: Tags },
+    { title: t("admin_nav_transactions"), desc: language === "vi" ? "Giám sát luồng tiền hệ thống" : "Monitor system money flows", href: "/admin/transactions", count: "45k", icon: ArrowLeftRight },
+    { title: t("admin_nav_budgets"), desc: language === "vi" ? "Cảnh báo hạn mức & chỉ tiêu" : "Budget threshold alerts", href: "/admin/budgets", count: "850", icon: Target },
+    { title: t("admin_nav_reports"), desc: language === "vi" ? "Tăng trưởng & doanh số dịch vụ" : "Revenue & growth reports", href: "/admin/reports", count: language === "vi" ? "Hàng tháng" : "Monthly", icon: BarChart3 },
+    { title: t("admin_nav_notifications"), desc: language === "vi" ? "Gửi thông báo & tin tức broadcast" : "Broadcast system messages", href: "/admin/notifications", count: language === "vi" ? "3 đang chạy" : "3 Active", icon: Bell },
+    { title: t("admin_nav_audit"), desc: language === "vi" ? "Lịch sử bảo mật & thao tác" : "Security & access audit logs", href: "/admin/audit-logs", count: language === "vi" ? "Trực tiếp" : "Live", icon: FileText },
+    { title: t("admin_nav_roles"), desc: language === "vi" ? "Vai trò & quyền hạn quản trị" : "Admin roles & permissions", href: "/admin/roles", count: language === "vi" ? "5 vai trò" : "5 Roles", icon: ShieldCheck },
+    { title: t("admin_nav_settings"), desc: language === "vi" ? "Cấu hình AI, email & bảo mật" : "AI, Email & security config", href: "/admin/settings", count: "v2.4", icon: Settings },
   ];
 
   const recentLogs = [
-    { id: 1, user: "admin_lam", action: "UPDATE_CONFIG", target: "System AI Threshold", time: "2 phút trước", status: "success" },
-    { id: 2, user: "mod_hoa", action: "LOCK_USER", target: "user_fake99@gmail.com", time: "15 phút trước", status: "danger" },
-    { id: 3, user: "admin_lam", action: "CREATE_CATEGORY", target: "Crypto Investment", time: "1 giờ trước", status: "success" },
-    { id: 4, user: "system_cron", action: "AUTO_BACKUP", target: "DB PostgreSQL Snapshot", time: "3 giờ trước", status: "info" },
+    { id: 1, user: "admin_lam", action: "UPDATE_CONFIG", target: "System AI Threshold", time: language === "vi" ? "2 phút trước" : "2 mins ago", status: "success" },
+    { id: 2, user: "mod_hoa", action: "LOCK_USER", target: "user_fake99@gmail.com", time: language === "vi" ? "15 phút trước" : "15 mins ago", status: "danger" },
+    { id: 3, user: "admin_lam", action: "CREATE_CATEGORY", target: "Crypto Investment", time: language === "vi" ? "1 giờ trước" : "1 hour ago", status: "success" },
+    { id: 4, user: "system_cron", action: "AUTO_BACKUP", target: "DB PostgreSQL Snapshot", time: language === "vi" ? "3 giờ trước" : "3 hours ago", status: "info" },
   ];
 
   return (
     <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="Bảng Điều Khiển Quản Trị Hệ Thống"
-        subtitle="Tổng quan hoạt động, hiệu suất máy chủ và các phân hệ quản lý cốt lõi"
+        title={t("admin_dashboard_title")}
+        subtitle={t("admin_dashboard_sub")}
       />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
@@ -116,13 +118,13 @@ export default function AdminDashboardPage() {
         {backupStatus === "running" && (
           <div className="p-4 bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-500/40 rounded-2xl flex items-center gap-3 text-indigo-700 dark:text-indigo-200 animate-pulse text-sm">
             <Activity className="w-5 h-5 text-indigo-500 animate-spin" />
-            <span>Hệ thống đang sao lưu snapshot cơ sở dữ liệu PostgreSQL...</span>
+            <span>{language === "vi" ? "Hệ thống đang sao lưu snapshot cơ sở dữ liệu PostgreSQL..." : "System database snapshot backup in progress..."}</span>
           </div>
         )}
         {backupStatus === "completed" && (
           <div className="p-4 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-500/40 rounded-2xl flex items-center gap-3 text-emerald-700 dark:text-emerald-200 text-sm">
             <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-            <span>Sao lưu dữ liệu thành công! Bản ghi đã được đồng bộ an toàn.</span>
+            <span>{language === "vi" ? "Sao lưu dữ liệu thành công! Bản ghi đã được đồng bộ an toàn." : "Database backup completed successfully!"}</span>
           </div>
         )}
 
@@ -133,7 +135,7 @@ export default function AdminDashboardPage() {
             return (
               <div
                 key={idx}
-                className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 shadow-xs relative overflow-hidden group"
+                className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md transition-all duration-300 shadow-xs relative overflow-hidden group"
               >
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -176,10 +178,10 @@ export default function AdminDashboardPage() {
             <div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                 <LayoutGrid className="w-4 h-4 text-emerald-500" />
-                <span>Các Phân Hệ Quản Trị Hệ Thống</span>
+                <span>{t("core_modules")}</span>
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Truy cập nhanh vào các tính năng quản lý và phân quyền
+                {language === "vi" ? "Truy cập nhanh vào các tính năng quản lý và phân quyền" : "Quick access to all management modules"}
               </p>
             </div>
           </div>
@@ -191,7 +193,7 @@ export default function AdminDashboardPage() {
                 <Link
                   key={idx}
                   href={item.href}
-                  className="p-5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-850 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500/40 rounded-2xl transition-all duration-200 group flex items-start justify-between shadow-xs"
+                  className="p-5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500/40 rounded-2xl transition-all duration-200 group flex items-start justify-between shadow-xs hover:shadow-md"
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center text-slate-700 dark:text-slate-300 group-hover:text-emerald-500 transition-colors shrink-0">
@@ -227,14 +229,16 @@ export default function AdminDashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base">
-                    Hạ Tầng Máy Chủ & Hiệu Năng
+                    {t("server_infrastructure")}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Giám sát tài nguyên thời gian thực</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {language === "vi" ? "Giám sát tài nguyên thời gian thực" : "Realtime system metrics"}
+                  </p>
                 </div>
               </div>
               <span className="text-xs font-semibold px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Tất cả node hoạt động
+                {t("all_nodes_operational")}
               </span>
             </div>
 
@@ -242,7 +246,7 @@ export default function AdminDashboardPage() {
               <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
-                    <Cpu className="w-4 h-4 text-indigo-500" /> Tải CPU
+                    <Cpu className="w-4 h-4 text-indigo-500" /> {t("cpu_load")}
                   </span>
                   <span className="text-indigo-600 dark:text-indigo-400 font-bold">28.4%</span>
                 </div>
@@ -255,7 +259,7 @@ export default function AdminDashboardPage() {
               <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
-                    <Database className="w-4 h-4 text-emerald-500" /> Bộ Nhớ RAM
+                    <Database className="w-4 h-4 text-emerald-500" /> {t("ram_allocated")}
                   </span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-bold">4.2 GB / 16 GB</span>
                 </div>
@@ -268,7 +272,7 @@ export default function AdminDashboardPage() {
               <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
-                    <Activity className="w-4 h-4 text-purple-500" /> Độ Trễ API
+                    <Activity className="w-4 h-4 text-purple-500" /> {t("api_latency")}
                   </span>
                   <span className="text-purple-600 dark:text-purple-400 font-bold">42 ms</span>
                 </div>
@@ -282,7 +286,7 @@ export default function AdminDashboardPage() {
             {/* Live activity log snippet */}
             <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
               <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">
-                Nhật Ký Thao Tác Gần Đây (Audit Stream)
+                {t("recent_audit_stream")}
               </h4>
               <div className="space-y-2">
                 {recentLogs.map((log) => (
@@ -293,7 +297,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-2.5">
                       <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
                       <span className="font-semibold text-slate-800 dark:text-slate-300">{log.user}</span>
-                      <span className="text-slate-500">thực hiện</span>
+                      <span className="text-slate-500">{language === "vi" ? "thực hiện" : "performed"}</span>
                       <span className="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-mono text-[11px] border border-indigo-200 dark:border-indigo-500/20">
                         {log.action}
                       </span>
@@ -311,8 +315,10 @@ export default function AdminDashboardPage() {
           {/* Quick Actions Panel */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xs">
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1">Thao Tác Nhanh</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Thực hiện các tác vụ phổ biến với 1 nhấp chuột</p>
+              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1">{t("quick_actions")}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+                {language === "vi" ? "Thực hiện các tác vụ phổ biến với 1 nhấp chuột" : "Perform routine admin tasks with one click"}
+              </p>
 
               <div className="space-y-3">
                 <Link
@@ -320,39 +326,39 @@ export default function AdminDashboardPage() {
                   className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-600/10 hover:bg-indigo-100 dark:hover:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 transition-all font-medium text-xs"
                 >
                   <Send className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span>Phát Thông Báo Toàn Hệ Thống</span>
+                  <span>{t("broadcast_btn")}</span>
                 </Link>
 
                 <Link
                   href="/admin/categories"
-                  className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 transition-all font-medium text-xs"
+                  className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 transition-all font-medium text-xs"
                 >
                   <PlusCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>Thêm Danh Mục Chi Tiêu Mới</span>
+                  <span>{t("add_category_btn")}</span>
                 </Link>
 
                 <Link
                   href="/admin/users"
-                  className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 transition-all font-medium text-xs"
+                  className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 transition-all font-medium text-xs"
                 >
                   <UserPlus className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <span>Tạo Tài Khoản Quản Trị Viên</span>
+                  <span>{t("create_admin_acc")}</span>
                 </Link>
 
                 <button
                   onClick={handleTriggerBackup}
                   disabled={backupStatus === "running"}
-                  className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 transition-all font-medium text-xs text-left cursor-pointer"
+                  className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 transition-all font-medium text-xs text-left cursor-pointer"
                 >
                   <FileSpreadsheet className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                  <span>Sao Lưu Cơ Sở Dữ Liệu Ngay</span>
+                  <span>{t("backup_db_btn")}</span>
                 </button>
               </div>
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
               <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                Hỗ trợ kỹ thuật: Liên hệ đội ngũ DevOps hạ tầng Budgetly
+                {language === "vi" ? "Hỗ trợ kỹ thuật: Liên hệ đội ngũ DevOps hạ tầng Budgetly" : "Technical Support: Contact Budgetly Infrastructure Team"}
               </p>
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   Search,
   CheckCircle2,
@@ -73,6 +74,7 @@ const initialLogs: AuditLog[] = [
 ];
 
 export default function AdminAuditLogsPage() {
+  const { t, language } = useLanguage();
   const [logs] = useState<AuditLog[]>(initialLogs);
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("All");
@@ -98,8 +100,12 @@ export default function AdminAuditLogsPage() {
   return (
     <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="Nhật Ký Hoạt Động & Kiểm Toán Bảo Mật"
-        subtitle="Theo dõi toàn bộ thao tác của quản trị viên, thay đổi cấu hình và cảnh báo an toàn hệ thống"
+        title={language === "vi" ? "Nhật ký hoạt động & kiểm toán bảo mật" : "Security & Audit Logs"}
+        subtitle={
+          language === "vi"
+            ? "Theo dõi toàn bộ thao tác của quản trị viên, thay đổi cấu hình và cảnh báo an toàn hệ thống"
+            : "Track administrator activities, configuration adjustments, and system security alerts"
+        }
       />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -139,11 +145,11 @@ export default function AdminAuditLogsPage() {
           </div>
 
           <button
-            onClick={() => showNotification("Đã trích xuất tệp nhật ký (.csv)")}
+            onClick={() => showNotification(language === "vi" ? "Đã trích xuất tệp nhật ký (.csv)" : "Exported audit logs (.csv)")}
             className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all shrink-0 cursor-pointer active:scale-95"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span>Xuất Nhật Ký CSV</span>
+            <span>{language === "vi" ? "Xuất nhật ký CSV" : "Export CSV"}</span>
           </button>
         </div>
 
@@ -153,17 +159,17 @@ export default function AdminAuditLogsPage() {
             <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
               <thead className="bg-slate-50 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Mã & Thời Gian</th>
-                  <th className="px-6 py-4">Tài Khoản Thao Tác</th>
-                  <th className="px-6 py-4">Hành Động</th>
-                  <th className="px-6 py-4">Mức Độ</th>
-                  <th className="px-6 py-4">Địa Chỉ IP</th>
-                  <th className="px-6 py-4">Chi Tiết Thao Tác</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Mã & thời gian" : "ID & Timestamp"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Tài khoản thao tác" : "Actor"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Hành động" : "Action"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Mức độ" : "Severity"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Địa chỉ IP" : "IP Address"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Chi tiết thao tác" : "Details"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-mono text-[11px]">
                 {filteredLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition-colors">
+                  <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
                     <td className="px-6 py-4">
                       <span className="text-emerald-600 dark:text-emerald-400 font-bold">{log.id}</span>
                       <p className="text-slate-400 dark:text-slate-500 text-[10px] mt-0.5">{log.timestamp}</p>

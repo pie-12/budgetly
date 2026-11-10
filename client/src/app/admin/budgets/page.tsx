@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   CheckCircle2,
   Settings,
@@ -63,6 +64,7 @@ const initialBudgets: UserBudgetMonitor[] = [
 ];
 
 export default function AdminBudgetsPage() {
+  const { t, language } = useLanguage();
   const [budgets] = useState<UserBudgetMonitor[]>(initialBudgets);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -76,19 +78,23 @@ export default function AdminBudgetsPage() {
   };
 
   const handleSendNudge = (userEmail: string) => {
-    showNotification(`Đã gửi thông báo nhắc nhở vượt hạn mức tới ${userEmail}`);
+    showNotification(language === "vi" ? `Đã gửi thông báo nhắc nhở vượt hạn mức tới ${userEmail}` : `Sent budget threshold warning to ${userEmail}`);
   };
 
   const handleSaveTierLimits = (e: React.FormEvent) => {
     e.preventDefault();
-    showNotification("Đã lưu cấu hình hạn mức ngân sách hệ thống!");
+    showNotification(language === "vi" ? "Đã lưu cấu hình hạn mức ngân sách hệ thống!" : "System budget tier caps saved successfully!");
   };
 
   return (
     <div className="flex-1 pb-12 font-sans transition-colors duration-200">
       <AdminHeader
-        title="Quản Lý Ngân Sách & Hạn Mức Hệ Thống"
-        subtitle="Giám sát người dùng vượt hạn mức chi tiêu và cấu hình trần ngân sách theo gói tài khoản"
+        title={language === "vi" ? "Quản lý ngân sách & hạn mức hệ thống" : "System Budgets & Limits Management"}
+        subtitle={
+          language === "vi"
+            ? "Giám sát người dùng vượt hạn mức chi tiêu và cấu hình trần ngân sách theo gói tài khoản"
+            : "Monitor spending threshold overruns and account tier caps"
+        }
       />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
@@ -108,10 +114,10 @@ export default function AdminBudgetsPage() {
             </div>
             <div>
               <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">
-                Cấu Hình Trần Ngân Sách Theo Gói Người Dùng
+                {language === "vi" ? "Cấu hình trần ngân sách theo gói người dùng" : "Budget tier caps configuration"}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Thiết lập giới hạn ngân sách tối đa được phép tạo trên hệ thống
+                {language === "vi" ? "Thiết lập giới hạn ngân sách tối đa được phép tạo trên hệ thống" : "Define maximum budget caps allowed per user tier"}
               </p>
             </div>
           </div>
@@ -119,7 +125,7 @@ export default function AdminBudgetsPage() {
           <form onSubmit={handleSaveTierLimits} className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Gói Miễn Phí (Free Tier) - Trần Hàng Tháng
+                {language === "vi" ? "Gói miễn phí (Free tier) - Trần hàng tháng" : "Free Tier - Monthly Cap"}
               </label>
               <div className="relative">
                 <input
@@ -136,7 +142,7 @@ export default function AdminBudgetsPage() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Gói Nâng Cao (Premium Tier) - Trần Hàng Tháng
+                {language === "vi" ? "Gói nâng cao (Premium tier) - Trần hàng tháng" : "Premium Tier - Monthly Cap"}
               </label>
               <div className="relative">
                 <input
@@ -156,7 +162,7 @@ export default function AdminBudgetsPage() {
                 type="submit"
                 className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-95"
               >
-                Lưu Cấu Hình Hạn Mức
+                {language === "vi" ? "Lưu cấu hình hạn mức" : "Save Tier Limits"}
               </button>
             </div>
           </form>
@@ -166,10 +172,10 @@ export default function AdminBudgetsPage() {
         <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
           <div className="p-6 border-b border-slate-100 dark:border-slate-800">
             <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">
-              Giám Sát Cảnh Báo Ngân Sách Thời Gian Thực
+              {language === "vi" ? "Giám sát cảnh báo ngân sách thời gian thực" : "Realtime Budget Alert Monitor"}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Các tài khoản chạm ngưỡng cảnh báo (&gt;90% hạn mức)
+              {language === "vi" ? "Các tài khoản chạm ngưỡng cảnh báo (>90% hạn mức)" : "Accounts reaching threshold warning (>90% limit)"}
             </p>
           </div>
 
@@ -177,18 +183,18 @@ export default function AdminBudgetsPage() {
             <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
               <thead className="bg-slate-50 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Người Dùng</th>
-                  <th className="px-6 py-4">Tên Ngân Sách</th>
-                  <th className="px-6 py-4">Hạn Mức Đặt</th>
-                  <th className="px-6 py-4">Đã Chi Tiêu</th>
-                  <th className="px-6 py-4">Tỷ Lệ Đã Dùng</th>
-                  <th className="px-6 py-4">Trạng Thái</th>
-                  <th className="px-6 py-4 text-right">Hành Động</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Người dùng" : "User"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Tên ngân sách" : "Budget Name"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Hạn mức đặt" : "Budget Cap"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Đã chi tiêu" : "Spent"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Tỷ lệ đã dùng" : "Usage Rate"}</th>
+                  <th className="px-6 py-4">{language === "vi" ? "Trạng thái" : "Status"}</th>
+                  <th className="px-6 py-4 text-right">{language === "vi" ? "Hành động" : "Actions"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {budgets.map((b) => (
-                  <tr key={b.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition-colors">
+                  <tr key={b.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
                     <td className="px-6 py-4">
                       <span className="font-semibold text-slate-900 dark:text-slate-200">{b.userName}</span>
                       <p className="text-[11px] text-slate-400 dark:text-slate-500">{b.userEmail}</p>
