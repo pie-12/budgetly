@@ -151,7 +151,7 @@ def update_profile(
     if not clean_name:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Họ và tên không được để trống / Full name cannot be empty"
+            detail="Full name cannot be empty"
         )
 
     current_user.full_name = clean_name
@@ -165,7 +165,7 @@ def update_profile(
             full_name=current_user.full_name,
             created_at=current_user.created_at
         ),
-        message="Hồ sơ người dùng đã được cập nhật thành công."
+        message="Profile updated successfully."
     )
 
 
@@ -180,14 +180,14 @@ def change_password(
     if not verify_password(req.current_password, current_user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Mật khẩu hiện tại không chính xác. Vui lòng kiểm tra lại."
+            detail="The current password is incorrect. Please try again."
         )
 
     # 2. Check that new password is not identical to current
     if req.new_password == req.current_password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Mật khẩu mới không được trùng với mật khẩu hiện tại."
+            detail="The new password must be different from the current one."
         )
 
     # 3. Hash and persist in PostgreSQL
@@ -196,5 +196,5 @@ def change_password(
 
     return APIResponse(
         data={"user_id": str(current_user.id)},
-        message="Đổi mật khẩu thành công. Mật khẩu mới của bạn đã có hiệu lực."
+        message="Password changed successfully. Your new password is now active."
     )

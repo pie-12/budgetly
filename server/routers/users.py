@@ -92,7 +92,7 @@ def create_user_by_admin(
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Tài khoản với email này đã tồn tại trong cơ sở dữ liệu."
+            detail="An account with this email address already exists in the database."
         )
 
     new_user = User(
@@ -143,7 +143,7 @@ def create_user_by_admin(
 
     return APIResponse(
         data=item,
-        message="Người dùng mới đã được tạo thành công trong PostgreSQL."
+        message="User created successfully in PostgreSQL."
     )
 
 
@@ -158,11 +158,11 @@ def update_user_by_admin(
     try:
         u_uuid = uuid.UUID(user_id)
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ID người dùng không hợp lệ")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user id")
 
     target_user = db.query(User).filter(User.id == u_uuid).first()
     if not target_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Không tìm thấy người dùng")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     if req.full_name is not None:
         target_user.full_name = req.full_name.strip()
@@ -193,7 +193,7 @@ def update_user_by_admin(
 
     return APIResponse(
         data=item,
-        message="Cập nhật thông tin người dùng thành công."
+        message="User updated successfully."
     )
 
 
@@ -207,17 +207,17 @@ def delete_user_by_admin(
     try:
         u_uuid = uuid.UUID(user_id)
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ID người dùng không hợp lệ")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user id")
 
     target_user = db.query(User).filter(User.id == u_uuid).first()
     if not target_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Không tìm thấy người dùng")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     # Protection: Do not allow deleting system administrators
     if target_user.email.lower().strip() in ADMIN_EMAILS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Không thể xóa tài khoản Quản trị viên hệ thống (Admin/Demo)."
+            detail="System administrator accounts (Admin/Demo) cannot be deleted."
         )
 
     db.delete(target_user)
@@ -225,5 +225,5 @@ def delete_user_by_admin(
 
     return APIResponse(
         data={"deleted_id": user_id},
-        message=f"Đã xóa tài khoản {target_user.email} khỏi cơ sở dữ liệu thành công."
+        message=f"User {target_user.email} deleted successfully."
     )

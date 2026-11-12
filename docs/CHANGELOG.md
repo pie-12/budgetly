@@ -59,3 +59,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Month-end projection divided by a hardcoded 30 days, which under-projected February and over-projected 31-day months. It now projects over the real length of the current month and clamps the elapsed day to it.
+
+## [0.7.1] - 2026-11-12
+### Changed
+- The admin user-management endpoints (`/api/v1/users`) and the profile/password endpoints (`/api/v1/auth/profile`, `/api/v1/auth/change-password`) now answer with English messages only. The UI localises those messages through `LanguageContext`, so the API no longer mixes two languages depending on which endpoint answered. Vietnamese is kept where it belongs: the NLP keyword lists that parse Vietnamese input.
+
+### Added
+- Backend tests for the administrator guard and role mapping (`server/tests/test_admin_access.py`): regular users get `403`, admin emails are matched case-insensitively, a lookalike domain is rejected, and `determine_role` stays consistent with `ADMIN_EMAILS`.
